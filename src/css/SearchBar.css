@@ -1,0 +1,28 @@
+
+.search-bar-container {
+    display: flex;
+    align-items: center;
+    max-width: 400px;
+    margin: auto;
+    padding: 20px;
+}
+
+.search-input {
+    flex: 1; /* Take up the available space */
+}
+
+.loading-text {
+    margin-left: 8px;
+}
+
+.search-results {
+    list-style: none;
+    padding: 0;
+}
+
+.search-result-item {
+    margin: 8px 0;
+    border-bottom: 1px solid #ccc;
+    padding-bottom: 4px;
+}
+  
