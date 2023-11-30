@@ -13,6 +13,7 @@ const SearchBar = () => {
     const [searchResults, setSearchResults] = useState([]);
     const [isLoading, setIsLoading] = useState(false);
     const [totalCount, setTotalCount] = useState(0);
+    const [abortController, setAbortController] = useState(null);
 
     const columns = [
       { field: 'id', headerName: 'ID', width: 100 },
@@ -42,18 +43,37 @@ const SearchBar = () => {
     };
 
     const handleSearchSubmit = () => {
-        setIsLoading(true);
-        axios
-        .get(`${SAR_BACKEND_URL}/search?query=${searchQuery}`)
-        .then((response) => {
-            setSearchResults(response.data.results);
-            setTotalCount(response.data.totalCount)
-            setIsLoading(false);
-        })
-        .catch((error) => {
+      // If there is an existing search, cancel it before starting a new one
+      if (abortController) {
+        abortController.abort();
+      }
+  
+      const newAbortController = new AbortController();
+      setAbortController(newAbortController);
+  
+      setIsLoading(true);
+  
+      axios.get(`${SAR_BACKEND_URL}/search?query=${searchQuery}`, {
+        signal: newAbortController.signal
+      })
+      .then((response) => {
+          setSearchResults(response.data.results);
+          setTotalCount(response.data.totalCount);
+          setIsLoading(false);
+      })
+      .catch((error) => {
+          if (axios.isCancel(error)) {
+            console.log('Request canceled:', error.message);
+          } else {
             console.error('Error fetching search results:', error);
-            setIsLoading(false);
-        });
+          }
+          setIsLoading(false);
+      });
+    };
+
+    const handleCancel = () => {
+      abortController.abort();
+      setIsLoading(false);
     };
 
     const handleKeyDown = (event) => {
@@ -116,7 +136,7 @@ const SearchBar = () => {
                         Search <SearchIcon />
                 </Button>
             </div>
-            {isLoading && <Loading open={isLoading} searchQuery={searchQuery}/>}
+            <Loading open={isLoading} onCancel={handleCancel} searchQuery={searchQuery}/>
             {searchResults.length > 0 ? (
               <>
                 <div className="search-result-text">
