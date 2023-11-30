@@ -6,6 +6,7 @@ import Avatar from '@mui/material/Avatar';
 import {SAR_BACKEND_URL} from '../constants/urlConstants';
 import axios from 'axios';
 import "../css/SearchBar.css"
+import Loading from './Loading';
 
 const SearchBar = () => {
     const [searchQuery, setSearchQuery] = useState('');
@@ -63,7 +64,6 @@ const SearchBar = () => {
 
     const handleDownloadAllResults = async () => {
         try {
-            // Update the URL to your specific API endpoint
             const response = await axios.get(`${SAR_BACKEND_URL}/download-csv`, {
                 responseType: 'blob', //handling the binary data
                 headers: {
@@ -116,7 +116,7 @@ const SearchBar = () => {
                         Search <SearchIcon />
                 </Button>
             </div>
-            {isLoading && <span className="loading-text">Loading...</span>}
+            {isLoading && <Loading open={isLoading} searchQuery={searchQuery}/>}
             {searchResults.length > 0 ? (
               <>
                 <div className="search-result-text">
