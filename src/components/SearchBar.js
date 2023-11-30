@@ -3,7 +3,6 @@ import { TextField, IconButton, Button, Typography } from '@mui/material';
 import SearchIcon from '@mui/icons-material/Search';
 import { DataGrid } from '@mui/x-data-grid';
 import Avatar from '@mui/material/Avatar';
-import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
 import {SAR_BACKEND_URL} from '../constants/urlConstants';
 import axios from 'axios';
 import "../css/SearchBar.css"
@@ -65,7 +64,7 @@ const SearchBar = () => {
     const handleDownloadAllResults = async () => {
         try {
             // Update the URL to your specific API endpoint
-            const response = await axios.get('${SAR_BACKEND_URL}', {
+            const response = await axios.get(`${SAR_BACKEND_URL}/download-csv`, {
                 responseType: 'blob', //handling the binary data
                 headers: {
                     // Include authorization tokens
@@ -153,13 +152,16 @@ const SearchBar = () => {
                 ( <div className="example-searches-container">
                     <div style={{ textAlign: 'left' }}> 
                       <Typography variant="h5" className="no-search-message">
-                          Example Searches: Meditation, Self care, Children
+                          Example Searches:
+                      </Typography>
+                      <Typography variant="body1" className="no-search-message">
+                          Meditation, Self care, Children
                       </Typography>
                       <Typography variant="h5" className="no-search-message">Past research: </Typography>
-                      <Typography variant="h6" className="no-search-message">
+                      <Typography variant="body1" className="no-search-message">
                         User searched for the keywords “Meditation”  and analyzed which apps require risky permissions
                       </Typography>
-                      <Typography variant="h6" className="no-search-message">
+                      <Typography variant="body1" className="no-search-message">
                         User searched for the keywords “Self Care”  and analyzed which apps require risky permissions
                       </Typography>  
                     </div>
