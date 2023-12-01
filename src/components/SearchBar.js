@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { TextField, IconButton, Button, Typography } from '@mui/material';
+import { TextField, Button, Typography } from '@mui/material';
 import SearchIcon from '@mui/icons-material/Search';
 import { DataGrid } from '@mui/x-data-grid';
 import Avatar from '@mui/material/Avatar';
@@ -90,17 +90,18 @@ const SearchBar = () => {
                     // Include authorization tokens
                 }
             });
-    
+            
             // Extract the filename from the Content-Disposition header
             const contentDisposition = response.headers['content-disposition'];
             let filename = 'download.csv';
             if (contentDisposition) {
-                const filenameRegex = /filename[^;=\n]*=((['"]).*?\2|[^;\n]*)/;
-                const matches = filenameRegex.exec(contentDisposition);
-                if (matches != null && matches[1]) { 
-                  filename = matches[1].replace(/['"]/g, '');
-                }
+              const filenameRegex = /filename\s*=\s*(["'])(.*?)\1/;
+              const matches = filenameRegex.exec(contentDisposition);
+              if (matches && matches[2]) { 
+                  filename = matches[2];
+              }
             }
+            console.log(`Filename from header: ${filename}`);
     
             // Create a URL from the blob
             const url = window.URL.createObjectURL(new Blob([response.data]));
@@ -113,13 +114,14 @@ const SearchBar = () => {
             link.click();
     
             // Clean up and revoke the URL
-            link.parentNode.removeChild(link);
+            document.body.removeChild(link);
             window.URL.revokeObjectURL(url);
     
         } catch (error) {
             console.error('Error fetching or downloading the file:', error);
         }
-    };    
+    };  
+
     return (
         <div className="search-bar-container">
             <div className="search-and-button-container">
