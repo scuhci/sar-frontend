@@ -2,8 +2,9 @@ import React from 'react';
 import { Typography, Container, Grid } from '@mui/material';
 import TeamMemberCard from '../components/TeamMemberCard';
 import {teamMembers} from "../constants/TeamMembers"
+import Footer from '../components/Footer';
 import "../css/About.css";
-import hciLabLogo from "../res/HCI_Logo.png";
+
 
 const About = () => {
   return (
@@ -19,13 +20,7 @@ const About = () => {
           <TeamMemberCard key={index} {...member} />
         ))}
       </Grid>
-      <div className="hci-lab-footer">
-        <Typography variant="body2" component="p" className="made-with-love">
-          Made with love in <img src={hciLabLogo} alt="HCI Lab Logo" className="hci-lab-logo" /> 
-          <span className="hci-lab-text">Human Computer Interaction Lab </span>
-          @Santa Clara University
-        </Typography>
-      </div>
+      <Footer />
     </Container>
   );
 };
