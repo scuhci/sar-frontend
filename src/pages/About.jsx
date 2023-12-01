@@ -14,7 +14,7 @@ const About = () => {
         A tool for academic researchers to search mobile app store(s) to select a corpus of mobile apps that meet certain criteria (e.g., keywords in description, download count, app store rank). Researchers can then analyze data from this corpus of apps, such as app content (e.g., functionality, accessibility, language support) or metadata (e.g., permissions, user reviews, privacy labels). 
       </Typography>
 
-      <Typography variant="h4" className="about-header">SMAR Team</Typography>
+      <Typography variant="h5" className="about-header">SMAR Team</Typography>
       <Grid container spacing={2} justifyContent="center">
         {teamMembers.map((member, index) => (
           <TeamMemberCard key={index} {...member} />
