@@ -19,6 +19,13 @@ const About = () => {
           <TeamMemberCard key={index} {...member} />
         ))}
       </Grid>
+      <div className="hci-lab-footer">
+        <Typography variant="body2" component="p" className="made-with-love">
+          Made with love in <img src={hciLabLogo} alt="HCI Lab Logo" className="hci-lab-logo" /> 
+          <span className="hci-lab-text">Human Computer Interaction Lab </span>
+          @Santa Clara University
+        </Typography>
+      </div>
     </Container>
   );
 };
