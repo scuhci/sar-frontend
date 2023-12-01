@@ -1,0 +1,8 @@
+.example-search-button {
+    margin-right: 8px;
+    margin-bottom: 8px;
+    border-radius: 2px;
+    border: 1px solid #000000; 
+    text-transform: none;
+    font-size: 1.1rem; 
+}

@@ -7,6 +7,7 @@ import {SAR_BACKEND_URL} from '../constants/urlConstants';
 import axios from 'axios';
 import "../css/SearchBar.css"
 import Loading from './Loading';
+import ExampleSearches from './ExampleSearches';
 
 const SearchBar = () => {
     const [searchQuery, setSearchQuery] = useState('');
@@ -14,6 +15,8 @@ const SearchBar = () => {
     const [isLoading, setIsLoading] = useState(false);
     const [totalCount, setTotalCount] = useState(0);
     const [abortController, setAbortController] = useState(null);
+
+    const sampleSearch = ["Meditation", "Self Care", "Children"];
 
     const columns = [
       { field: 'id', headerName: 'ID', width: 100 },
@@ -42,7 +45,7 @@ const SearchBar = () => {
         setSearchQuery(event.target.value);
     };
 
-    const handleSearchSubmit = () => {
+    const handleSearchSubmit = (term = searchQuery) => {
       // If there is an existing search, cancel it before starting a new one
       if (abortController) {
         abortController.abort();
@@ -53,7 +56,7 @@ const SearchBar = () => {
   
       setIsLoading(true);
   
-      axios.get(`${SAR_BACKEND_URL}/search?query=${searchQuery}`, {
+      axios.get(`${SAR_BACKEND_URL}/search?query=${term}`, {
         signal: newAbortController.signal
       })
       .then((response) => {
@@ -122,6 +125,12 @@ const SearchBar = () => {
         }
     };  
 
+    const handleExampleSearchClick = (term) => {
+      // Update the search query with the term
+      setSearchQuery(term); // Assuming setSearchQuery updates the state
+      handleSearchSubmit(term); // Assuming this function initiates the search
+    };
+
     return (
         <div className="search-bar-container">
             <div className="search-and-button-container">
@@ -173,12 +182,10 @@ const SearchBar = () => {
                 !isLoading && 
                 ( <div className="example-searches-container">
                     <div style={{ textAlign: 'left' }}> 
-                      <Typography variant="h5" className="no-search-message">
-                          Example Searches:
-                      </Typography>
-                      <Typography variant="body1" className="no-search-message">
-                          Meditation, Self care, Children
-                      </Typography>
+                      <ExampleSearches 
+                        sampleSearch={sampleSearch} 
+                        onExampleSearch={handleExampleSearchClick}
+                      />
                       <Typography variant="h5" className="no-search-message">Past research: </Typography>
                       <Typography variant="body1" className="no-search-message">
                         User searched for the keywords “Meditation”  and analyzed which apps require risky permissions
