@@ -8,6 +8,7 @@ import axios from 'axios';
 import "../css/SearchBar.css"
 import Loading from './Loading';
 import ExampleSearches from './ExampleSearches';
+import {columns} from '../constants/columns'
 
 const SearchBar = () => {
     const [searchQuery, setSearchQuery] = useState('');
@@ -18,18 +19,7 @@ const SearchBar = () => {
 
     const sampleSearch = ["Meditation", "Self Care", "Children"];
 
-    const columns = [
-      { field: 'id', headerName: 'ID', width: 100 },
-      { field: 'icon', headerName: 'Icon', width: 100, renderCell: (params) => <Avatar src={params.value} alt="Icon" /> },
-      { field: 'title', headerName: 'Title', width: 200 },
-      { field: 'developer', headerName: 'Developer', width: 200 },
-      { field: 'summary', headerName: 'Summary', width: 200 },
-      { field: 'score', headerName: 'Score', width: 200 },
-      { field: 'category', headerName: 'Category', width: 200 },
-      { field: 'installs', headerName: 'Installs', width: 200 }
-    ];
-
-    const rows = searchResults.map((application) => ({
+    /* const rows = searchResults.map((application) => ({
       id: application.appId,
       icon: application.icon,
       title: application.title,
@@ -39,7 +29,45 @@ const SearchBar = () => {
       currency: application.currency,
       category: application.category,
       installs: application.installs
+    })).slice(0, 5); */
+
+    const rows = searchResults.map((application) => ({
+      title: application.title,
+      appId: application.appId,
+      url: application.url,
+      developer: application.developer,
+      currency: application.currency,
+      price: application.price,
+      free: application.free,
+      summary: application.summary,
+      scoreText: application.scoreText,
+      score: application.score,
+      source: application.source,
+      installs: application.installs,
+      maxInstalls: application.maxInstalls,
+      ratings: application.ratings,
+      originalPrice: application.originalPrice,
+      discountEndDate: application.discountEndDate,
+      available: application.available,
+      offersIAP: application.offersIAP,
+      IAPRange: application.IAPRange,
+      androidVersion: application.androidVersion,
+      androidMaxVersion: application.androidMaxVersion,
+      developerId: application.developerId,
+      developerEmail: application.developerEmail,
+      developerWebsite: application.developerWebsite,
+      developerAddress: application.developerAddress,
+      privacyPolicy: application.privacyPolicy,
+      genre: application.genre,
+      genreId: application.genreId,
+      previewVideo: application.previewVideo,
+      contentRating: application.contentRating,
+      adSupported: application.adSupported,
+      released: application.released,
+      version: application.version,
+      recentChanges: application.recentChanges,
     })).slice(0, 5);
+
 
     const handleSearchChange = (event) => {
         setSearchQuery(event.target.value);
@@ -160,7 +188,7 @@ const SearchBar = () => {
                       rows={rows}
                       columns={columns}
                       pageSize={5}
-                      getRowId={(row) => row.id}
+                      getRowId={(row) => row.appId}
                       disableRowSelectionOnClick
                       hideFooter
                     />
