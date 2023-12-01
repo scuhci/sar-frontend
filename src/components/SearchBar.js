@@ -2,7 +2,6 @@ import React, { useState } from 'react';
 import { TextField, Button, Typography } from '@mui/material';
 import SearchIcon from '@mui/icons-material/Search';
 import { DataGrid } from '@mui/x-data-grid';
-import Avatar from '@mui/material/Avatar';
 import {SAR_BACKEND_URL} from '../constants/urlConstants';
 import axios from 'axios';
 import "../css/SearchBar.css"
@@ -18,18 +17,6 @@ const SearchBar = () => {
     const [abortController, setAbortController] = useState(null);
 
     const sampleSearch = ["Meditation", "Self Care", "Children"];
-
-    /* const rows = searchResults.map((application) => ({
-      id: application.appId,
-      icon: application.icon,
-      title: application.title,
-      developer: application.developer,
-      summary: application.summary,
-      score: application.score,
-      currency: application.currency,
-      category: application.category,
-      installs: application.installs
-    })).slice(0, 5); */
 
     const rows = searchResults.map((application) => ({
       title: application.title,
@@ -154,9 +141,8 @@ const SearchBar = () => {
     };  
 
     const handleExampleSearchClick = (term) => {
-      // Update the search query with the term
-      setSearchQuery(term); // Assuming setSearchQuery updates the state
-      handleSearchSubmit(term); // Assuming this function initiates the search
+      setSearchQuery(term);
+      handleSearchSubmit(term);
     };
 
     return (
