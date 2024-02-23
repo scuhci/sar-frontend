@@ -146,6 +146,17 @@ const SearchBar = () => {
       handleSearchSubmit(term);
     };
 
+    //Making column header bold // this does not work
+    /* const modifiedColumns = columns.map(column => ({
+      ...column,
+      renderHeader: (params) => (
+        <span className="centeredHeader">
+          <strong>{params.colDef.headerName || ''}</strong>
+        </span>
+      ),
+      headerAlign: 'center'
+    })); */
+
     return (
         <div className="search-bar-container">
             <div className="search-and-button-container">
