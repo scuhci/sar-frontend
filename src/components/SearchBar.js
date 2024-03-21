@@ -9,6 +9,12 @@ import Loading from './Loading';
 import ExampleSearches from './ExampleSearches';
 import {columns} from '../constants/columns'
 
+// For the checkbox 
+import FormGroup from '@mui/material/FormGroup';
+import FormControlLabel from '@mui/material/FormControlLabel';
+import Checkbox from '@mui/material/Checkbox';
+import Stack from '@mui/material/Stack';
+
 const SearchBar = () => {
     const [searchQuery, setSearchQuery] = useState('');
     const [searchResults, setSearchResults] = useState([]);
@@ -172,6 +178,21 @@ const SearchBar = () => {
                 <Button className="search-button" onClick={handleSearchSubmit} variant="contained" color="primary" disabled={isLoading}>
                         Search <SearchIcon />
                 </Button>
+            </div>
+            <div className='permissions-checkbox'>
+              <Stack 
+                direction="row" 
+                justifyContent="flex-start"
+                spacing={2}>
+                  <FormGroup>
+                    <FormControlLabel 
+                    control={
+                      <Checkbox permsCheckbox 
+                      size="small"
+                      />} 
+                    label="Show Permissions" />
+                  </FormGroup>
+              </Stack>
             </div>
             <Loading open={isLoading} onCancel={handleCancel} searchQuery={searchQuery}/>
             {searchResults.length > 0 ? (

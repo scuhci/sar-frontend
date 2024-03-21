@@ -10,6 +10,14 @@
     padding: 40px;
 }
 
+.permissions-checkbox {
+    display: flex;
+    align-items: flex-start; 
+    justify-content: flex-start; 
+    width: 100%;
+    margin-bottom: 10px;
+}
+
 .search-button {
     height: 55px;
 }
@@ -24,6 +32,7 @@
 .search-and-button-container {
     gap: 10px;
 }
+
 .search-result-text {
     width: 100%;
     max-width: 1000px;
