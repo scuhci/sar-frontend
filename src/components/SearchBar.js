@@ -21,6 +21,7 @@ const SearchBar = () => {
     const [isLoading, setIsLoading] = useState(false);
     const [totalCount, setTotalCount] = useState(0);
     const [abortController, setAbortController] = useState(null);
+    const [checked, setChecked] = React.useState(false);
 
     const sampleSearch = ["Meditation", "Self Care", "Children"];
 
@@ -107,6 +108,10 @@ const SearchBar = () => {
         }
     };
 
+    const handleChange = () => {
+      setChecked(!checked);
+    }
+
     const handleDownloadAllResults = async () => {
         try {
             const response = await axios.get(`${SAR_BACKEND_URL}/download-csv`, {
@@ -189,8 +194,10 @@ const SearchBar = () => {
                     control={
                       <Checkbox permsCheckbox 
                       size="small"
+                      checked={checked}
+                      onChange={handleChange}
                       />} 
-                    label="Show Permissions" />
+                    label="Show permissions" />
                   </FormGroup>
               </Stack>
             </div>
