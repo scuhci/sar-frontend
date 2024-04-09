@@ -79,7 +79,7 @@ const SearchBar = () => {
   
       setIsLoading(true);
   
-      axios.get(`${SAR_BACKEND_URL}/search?query=${term}`, {
+      axios.get(`${SAR_BACKEND_URL}/search?query=${term}&includePermissions=${checked}`, {
         signal: newAbortController.signal
       })
       .then((response) => {
