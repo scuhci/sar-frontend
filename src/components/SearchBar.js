@@ -192,7 +192,7 @@ const SearchBar = () => {
                   <FormGroup>
                     <FormControlLabel 
                     control={
-                      <Checkbox permsCheckbox 
+                      <Checkbox
                       size="small"
                       checked={checked}
                       onChange={handleChange}
