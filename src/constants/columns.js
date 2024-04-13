@@ -1,6 +1,7 @@
 import React from 'react';
 import Avatar from '@mui/material/Avatar';
 
+
 export const columns = [
     { field: 'title', renderHeader: () => <strong>Title</strong>, width: 200 },
     { field: 'appId', renderHeader: () => <strong>App ID</strong>, width: 150 },
@@ -36,5 +37,5 @@ export const columns = [
     { field: 'adSupported', renderHeader: () => <strong>Ad Supported</strong>, width: 100 },
     { field: 'released', renderHeader: () => <strong>Released</strong>, width: 100 },
     { field: 'version', renderHeader: () => <strong>Version</strong>, width: 100 },
-    { field: 'recentChanges', renderHeader: () => <strong>Recent Changes</strong>, width: 200 }
+    { field: 'recentChanges', renderHeader: () => <strong>Recent Changes</strong>, width: 200 },
 ];

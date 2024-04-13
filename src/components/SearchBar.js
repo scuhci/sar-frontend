@@ -1,19 +1,21 @@
 import React, { useState } from 'react';
 import { TextField, Button, Typography } from '@mui/material';
 import SearchIcon from '@mui/icons-material/Search';
-import { DataGrid } from '@mui/x-data-grid';
+import { DataGrid} from '@mui/x-data-grid';
 import {SAR_BACKEND_URL} from '../constants/urlConstants';
 import axios from 'axios';
 import "../css/SearchBar.css"
 import Loading from './Loading';
 import ExampleSearches from './ExampleSearches';
-import {columns} from '../constants/columns'
+import {columns} from '../constants/columns';
+import { permissionColumns } from '../constants/permissionColumns';
 
 // For the checkbox 
 import FormGroup from '@mui/material/FormGroup';
 import FormControlLabel from '@mui/material/FormControlLabel';
 import Checkbox from '@mui/material/Checkbox';
 import Stack from '@mui/material/Stack';
+
 
 const SearchBar = () => {
     const [searchQuery, setSearchQuery] = useState('');
@@ -22,10 +24,9 @@ const SearchBar = () => {
     const [totalCount, setTotalCount] = useState(0);
     const [abortController, setAbortController] = useState(null);
     const [checked, setChecked] = React.useState(false);
-
     const sampleSearch = ["Meditation", "Self Care", "Children"];
 
-    const rows = searchResults.map((application) => ({
+    const rows = checked ? (searchResults.map((application) => ({
       title: application.title,
       appId: application.appId,
       icon: application.icon,
@@ -61,8 +62,58 @@ const SearchBar = () => {
       released: application.released,
       version: application.version,
       recentChanges: application.recentChanges,
-    })).slice(0, 5);
-
+      // PERMISSIONS
+      // All truncated to two(ish) most relevant words.'
+      approximateLocation: application.permissions[0].isPermissionRequired,
+      preciseLocation: application.permissions[1].isPermissionRequired,
+      retrieveRunning: application.permissions[2].isPermissionRequired,
+      findAccounts: application.permissions[3].isPermissionRequired,
+      addRemoveAccounts: application.permissions[4].isPermissionRequired,
+      readContact: application.permissions[5].isPermissionRequired,
+      readCalendar: application.permissions[6].isPermissionRequired,
+      addModCalendar: application.permissions[7].isPermissionRequired,
+      readContacts: application.permissions[8].isPermissionRequired,
+      modifyContacts: application.permissions[9].isPermissionRequired,
+      directCall: application.permissions[10].isPermissionRequired,
+      readCallLog: application.permissions[11].isPermissionRequired,
+      readPhoneStatus: application.permissions[12].isPermissionRequired,
+      readUSB: application.permissions[13].isPermissionRequired,
+    })).slice(0, 5)) : (searchResults.map((application) => ({
+      title: application.title,
+      appId: application.appId,
+      icon: application.icon,
+      developer: application.developer,
+      currency: application.currency,
+      price: application.price,
+      free: application.free,
+      summary: application.summary,
+      url: application.url,
+      scoreText: application.scoreText,
+      score: application.score,
+      source: application.source,
+      installs: application.installs,
+      maxInstalls: application.maxInstalls,
+      ratings: application.ratings,
+      originalPrice: application.originalPrice,
+      discountEndDate: application.discountEndDate,
+      available: application.available,
+      offersIAP: application.offersIAP,
+      IAPRange: application.IAPRange,
+      androidVersion: application.androidVersion,
+      androidMaxVersion: application.androidMaxVersion,
+      developerId: application.developerId,
+      developerEmail: application.developerEmail,
+      developerWebsite: application.developerWebsite,
+      developerAddress: application.developerAddress,
+      privacyPolicy: application.privacyPolicy,
+      genre: application.genre,
+      genreId: application.genreId,
+      previewVideo: application.previewVideo,
+      contentRating: application.contentRating,
+      adSupported: application.adSupported,
+      released: application.released,
+      version: application.version,
+      recentChanges: application.recentChanges,})).slice(0, 5));
 
     const handleSearchChange = (event) => {
         setSearchQuery(event.target.value);
@@ -78,6 +129,7 @@ const SearchBar = () => {
       setAbortController(newAbortController);
   
       setIsLoading(true);
+
   
       axios.get(`${SAR_BACKEND_URL}/search?query=${term}&includePermissions=${checked}`, {
         signal: newAbortController.signal
@@ -180,7 +232,7 @@ const SearchBar = () => {
                     
                     className="search-input"
                 />
-                <Button className="search-button" onClick={handleSearchSubmit} variant="contained" color="primary" disabled={isLoading}>
+                <Button className="search-button" onClick={() => {handleSearchSubmit(searchQuery)}} variant="contained" color="primary" disabled={isLoading}>
                         Search <SearchIcon />
                 </Button>
             </div>
@@ -212,7 +264,7 @@ const SearchBar = () => {
                   <div className="datagrid-left">
                     <DataGrid
                       rows={rows}
-                      columns={columns}
+                      columns={checked ? permissionColumns : columns}
                       pageSize={5}
                       getRowId={(row) => row.appId}
                       disableRowSelectionOnClick
