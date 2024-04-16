@@ -131,9 +131,11 @@ const SearchBar = () => {
       
       setIsLoading(true);
       if (checked) {
-        setDisplayPermissions(!displayPermissions);
+        setDisplayPermissions(true);
       }
-
+      else {
+        setDisplayPermissions(false);
+      }
   
       axios.get(`${SAR_BACKEND_URL}/search?query=${term}&includePermissions=${checked}`, {
         signal: newAbortController.signal
