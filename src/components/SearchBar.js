@@ -25,6 +25,7 @@ const SearchBar = () => {
     const [abortController, setAbortController] = useState(null);
     const [checked, setChecked] = React.useState(false);
     const sampleSearch = ["Meditation", "Self Care", "Children"];
+    const [displayPermissions, setDisplayPermissions] = React.useState(false);
 
     const rows = checked ? (searchResults.map((application) => ({
       title: application.title,
@@ -127,8 +128,11 @@ const SearchBar = () => {
   
       const newAbortController = new AbortController();
       setAbortController(newAbortController);
-  
+      
       setIsLoading(true);
+      if (checked) {
+        setDisplayPermissions(!displayPermissions);
+      }
 
   
       axios.get(`${SAR_BACKEND_URL}/search?query=${term}&includePermissions=${checked}`, {
@@ -264,7 +268,7 @@ const SearchBar = () => {
                   <div className="datagrid-left">
                     <DataGrid
                       rows={rows}
-                      columns={checked ? permissionColumns : columns}
+                      columns={displayPermissions ? permissionColumns : columns}
                       pageSize={5}
                       getRowId={(row) => row.appId}
                       disableRowSelectionOnClick
