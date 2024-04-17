@@ -27,7 +27,7 @@ const SearchBar = () => {
     const sampleSearch = ["Meditation", "Self Care", "Children"];
     const [displayPermissions, setDisplayPermissions] = React.useState(false);
 
-    const rows = checked ? (searchResults.map((application) => ({
+    const rows = displayPermissions ? (searchResults.map((application) => ({
       title: application.title,
       appId: application.appId,
       icon: application.icon,
@@ -63,6 +63,7 @@ const SearchBar = () => {
       released: application.released,
       version: application.version,
       recentChanges: application.recentChanges,
+
       // PERMISSIONS
       // All truncated to two(ish) most relevant words.'
       approximateLocation: application.permissions[0].isPermissionRequired,
@@ -79,7 +80,33 @@ const SearchBar = () => {
       readCallLog: application.permissions[11].isPermissionRequired,
       readPhoneStatus: application.permissions[12].isPermissionRequired,
       readUSB: application.permissions[13].isPermissionRequired,
+      modUSB: application.permissions[14].isPermissionRequired,
+      takePics: application.permissions[15].isPermissionRequired,
+      recordAudio: application.permissions[16].isPermissionRequired,
+      viewWifi: application.permissions[17].isPermissionRequired,
+      viewNetwork: application.permissions[18].isPermissionRequired,
+      createAccounts: application.permissions[19].isPermissionRequired,
+      readBattery: application.permissions[20].isPermissionRequired,
+      pairBluetooth: application.permissions[21].isPermissionRequired,
+      accessBluetooth: application.permissions[22].isPermissionRequired,
+      sendStickyBroadcast: application.permissions[23].isPermissionRequired,
+      changeNetwork: application.permissions[24].isPermissionRequired,
+      connectWifi: application.permissions[25].isPermissionRequired,
+      fullNetworkAccess: application.permissions[26].isPermissionRequired,
+      changeAudio: application.permissions[27].isPermissionRequired,
+      controlNFC: application.permissions[28].isPermissionRequired,
+      readSync: application.permissions[29].isPermissionRequired,
+      runAtStart: application.permissions[30].isPermissionRequired,
+      reorderRunnning: application.permissions[31].isPermissionRequired,
+      drawOver: application.permissions[32].isPermissionRequired,
+      controlVibration: application.permissions[33].isPermissionRequired,
+      preventSleep: application.permissions[34].isPermissionRequired,
+      toggleSync: application.permissions[35].isPermissionRequired,
+      installShortcuts: application.permissions[36].isPermissionRequired,
+      readGoogleConfig: application.permissions[37].isPermissionRequired,
+
     })).slice(0, 5)) : (searchResults.map((application) => ({
+
       title: application.title,
       appId: application.appId,
       icon: application.icon,
@@ -130,17 +157,17 @@ const SearchBar = () => {
       setAbortController(newAbortController);
       
       setIsLoading(true);
-      if (checked) {
-        setDisplayPermissions(true);
-      }
-      else {
-        setDisplayPermissions(false);
-      }
-  
+
       axios.get(`${SAR_BACKEND_URL}/search?query=${term}&includePermissions=${checked}`, {
         signal: newAbortController.signal
       })
       .then((response) => {
+          if (checked) {
+            setDisplayPermissions(true);
+          }
+          else {
+            setDisplayPermissions(false);
+          }
           setSearchResults(response.data.results);
           setTotalCount(response.data.totalCount);
           setIsLoading(false);
