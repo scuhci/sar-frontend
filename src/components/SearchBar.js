@@ -16,6 +16,10 @@ import FormControlLabel from '@mui/material/FormControlLabel';
 import Checkbox from '@mui/material/Checkbox';
 import Stack from '@mui/material/Stack';
 
+//Tooltip
+import InfoIcon from '@mui/icons-material/Info';
+import { Tooltip } from '@mui/material';
+
 
 const SearchBar = () => {
     const [searchQuery, setSearchQuery] = useState('');
@@ -273,7 +277,8 @@ const SearchBar = () => {
               <Stack 
                 direction="row" 
                 justifyContent="flex-start"
-                spacing={2}>
+                alignItems="center"
+                spacing={0.1}>
                   <FormGroup>
                     <FormControlLabel 
                     control={
@@ -284,6 +289,9 @@ const SearchBar = () => {
                       />} 
                     label="Show permissions" />
                   </FormGroup>
+                  <Tooltip title="Searching for apps with permissions may take 1-5 minutes longer on average.">
+                      <InfoIcon fontSize='small'/>
+                  </Tooltip>
               </Stack>
             </div>
             <Loading open={isLoading} onCancel={handleCancel} searchQuery={searchQuery}/>
