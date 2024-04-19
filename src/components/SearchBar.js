@@ -287,11 +287,15 @@ const SearchBar = () => {
                       checked={checked}
                       onChange={handleChange}
                       />} 
-                    label="Show permissions" />
+                    label={<React.Fragment>
+                      <Stack alignItems="center" direction="row" gap={0.3}>
+                        Show permissions
+                        <Tooltip title="Searching for apps with permissions may take 1-5 minutes longer on average.">
+                          <InfoIcon fontSize='small'/>
+                        </Tooltip>
+                      </Stack>
+                      </React.Fragment>}/>
                   </FormGroup>
-                  <Tooltip title="Searching for apps with permissions may take 1-5 minutes longer on average.">
-                      <InfoIcon fontSize='small'/>
-                  </Tooltip>
               </Stack>
             </div>
             <Loading open={isLoading} onCancel={handleCancel} searchQuery={searchQuery}/>
