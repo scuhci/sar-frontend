@@ -10,6 +10,14 @@
     padding: 40px;
 }
 
+.permissions-checkbox {
+    display: flex;
+    align-items: flex-start; 
+    justify-content: flex-start; 
+    width: 100%;
+    margin-bottom: 10px;
+}
+
 .search-button {
     height: 55px;
 }
@@ -24,19 +32,22 @@
 .search-and-button-container {
     gap: 10px;
 }
+
 .search-result-text {
     width: 100%;
     max-width: 1000px;
     text-align: left;
     margin: 10px 0;
     box-sizing: border-box;
+    overflow: hidden;
 }
+
 .data-grid-container {
     max-width: 1000px;
     margin: auto;
-    overflow-x: auto;
     display:flex;
 }
+
 .datagrid-left {
     flex: 1; 
     display: flex;
@@ -79,6 +90,12 @@
     font-weight: bold;
 }
 
-
+.permissions-headers{
+    text-overflow: ellipsis;  
+    cursor: pointer;          
+    word-break: break-all;
+    overflow:hidden;         
+    white-space: nowrap;
+}
 
 
