@@ -7,7 +7,7 @@ import axios from 'axios';
 import "../css/SearchBar.css"
 import Loading from './Loading';
 import ExampleSearches from './ExampleSearches';
-import {columns} from '../constants/columns';
+import { columns} from '../constants/columns';
 import { permissionColumns } from '../constants/permissionColumns';
 
 // For the checkbox 
@@ -34,6 +34,7 @@ const SearchBar = () => {
     const rows = displayPermissions ? (searchResults.map((application) => ({
       title: application.title,
       appId: application.appId,
+      reviewsKey: application.appId, 
       icon: application.icon,
       developer: application.developer,
       currency: application.currency,
@@ -113,6 +114,7 @@ const SearchBar = () => {
 
       title: application.title,
       appId: application.appId,
+      reviewsKey: application.appId,
       icon: application.icon,
       developer: application.developer,
       currency: application.currency,

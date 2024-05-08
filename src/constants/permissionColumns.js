@@ -2,19 +2,18 @@ import React from 'react';
 import Avatar from '@mui/material/Avatar';
 import CheckIcon from '@mui/icons-material/Check';
 import CloseIcon from '@mui/icons-material/Close';
-import Typography from '@mui/material/Typography';
-import Stack from '@mui/material/Stack';
-import Button from '@mui/material/Button';
 import { Tooltip } from '@mui/material';
+import DownloadReviews from '../components/DownloadReviews';
 
 export const permissionColumns = [
     { field: 'title', renderHeader: () => <strong>Title</strong>, width: 200 },
     { field: 'appId', renderHeader: () => <strong>App ID</strong>, width: 150 },
-    { field: 'reviewsCount', renderHeader: () => <strong>Reviews</strong>, width: 260, renderCell: (params) => 
-        <Stack alignItems="center" direction="row" gap={2}> 
-            <Typography>######</Typography> 
-            <Tooltip title = "Scraping reviews for an app may take 5-10 minutes."><Button variant="outlined" size="small"><strong>Scrape Reviews</strong></Button></Tooltip>
-        </Stack>},
+    { field: 'reviewsCount', renderHeader: () => <strong>Reviews</strong>, width: 260, renderCell: (params) => {
+        return (
+            DownloadReviews(params)
+        );
+    }
+    },
     { field: 'icon', renderHeader: () => <strong>Icon</strong>, width: 100, renderCell: (params) => <Avatar src={params.value} alt="Icon" /> },
     { field: 'developer', renderHeader: () => <strong>Developer</strong>, width: 150 },
     { field: 'currency', renderHeader: () => <strong>Currency</strong>, width: 100 },

@@ -1,10 +1,16 @@
 import React from 'react';
 import Avatar from '@mui/material/Avatar';
-
+import DownloadReviews from '../components/DownloadReviews';
 
 export const columns = [
     { field: 'title', renderHeader: () => <strong>Title</strong>, width: 200 },
     { field: 'appId', renderHeader: () => <strong>App ID</strong>, width: 150 },
+    { field: 'reviewsCount', renderHeader: () => <strong>Reviews</strong>, width: 260, renderCell: (params) => {
+        return (
+            DownloadReviews(params)
+        );
+    }
+    },
     { field: 'icon', renderHeader: () => <strong>Icon</strong>, width: 100, renderCell: (params) => <Avatar src={params.value} alt="Icon" /> },
     { field: 'developer', renderHeader: () => <strong>Developer</strong>, width: 150 },
     { field: 'currency', renderHeader: () => <strong>Currency</strong>, width: 100 },
