@@ -34,7 +34,7 @@ const SearchBar = () => {
     const rows = displayPermissions ? (searchResults.map((application) => ({
       title: application.title,
       appId: application.appId,
-      reviewsKey: application.appId, 
+      reviews: [application.reviews, application.appId], 
       icon: application.icon,
       developer: application.developer,
       currency: application.currency,
@@ -114,7 +114,7 @@ const SearchBar = () => {
 
       title: application.title,
       appId: application.appId,
-      reviewsKey: application.appId,
+      reviews: [application.reviews, application.appId],
       icon: application.icon,
       developer: application.developer,
       currency: application.currency,
