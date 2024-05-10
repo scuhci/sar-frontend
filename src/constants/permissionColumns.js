@@ -11,30 +11,27 @@ import DownloadReviews from '../components/DownloadReviews';
 export const permissionColumns = [
     { field: 'title', renderHeader: () => <strong>Title</strong>, width: 200 },
     { field: 'appId', renderHeader: () => <strong>App ID</strong>, width: 150 },
-    { field: 'reviews', renderHeader: () => <strong>Reviews</strong>, width: 260, renderCell: (params) => {
-            if (params.value[0] < 10000) {
-                return (
-                    DownloadReviews(params.value[0], params.value[1])
-                );
-            }
-            else {
-                return (
-                    <div className='Reviews count & button'>
-                    <Stack alignItems="center" direction="row" gap={2}> 
-                        <Typography>{params.value[0]}</Typography> 
-                        <Tooltip title = "Unable to scrape reviews for this app due to review count being greater than max 10000 reviews.">
-                        <span>
-                            <Button disabled variant="outlined" size="small"> 
-                                <strong>Scrape Reviews</strong>
-                            </Button>
-                        </span>
-                        </Tooltip>
-                    </Stack>
-                    </div>
-                );
-            }
+    { field: 'reviewsCount', renderHeader: () => <strong>Reviews</strong>, width: 150, renderCell: (params) => <Typography>{params.value}</Typography>},
+    { field: 'reviews',renderHeader: () => <strong> </strong>, width: 260, renderCell: (params) => {
+        if (params.value[0] < 10000) {
+            return (
+                DownloadReviews(params.value[1])
+            );
         }
-    },
+        else {
+            return (
+                <div className='Reviews count & button'>
+                    <Tooltip title = "Unable to scrape reviews for this app due to review count being greater than max 10000 reviews.">
+                    <span>
+                        <Button disabled variant="outlined" size="small"> 
+                            <strong>Scrape Reviews</strong>
+                        </Button>
+                    </span>
+                    </Tooltip>
+                </div>
+            );
+        }
+    }},
     { field: 'icon', renderHeader: () => <strong>Icon</strong>, width: 100, renderCell: (params) => <Avatar src={params.value} alt="Icon" /> },
     { field: 'developer', renderHeader: () => <strong>Developer</strong>, width: 150 },
     { field: 'currency', renderHeader: () => <strong>Currency</strong>, width: 100 },

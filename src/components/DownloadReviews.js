@@ -1,13 +1,11 @@
 import React, { useState } from 'react';
-import Typography from '@mui/material/Typography';
-import Stack from '@mui/material/Stack';
 import Button from '@mui/material/Button';
 import { Tooltip } from '@mui/material';
 import ReviewsLoading from './ReviewsLoading';
 import axios from 'axios';
 import {SAR_BACKEND_URL} from '../constants/urlConstants';
 
-const DownloadReviews = (reviewsCount, appId) => {
+const DownloadReviews = (appId) => {
     const [isLoading, setIsLoading] = useState(false);
     const [abortController, setAbortController] = useState(null);
 
@@ -73,14 +71,11 @@ const DownloadReviews = (reviewsCount, appId) => {
 
     return (
         <div className='Reviews count & button'>
-            <Stack alignItems="center" direction="row" gap={2}> 
-                <Typography>{reviewsCount}</Typography> 
                 <Tooltip title = "Scraping reviews for an app may take 1-5 minutes.">
                     <Button variant="outlined" size="small" onClick={() => downloadAllReviews(appId)}> 
                         <strong>Scrape Reviews</strong>
                     </Button>
                 </Tooltip>
-            </Stack>
             <ReviewsLoading open={isLoading} onCancel={handleCancel} appId={appId}/>
         </div>
     );
