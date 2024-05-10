@@ -35,15 +35,19 @@ const DownloadReviews = (reviewsCount, appId) => {
             });
             
             // Extract the filename from the Content-Disposition header
-            const contentDisposition = response.headers['content-disposition'];
-            let filename = 'download.csv';
-            if (contentDisposition) {
-            const filenameRegex = /filename\s*=\s*(["'])(.*?)\1/;
-            const matches = filenameRegex.exec(contentDisposition);
-            if (matches && matches[2]) { 
-                filename = matches[2];
-            }
-            }
+            // const disposition = response.headers['content-disposition'];
+            const filename = `${appId}_reviews.csv`;
+            // if (disposition) {
+            //     console.log(`Disposition gotten`);
+            //     var filenameRegex = /filename[^;=\n]*=((['"]).*?\2|[^;\n]*)/;
+            //     var matches = filenameRegex.exec(disposition);
+            //     if (matches != null && matches[1]) { 
+            //       filename = matches[1].replace(/['"]/g, '');
+            //     }
+            // } else {
+            //     console.log(`no dispo???`);
+            // }
+
             console.log(`Filename from header: ${filename}`);
 
             // Create a URL from the blob
