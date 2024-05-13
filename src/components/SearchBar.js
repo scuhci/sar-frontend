@@ -9,6 +9,7 @@ import Loading from './Loading';
 import ExampleSearches from './ExampleSearches';
 import { columns} from '../constants/columns';
 import { permissionColumns } from '../constants/permissionColumns';
+import Link from '@mui/material/Link';
 
 // For the checkbox 
 import FormGroup from '@mui/material/FormGroup';
@@ -341,13 +342,28 @@ const SearchBar = () => {
                         sampleSearch={sampleSearch} 
                         onExampleSearch={handleExampleSearchClick}
                       />
-                      <Typography variant="h5" className="no-search-message">Past research: </Typography>
+                      <Typography variant="h5" className="no-search-message">Example Research: </Typography>
                       <Typography variant="body1" className="no-search-message">
-                        User searched for the keywords “Meditation”  and analyzed which apps require risky permissions
+                        <Link 
+                          href="https://dl.acm.org/doi/10.1145/2556288.2557079"
+                          target="_blank" 
+                          rel="noopener noreferrer"
+                          >Stawarz et al.</Link> (2014) reviewed the functionality and user reviews for 229 medication reminder apps
                       </Typography>
                       <Typography variant="body1" className="no-search-message">
-                        User searched for the keywords “Self Care”  and analyzed which apps require risky permissions
-                      </Typography>  
+                        <Link 
+                          href="https://dl.acm.org/doi/10.1145/3290605.3300361"
+                          target="_blank" 
+                          rel="noopener noreferrer"
+                          >Lyngs et al.</Link> (2019) coded the features in 96 digital self-control apps 
+                      </Typography>
+                      <Typography variant="body1" className="no-search-message">
+                        <Link 
+                          href="https://dl.acm.org/doi/10.1145/3411764.3445500"
+                          target="_blank" 
+                          rel="noopener noreferrer"
+                          >Spors et al.</Link> (2021) employed feminist content analysis to review the descriptions of 69 self-care apps 
+                      </Typography>
                     </div>
                   </div>  
                 )
