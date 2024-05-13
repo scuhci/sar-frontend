@@ -28,7 +28,7 @@ const SearchBar = () => {
     const [totalCount, setTotalCount] = useState(0);
     const [abortController, setAbortController] = useState(null);
     const [checked, setChecked] = React.useState(false);
-    const sampleSearch = ["Meditation", "Self Care", "Children"];
+    const sampleSearch = ["medication reminders", "self-care", "smartphone addiction"];
     const [displayPermissions, setDisplayPermissions] = React.useState(false);
 
     const rows = displayPermissions ? (searchResults.map((application) => ({
