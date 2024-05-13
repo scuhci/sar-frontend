@@ -3,7 +3,6 @@ import Avatar from '@mui/material/Avatar';
 import CheckIcon from '@mui/icons-material/Check';
 import CloseIcon from '@mui/icons-material/Close';
 import Typography from '@mui/material/Typography';
-import Stack from '@mui/material/Stack';
 import Button from '@mui/material/Button';
 import { Tooltip } from '@mui/material';
 import DownloadReviews from '../components/DownloadReviews';
