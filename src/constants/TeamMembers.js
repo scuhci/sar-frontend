@@ -50,8 +50,8 @@ export const teamMembers = [
     {
         name: 'Maggie Lau', 
         role: 'Literature Review',
-        imageUrl: '', // update s3 link here
-        linkedInUrl: '#' // update LinkedIn link here
+        imageUrl: '',
+        linkedInUrl: '#'
     },
     {
         name: 'Rani Rajurkar', 
