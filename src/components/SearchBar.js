@@ -266,7 +266,7 @@ const SearchBar = () => {
         <div className="search-bar-container">
             <div className="search-and-button-container">
                 <TextField
-                    label="Search App"
+                    label="Search by keyword (e.g., puzzle games) or package name (e.g., com.facebook.katana)"
                     variant="outlined"
                     value={searchQuery}
                     onChange={handleSearchChange}
