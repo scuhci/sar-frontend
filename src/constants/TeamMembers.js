@@ -1,7 +1,7 @@
 export const teamMembers = [
     {
         name: 'Dr Kai Lukoff', 
-        role: 'Guide & Mentor',
+        role: 'Faculty Advisor',
         imageUrl: 'https://smar-team.s3.us-west-1.amazonaws.com/profile-photo/KaiLukoff.jpg',
         linkedInUrl: 'https://www.linkedin.com/in/klukoff/'
     },
@@ -15,7 +15,7 @@ export const teamMembers = [
         name: 'Vaishnavi Upadhye', 
         role: 'Developer',
         imageUrl: 'https://smar-team.s3.us-west-1.amazonaws.com/profile-photo/VaishnaviUpadhye.jpeg',
-        linkedInUrl: 'https://www.linkedin.com/in/vaishnaviupadhye/overlay/photo/'
+        linkedInUrl: 'https://www.linkedin.com/in/vaishnaviupadhye/'
     },
     {
         name: 'Varun Mangla', 
@@ -24,10 +24,16 @@ export const teamMembers = [
         linkedInUrl: 'https://www.linkedin.com/in/varunmangla/'
     },
     {
-        name: 'Rani Rajurkar', 
-        role: 'Techincal Consultant',
-        imageUrl: 'https://smar-team.s3.us-west-1.amazonaws.com/profile-photo/RaniRajurkar.jpeg',
-        linkedInUrl: 'https://www.linkedin.com/in/rani-rajurkar/'
+        name: 'Llona van der Linden', 
+        role: 'Developer',
+        imageUrl: 'https://smar-team.s3.us-west-1.amazonaws.com/profile-photo/LonaLinden.jpg',
+        linkedInUrl: 'https://www.linkedin.com/in/lonavdlin/'
+    },
+    {
+        name: 'Gaurav Punjabi', 
+        role: 'UX',
+        imageUrl: 'https://smar-team.s3.us-west-1.amazonaws.com/profile-photo/GauravPunjabi.jpeg',
+        linkedInUrl: 'https://www.linkedin.com/in/gaurav-punjabi-34067315a/'
     },
     {
         name: 'Crystal Chen', 
@@ -40,5 +46,23 @@ export const teamMembers = [
         role: 'Literature Review',
         imageUrl: 'https://smar-team.s3.us-west-1.amazonaws.com/profile-photo/KatrinaYing.JPG',
         linkedInUrl: 'https://www.linkedin.com/in/katrinaying/'
+    },
+    {
+        name: 'Rani Rajurkar', 
+        role: 'Technical Consultant',
+        imageUrl: 'https://smar-team.s3.us-west-1.amazonaws.com/profile-photo/RaniRajurkar.jpeg',
+        linkedInUrl: 'https://www.linkedin.com/in/rani-rajurkar/'
+    },
+    {
+        name: 'Juilee Katpatal', 
+        role: 'Technical Consultant',
+        imageUrl: 'https://smar-team.s3.us-west-1.amazonaws.com/profile-photo/JuileeKatpatal.jpeg',
+        linkedInUrl: 'https://www.linkedin.com/in/zuilee/'
+    },
+    {
+        name: 'Soham Phadke', 
+        role: 'Technical Consultant',
+        imageUrl: 'https://smar-team.s3.us-west-1.amazonaws.com/profile-photo/SohamPhadke.jpeg',
+        linkedInUrl: 'https://www.linkedin.com/in/soham-phadke/'
     }
 ];
