@@ -48,6 +48,12 @@ export const teamMembers = [
         linkedInUrl: 'https://www.linkedin.com/in/katrinaying/'
     },
     {
+        name: 'Maggie Lau', 
+        role: 'Literature Review',
+        imageUrl: '', // update s3 link here
+        linkedInUrl: '#' // update LinkedIn link here
+    },
+    {
         name: 'Rani Rajurkar', 
         role: 'Technical Consultant',
         imageUrl: 'https://smar-team.s3.us-west-1.amazonaws.com/profile-photo/RaniRajurkar.jpeg',
