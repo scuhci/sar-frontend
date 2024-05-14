@@ -70,5 +70,11 @@ export const teamMembers = [
         role: 'Technical Consultant',
         imageUrl: 'https://smar-team.s3.us-west-1.amazonaws.com/profile-photo/SohamPhadke.jpeg',
         linkedInUrl: 'https://www.linkedin.com/in/soham-phadke/'
-    }
+    },
+    {
+        name: 'Soumya Mohan', 
+        role: 'PM',
+        imageUrl: 'https://smar-team.s3.us-west-1.amazonaws.com/profile-photo/SoumyaMohan.jpeg',
+        linkedInUrl: 'https://www.linkedin.com/in/soumyaiim/'
+    },
 ];
