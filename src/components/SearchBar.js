@@ -161,12 +161,11 @@ const SearchBar = () => {
       if (abortController) {
         abortController.abort();
       }
-  
       const newAbortController = new AbortController();
       setAbortController(newAbortController);
       
       setIsLoading(true);
-
+      setSearchQuery(term); // redundant
       axios.get(`${SAR_BACKEND_URL}/search?query=${term}&includePermissions=${checked}`, {
         signal: newAbortController.signal
       })
@@ -208,7 +207,7 @@ const SearchBar = () => {
 
     const handleDownloadAllResults = async () => {
         try {
-            const response = await axios.get(`${SAR_BACKEND_URL}/download-csv`, {
+            const response = await axios.get(`${SAR_BACKEND_URL}/download-csv?query=${searchQuery}`, {
                 responseType: 'blob', //handling the binary data
                 headers: {
                     // Include authorization tokens
