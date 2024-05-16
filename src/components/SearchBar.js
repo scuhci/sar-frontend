@@ -207,7 +207,7 @@ const SearchBar = () => {
 
     const handleDownloadAllResults = async () => {
         try {
-            const response = await axios.get(`${SAR_BACKEND_URL}/download-csv?query=${searchQuery}`, {
+            const response = await axios.get(`${SAR_BACKEND_URL}/download-csv?query=${searchQuery}&includePermissions=${checked}`, {
                 responseType: 'blob', //handling the binary data
                 headers: {
                     // Include authorization tokens
