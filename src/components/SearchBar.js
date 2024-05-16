@@ -24,6 +24,7 @@ import { Tooltip } from '@mui/material';
 
 const SearchBar = () => {
     const [searchQuery, setSearchQuery] = useState('');
+    const [fixedSearchQuery, setFixedSearchQuery] = useState('');
     const [searchResults, setSearchResults] = useState([]);
     const [isLoading, setIsLoading] = useState(false);
     const [totalCount, setTotalCount] = useState(0);
@@ -165,7 +166,8 @@ const SearchBar = () => {
       setAbortController(newAbortController);
       
       setIsLoading(true);
-      setSearchQuery(term); // redundant
+      setFixedSearchQuery(term);
+      
       axios.get(`${SAR_BACKEND_URL}/search?query=${term}&includePermissions=${checked}`, {
         signal: newAbortController.signal
       })
@@ -207,7 +209,7 @@ const SearchBar = () => {
 
     const handleDownloadAllResults = async () => {
         try {
-            const response = await axios.get(`${SAR_BACKEND_URL}/download-csv?query=${searchQuery}&includePermissions=${checked}`, {
+            const response = await axios.get(`${SAR_BACKEND_URL}/download-csv?query=${fixedSearchQuery}&includePermissions=${checked}`, {
                 responseType: 'blob', //handling the binary data
                 headers: {
                     // Include authorization tokens
