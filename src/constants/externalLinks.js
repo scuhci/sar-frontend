@@ -1,0 +1,1 @@
+export const SMAR_USER_GUIDE_URL = "https://smar-team.s3.us-west-1.amazonaws.com/user-guide/SMAR+User+Guide.pdf"
