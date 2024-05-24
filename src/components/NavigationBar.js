@@ -16,6 +16,7 @@ const NavigationBar = () => {
                 <div>
                   <Button color="inherit" component={Link} to="/">Home</Button>
                   <Button color="inherit" component="a" href={SMAR_USER_GUIDE_URL} target="_blank" rel="noopener noreferrer">User Guide</Button>
+                  <Button color="inherit" component={Link} to="/citation">Citation</Button>
                   <Button color="inherit" component={Link} to="/about">About</Button>
                 </div>
             </Toolbar>
