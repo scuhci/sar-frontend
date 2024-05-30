@@ -327,7 +327,7 @@ const SearchBar = () => {
                         onClick={handleDownloadAllResults}
                         className="download-button"
                       >
-                        Download All Results
+                        Download {totalCount} Results
                       </Button>
                     </div>
                   </div>
