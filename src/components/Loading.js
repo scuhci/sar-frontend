@@ -1,10 +1,8 @@
 import React from 'react';
-import { Dialog, DialogContent, DialogContentText, LinearProgress, Button, DialogActions, Backdrop } from '@mui/material';
-import { useTheme } from '@mui/material/styles';
+import { Dialog, DialogContent, DialogContentText, LinearProgress, Button, DialogActions} from '@mui/material';
 import "../css/Loading.css"
 
 function Loading({ open, onCancel, searchQuery }) {
-    const theme = useTheme();
 
     return (
         <Dialog open={open} onClose={onCancel} aria-labelledby="loading-dialog-title" PaperProps={{
