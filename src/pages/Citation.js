@@ -1,5 +1,5 @@
 import React from 'react';
-import { Typography, Container, Stack, Icon, Button} from '@mui/material';
+import { Typography, Container, Stack, Button} from '@mui/material';
 import ContentCopyIcon from '@mui/icons-material/ContentCopy';
 import "../css/About.css";
 import Card from '@mui/material/Card';
