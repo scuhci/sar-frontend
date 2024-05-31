@@ -10,7 +10,7 @@ export const columns = [
     { field: 'appId', renderHeader: () => <strong>App ID</strong>, width: 150 },
     { field: 'reviewsCount', renderHeader: () => <strong>Reviews</strong>, width: 75, renderCell: (params) => <Typography>{params.value}</Typography>},
     { field: 'reviews', renderHeader: () => <strong> </strong>, width: 200, renderCell: (params) => {
-        if (params.value[0] < 10000) {
+        if (params.value[0] < 100000) {
             return (
                 DownloadReviews(params.value[1])
             );
@@ -18,7 +18,7 @@ export const columns = [
         else {
             return (
                 <div className='Reviews count & button'>
-                    <Tooltip title = "Unable to scrape reviews for this app due to review count being greater than max 10000 reviews.">
+                    <Tooltip title = "Unable to scrape reviews for this app due to review count being greater than max 100000 reviews.">
                     <span>
                         <Button disabled variant="outlined" size="small"> 
                             <strong>Scrape Reviews</strong>
