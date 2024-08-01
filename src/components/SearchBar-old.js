@@ -91,7 +91,7 @@ const SearchBar = () => {
                 <Collapse in={expandedId === application.appId} timeout="auto" unmountOnExit>
                     <Typography variant="body2" color="textSecondary" component="div">
                         {/* Additional details to display when expanded */}
-                        <div>{application.scoreText}</div>
+                        <div>{application.currentVersionScore}</div>
                         <div>{application.currency}</div>
                         {/* Add more details as needed */}
                     </Typography>
