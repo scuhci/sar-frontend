@@ -332,7 +332,6 @@ const SearchBar = () => {
                       </Button>
                     </div>
                   </div>
-                  <div className="datagrid-right"></div>
                 </div>
               </> 
               ) : (

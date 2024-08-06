@@ -54,10 +54,7 @@
     flex-direction: column;
     overflow-x: auto;
 }
-.datagrid-right {
-    width: 125px;
-    flex-shrink: 0;
-}
+
 .download-button-container {
     width: 100%;
     padding: 10px 0;
