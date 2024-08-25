@@ -1,6 +1,7 @@
 import React from 'react';
 import { Dialog, DialogContent, DialogContentText, LinearProgress, Button, DialogActions} from '@mui/material';
 import "../css/Loading.css"
+import { OpenInNew } from '@mui/icons-material';
 
 function Loading({ open, onCancel, searchQuery }) {
 
@@ -22,7 +23,7 @@ function Loading({ open, onCancel, searchQuery }) {
                     Returns results from two sources: <br></br>
                     {'\t'}1. up to 30 primary search results for this keyword in Google Play.  <br></br>
                     {'\t'}2. similar app results for apps in primary search results. <br></br>
-                    For more info, see the <a href="https://smar-team.s3.us-west-1.amazonaws.com/user-guide/SMAR+User+Guide.pdf" target="_blank" rel="noopener noreferrer"> user guide. </a>
+                    For more info, see the <a href="https://smar-team.s3.us-west-1.amazonaws.com/user-guide/SMAR+User+Guide.pdf" target="_blank" rel="noopener noreferrer"> user guide<OpenInNew fontSize='inherit' /></a>. 
                 </DialogContentText>
                 <LinearProgress className="loading-progress-bar"/>
             </DialogContent>
