@@ -2,16 +2,16 @@ import React from "react";
 import SearchBar from "../components/SearchBar";
 import MobileScreen from "../components/MobileScreen";
 import Typography from "@mui/material/Typography";
+import { UserAgent } from "express-useragent";
 import "../css/Home.css";
 import Chip from "@mui/joy/Chip";
 
 const Home = () => {
-  // Determine if the user is on a mobile device or a PC
-  // PLACEHOLDER! Change to actual mobile device detection
-  const isMobileDevice = true;
+  // Determine if the user is on a mobile device[true] or a PC [false]
+  const isMobileDevice = new UserAgent().parse(navigator.userAgent);
 
   // Switch to mobile device screen if user is on a mobile device
-  return !isMobileDevice ? (
+  return isMobileDevice ? (
     <>
       <div className="home-container">
         <Typography variant="h3" className="home-header">
@@ -34,7 +34,9 @@ const Home = () => {
       <SearchBar />
     </>
   ) : (
+    <div>
     <MobileScreen />
+    </div>
   );
 };
 
