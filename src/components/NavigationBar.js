@@ -8,10 +8,11 @@ import { SMAR_USER_GUIDE_URL } from "../constants/externalLinks";
 const NavigationBar = () => {
 
   // Determine if the user is on a mobile device[true] or a PC [false]
-  const isMobileDevice = new UserAgent().parse(navigator.userAgent);
+  const userAgent = new UserAgent().parse(navigator.userAgent);
+  const isMobileDevice = userAgent.isMobile;
 
   // Switch to mobile device navigation bar if user is on a mobile device
-  return isMobileDevice ? (
+  return ! isMobileDevice ? (
     <AppBar position="static" style={{ marginBottom: 15 }}>
       <Toolbar>
         <Typography variant="h6" style={{ flexGrow: 1 }}>

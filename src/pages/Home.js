@@ -7,11 +7,13 @@ import "../css/Home.css";
 import Chip from "@mui/joy/Chip";
 
 const Home = () => {
-  // Determine if the user is on a mobile device[true] or a PC [false]
-  const isMobileDevice = new UserAgent().parse(navigator.userAgent);
+  
+  const userAgent = new UserAgent().parse(navigator.userAgent);
+  const isMobileDevice = userAgent.isMobile;
+
 
   // Switch to mobile device screen if user is on a mobile device
-  return isMobileDevice ? (
+  return ! isMobileDevice ? (
     <>
       <div className="home-container">
         <Typography variant="h3" className="home-header">
@@ -34,9 +36,7 @@ const Home = () => {
       <SearchBar />
     </>
   ) : (
-    <div>
     <MobileScreen />
-    </div>
   );
 };
 
