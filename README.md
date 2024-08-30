@@ -10,10 +10,10 @@ Also, take a look at our [User Guide](https://smar-team.s3.us-west-1.amazonaws.c
 
 This project was made with love at the [Santa Clara University HCI Lab](https://scuhci.com/) by a student-led team of researchers across various disciplines.
 
-**Faculty Advisor**
+**Faculty Advisor** :bulb:
 - Professor Kai Lukoff | [Website](https://kailukoff.com/)
 
-**Project Lead** 
+**Project Lead** 💬
 
 - Ilona van der Linden | [LinkedIn](https://www.linkedin.com/in/lonavdlin/) | [Email](mailto:lonavdlin@gmail.com)
 
@@ -33,7 +33,7 @@ This project was made with love at the [Santa Clara University HCI Lab](https://
 - Maggie Lau | [LinkedIn](
 - Crystal Chen | [LinkedIn](https://www.linkedin.com/in/crystal-chen-637757119/)
 
-**Project Alumni**
+**Project Alumni** 🤍
 - Akaash Trivedi
 - Vaishnavi Upadhye
 - Rani Rajurkar
