@@ -6,6 +6,8 @@ A tool for academic researchers to conduct a keyword search of Google Play and g
 
 Also, take a look at our [User Guide](https://smar-team.s3.us-west-1.amazonaws.com/user-guide/SMAR+User+Guide.pdf) for an in-depth overview of how to use our application.
 
+Our [backend code](https://github.com/scuhci/SAR-backend/) can be found here.
+
 ## Team
 
 This project was made with love at the [Santa Clara University HCI Lab](https://scuhci.com/) by a student-led team of researchers across various disciplines.
