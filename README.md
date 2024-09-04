@@ -1,70 +1,54 @@
-# Getting Started with Create React App
+# SMAR Tool for Systematic Mobile Application Reviews
 
-This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
+A tool for academic researchers to conduct a keyword search of Google Play and get back the metadata for all relevant apps. 
 
-## Available Scripts
+**This project is stil a work in progress.** You can view our beta site at [smar-tool.org](http://smar-tool.org/)
 
-In the project directory, you can run:
+Also, take a look at our [User Guide](https://smar-team.s3.us-west-1.amazonaws.com/user-guide/SMAR+User+Guide.pdf) for an in-depth overview of how to use our application.
 
-### `npm start`
+Our [backend code](https://github.com/scuhci/SAR-backend/) can be found here.
 
-Runs the app in the development mode.\
-Open [http://localhost:3000](http://localhost:3000) to view it in your browser.
+## Team
 
-The page will reload when you make changes.\
-You may also see any lint errors in the console.
+This project was made with love at the [Santa Clara University HCI Lab](https://scuhci.com/) by a student-led team of researchers across various disciplines.
 
-### `npm test`
+**Faculty Advisor** :bulb:
+- Professor Kai Lukoff | [Website](https://kailukoff.com/)
 
-Launches the test runner in the interactive watch mode.\
-See the section about [running tests](https://facebook.github.io/create-react-app/docs/running-tests) for more information.
+**Project Lead** 💬
 
-### `npm run build`
+- Ilona van der Linden | [LinkedIn](https://www.linkedin.com/in/lonavdlin/) | [Email](mailto:lonavdlin@gmail.com)
 
-Builds the app for production to the `build` folder.\
-It correctly bundles React in production mode and optimizes the build for the best performance.
+**Developer Team** 🖥️
 
-The build is minified and the filenames include the hashes.\
-Your app is ready to be deployed!
+- Varun Mangla | [LinkedIn](https://www.linkedin.com/in/varunmangla/) | [Email](mailto:varunm57@outlook.com)
+- Gaurav Punjabi | [LinkedIn](https://www.linkedin.com/in/gaurav-punjabi-34067315a/)
+- Jeshwin Prince | [LinkedIn]( https://www.linkedin.com/in/jeshwinprince/) | [Email](mailto:jprince2@scu.edu)
 
-See the section about [deployment](https://facebook.github.io/create-react-app/docs/deployment) for more information.
+**Technical Consulting Team** 🗒️
 
-### `npm run eject`
+- Soham Phadke | [LinkedIn](https://www.linkedin.com/in/soham-phadke/) | [Email](mailto:smphadke24@gmail.com)
+- Juilee Katpatal | [LinkedIn](https://www.linkedin.com/in/zuilee/) 
 
-**Note: this is a one-way operation. Once you `eject`, you can't go back!**
+**Literature Review Team** 📖
+- Katrina Ying | [LinkedIn](https://www.linkedin.com/in/katrinaying/)
+- Maggie Lau | [LinkedIn](
+- Crystal Chen | [LinkedIn](https://www.linkedin.com/in/crystal-chen-637757119/)
 
-If you aren't satisfied with the build tool and configuration choices, you can `eject` at any time. This command will remove the single build dependency from your project.
+**Project Alumni** 🤍
+- Akaash Trivedi
+- Vaishnavi Upadhye
+- Rani Rajurkar
 
-Instead, it will copy all the configuration files and the transitive dependencies (webpack, Babel, ESLint, etc) right into your project so you have full control over them. All of the commands except `eject` will still work, but they will point to the copied scripts so you can tweak them. At this point you're on your own.
+## Running SMAR Locally
 
-You don't have to ever use `eject`. The curated feature set is suitable for small and middle deployments, and you shouldn't feel obligated to use this feature. However we understand that this tool wouldn't be useful if you couldn't customize it when you are ready for it.
+### **We strongly advise accessing our tool via our [website](http://smar-tool.org/) for the best user experience!** 
+*Experienced developers who wish to try the SMAR tool on their local machine: read on.*
 
-## Learn More
+1. Clone down the `sar-frontend` and `SAR-backend` repositories to your local machine.
 
-You can learn more in the [Create React App documentation](https://facebook.github.io/create-react-app/docs/getting-started).
+2. To use our stable, deployed branch: `git checkout production` in both the frontend and backend repositories.
 
-To learn React, check out the [React documentation](https://reactjs.org/).
+3. To start `sar-backend` : Run `node index.js`
 
-### Code Splitting
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/code-splitting](https://facebook.github.io/create-react-app/docs/code-splitting)
-
-### Analyzing the Bundle Size
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/analyzing-the-bundle-size](https://facebook.github.io/create-react-app/docs/analyzing-the-bundle-size)
-
-### Making a Progressive Web App
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/making-a-progressive-web-app](https://facebook.github.io/create-react-app/docs/making-a-progressive-web-app)
-
-### Advanced Configuration
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/advanced-configuration](https://facebook.github.io/create-react-app/docs/advanced-configuration)
-
-### Deployment
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/deployment](https://facebook.github.io/create-react-app/docs/deployment)
-
-### `npm run build` fails to minify
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify](https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify)
+4. To start `sar-frontend` : Run `npm-start`

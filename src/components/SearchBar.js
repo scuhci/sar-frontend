@@ -296,145 +296,114 @@ const SearchBar = () => {
       headerAlign: 'center'
     })); */
 
-  return (
-    <div className="search-bar-container">
-      <div className="search-and-button-container">
-        <TextField
-          label="Search by keyword (e.g., puzzle games) or package name (e.g., com.facebook.katana)"
-          variant="outlined"
-          value={searchQuery}
-          onChange={handleSearchChange}
-          onKeyDown={handleKeyDown}
-          className="search-input"
-        />
-        <Button
-          className="search-button"
-          onClick={() => {
-            handleSearchSubmit(searchQuery);
-          }}
-          variant="contained"
-          color="primary"
-          disabled={isLoading}
-        >
-          Search <SearchIcon />
-        </Button>
-      </div>
-      <div className="permissions-checkbox">
-        <Stack
-          direction="row"
-          justifyContent="flex-start"
-          alignItems="center"
-          spacing={0.1}
-        >
-          <FormGroup>
-            <FormControlLabel
-              control={
-                <Checkbox
-                  size="small"
-                  checked={checked}
-                  onChange={handleChange}
+    return (
+        <div className="search-bar-container">
+            <div className="search-and-button-container">
+                <TextField
+                    label="Search by keyword (e.g., puzzle games) or package name (e.g., com.facebook.katana)"
+                    variant="outlined"
+                    value={searchQuery}
+                    onChange={handleSearchChange}
+                    onKeyDown={handleKeyDown}
+                    
+                    className="search-input"
                 />
-              }
-              label={
-                <React.Fragment>
-                  <Stack alignItems="center" direction="row" gap={0.3}>
-                    Show permissions
-                    <Tooltip title="Searching for apps with permissions may take 1-5 minutes longer on average.">
-                      <InfoIcon fontSize="small" />
-                    </Tooltip>
-                  </Stack>
-                </React.Fragment>
-              }
-            />
-          </FormGroup>
-        </Stack>
-      </div>
-      <Loading
-        open={isLoading}
-        onCancel={handleCancel}
-        searchQuery={searchQuery}
-      />
-      {searchResults.length > 0 ? (
-        <>
-          <div className="search-result-text">
-            <Typography variant="h5">Results for "{searchQuery}"</Typography>
-            <Typography>
-              Preview of first 5 out of {totalCount} results
-            </Typography>
-          </div>
-          <div className="data-grid-container" style={{ width: "100%" }}>
-            <div className="datagrid-left">
-              <DataGrid
-                rows={rows}
-                columns={displayPermissions ? permissionColumns : columns}
-                pageSize={5}
-                getRowId={(row) => row.appId}
-                disableRowSelectionOnClick
-                hideFooter
-              />
-              <div className="download-button-container">
-                <Button
-                  variant="contained"
-                  color="primary"
-                  onClick={handleDownloadAllResults}
-                  className="download-button"
-                >
-                  Download {totalCount} Results
+                <Button className="search-button" onClick={() => {handleSearchSubmit(searchQuery)}} variant="contained" color="primary" disabled={isLoading}>
+                        Search <SearchIcon />
                 </Button>
-              </div>
             </div>
-            <div className="datagrid-right"></div>
-          </div>
-        </>
-      ) : (
-        !isLoading && (
-          <div className="example-searches-container">
-            <div style={{ textAlign: "left" }}>
-              <ExampleSearches
-                sampleSearch={sampleSearch}
-                onExampleSearch={handleExampleSearchClick}
-              />
-              <Typography variant="h5" className="no-search-message">
-                Example Research:{" "}
-              </Typography>
-              <Typography variant="body1" className="no-search-message">
-                <Link
-                  href="https://dl.acm.org/doi/10.1145/2556288.2557079"
-                  target="_blank"
-                  rel="noopener noreferrer"
-                >
-                  Stawarz et al.
-                </Link>{" "}
-                (2014) reviewed the functionality and user reviews for 229
-                medication reminder apps
-              </Typography>
-              <Typography variant="body1" className="no-search-message">
-                <Link
-                  href="https://dl.acm.org/doi/10.1145/3290605.3300361"
-                  target="_blank"
-                  rel="noopener noreferrer"
-                >
-                  Lyngs et al.
-                </Link>{" "}
-                (2019) coded the features in 96 digital self-control apps
-              </Typography>
-              <Typography variant="body1" className="no-search-message">
-                <Link
-                  href="https://dl.acm.org/doi/10.1145/3411764.3445500"
-                  target="_blank"
-                  rel="noopener noreferrer"
-                >
-                  Spors et al.
-                </Link>{" "}
-                (2021) employed feminist content analysis to review the
-                descriptions of 69 self-care apps
-              </Typography>
+            <div className='permissions-checkbox'>
+              <Stack 
+                direction="row" 
+                justifyContent="flex-start"
+                alignItems="center"
+                spacing={0.1}>
+                  <FormGroup>
+                    <FormControlLabel 
+                    control={
+                      <Checkbox
+                      size="small"
+                      checked={checked}
+                      onChange={handleChange}
+                      />} 
+                    label={<React.Fragment>
+                      <Stack alignItems="center" direction="row" gap={0.3}>
+                        Show permissions
+                        <Tooltip title="Searching for apps with permissions may take 1-5 minutes longer on average.">
+                          <InfoIcon fontSize='small'/>
+                        </Tooltip>
+                      </Stack>
+                      </React.Fragment>}/>
+                  </FormGroup>
+              </Stack>
             </div>
-          </div>
-        )
-      )}
-    </div>
-  );
+            <Loading open={isLoading} onCancel={handleCancel} searchQuery={searchQuery}/>
+            {searchResults.length > 0 ? (
+              <>
+                <div className="search-result-text">
+                  <Typography variant="h5">Results for "{searchQuery}"</Typography>
+                  <Typography >Preview of first 5 out of {totalCount} results</Typography>
+                </div>
+                <div className="data-grid-container" style={{width: "100%"}}>
+                  <div className="datagrid-left">
+                    <DataGrid
+                      rows={rows}
+                      columns={displayPermissions ? permissionColumns : columns}
+                      pageSize={5}
+                      getRowId={(row) => row.appId}
+                      disableRowSelectionOnClick
+                      hideFooter
+                    />
+                    <div className="download-button-container">
+                      <Button 
+                        variant="contained" 
+                        color="primary"
+                        onClick={handleDownloadAllResults}
+                        className="download-button"
+                      >
+                        Download ({totalCount} Results + Reproducibility Log)
+                      </Button>
+                    </div>
+                  </div>
+                </div>
+              </> 
+              ) : (
+                !isLoading && 
+                ( <div className="example-searches-container">
+                    <div style={{ textAlign: 'left' }}> 
+                      <ExampleSearches 
+                        sampleSearch={sampleSearch} 
+                        onExampleSearch={handleExampleSearchClick}
+                      />
+                      <Typography variant="h5" className="no-search-message">Example Research: </Typography>
+                      <Typography variant="body1" className="no-search-message">
+                        <Link 
+                          href="https://dl.acm.org/doi/10.1145/2556288.2557079"
+                          target="_blank" 
+                          rel="noopener noreferrer"
+                          >Stawarz et al.</Link> (2014) reviewed the functionality and user reviews for 229 medication reminder apps
+                      </Typography>
+                      <Typography variant="body1" className="no-search-message">
+                        <Link 
+                          href="https://dl.acm.org/doi/10.1145/3290605.3300361"
+                          target="_blank" 
+                          rel="noopener noreferrer"
+                          >Lyngs et al.</Link> (2019) coded the features in 96 digital self-control apps 
+                      </Typography>
+                      <Typography variant="body1" className="no-search-message">
+                        <Link 
+                          href="https://dl.acm.org/doi/10.1145/3411764.3445500"
+                          target="_blank" 
+                          rel="noopener noreferrer"
+                          >Spors et al.</Link> (2021) employed feminist content analysis to review the descriptions of 69 self-care apps 
+                      </Typography>
+                    </div>
+                  </div>  
+                )
+              )
+            }
+        </div>
+    );
 };
 
 export default SearchBar;
