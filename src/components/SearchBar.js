@@ -300,7 +300,7 @@ const SearchBar = () => {
         <div className="search-bar-container">
             <div className="search-and-button-container">
                 <TextField
-                    label="Search by keyword (e.g., puzzle games) or package name (e.g., com.facebook.katana)"
+                    label="Scrape by keyword (e.g., puzzle games) or package name (e.g., com.facebook.katana)"
                     variant="outlined"
                     value={searchQuery}
                     onChange={handleSearchChange}
@@ -309,7 +309,7 @@ const SearchBar = () => {
                     className="search-input"
                 />
                 <Button className="search-button" onClick={() => {handleSearchSubmit(searchQuery)}} variant="contained" color="primary" disabled={isLoading}>
-                        Search <SearchIcon />
+                        Scrape Data
                 </Button>
             </div>
             <div className='permissions-checkbox'>
@@ -328,8 +328,8 @@ const SearchBar = () => {
                       />} 
                     label={<React.Fragment>
                       <Stack alignItems="center" direction="row" gap={0.3}>
-                        Show permissions
-                        <Tooltip title="Searching for apps with permissions may take 1-5 minutes longer on average.">
+                        Include permissions in scrape
+                        <Tooltip title="It takes an additional 1-5 minutes to scrape the permissions that apps access (e.g, “read your contacts” and “take pictures and videos”)">
                           <InfoIcon fontSize='small'/>
                         </Tooltip>
                       </Stack>
@@ -363,7 +363,7 @@ const SearchBar = () => {
                         onClick={handleDownloadAllResults}
                         className="download-button"
                       >
-                        Download ({totalCount} Results + Reproducibility Log)
+                        Download ({totalCount} Results + Reproducibility Log as ZIP)
                       </Button>
                     </div>
                   </div>
