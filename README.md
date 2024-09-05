@@ -2,9 +2,7 @@
 
 A tool for academic researchers to conduct a keyword search of Google Play and get back the metadata for all relevant apps. 
 
-**This project is stil a work in progress.** You can view our beta site at [smar-tool.org](http://smar-tool.org/)
-
-Also, take a look at our [User Guide](https://smar-team.s3.us-west-1.amazonaws.com/user-guide/SMAR+User+Guide.pdf) for an in-depth overview of how to use our application.
+**This project is stil a work in progress.** You can view our beta site at [smar-tool.org](http://smar-tool.org/). Also, take a look at our [User Guide](https://smar-team.s3.us-west-1.amazonaws.com/user-guide/SMAR+User+Guide.pdf) for an in-depth overview of how to use our application.
 
 Our [backend code](https://github.com/scuhci/SAR-backend/) can be found here.
 
@@ -32,7 +30,7 @@ This project was made with love at the [Santa Clara University HCI Lab](https://
 
 **Literature Review Team** 📖
 - Katrina Ying | [LinkedIn](https://www.linkedin.com/in/katrinaying/)
-- Maggie Lau | [LinkedIn](
+- Maggie Lau | [Email](mailto:mlone2328@gmail.com)
 - Crystal Chen | [LinkedIn](https://www.linkedin.com/in/crystal-chen-637757119/)
 
 **Project Alumni** 🤍
