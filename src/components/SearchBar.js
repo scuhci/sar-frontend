@@ -353,6 +353,8 @@ const SearchBar = () => {
                       getRowId={(row) => row.appId}
                       disableRowSelectionOnClick
                       hideFooter
+                      autosizeOnMount
+                      disableVirtualization
                     />
                     <div className="download-button-container">
                       <Button 
