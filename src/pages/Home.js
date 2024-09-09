@@ -29,8 +29,7 @@ const Home = () => {
         </Typography>
 
         <Typography variant="p" className="home-text">
-          A tool for academic researchers to conduct a keyword search of Google
-          Play and get back the metadata for all relevant apps.
+        A tool for academic researchers to scrape data about mobile apps from the Google Play store.
         </Typography>
       </div>
       <SearchBar />
