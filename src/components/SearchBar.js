@@ -181,7 +181,7 @@ const SearchBar = () => {
 
     axios
       .get(
-        `${SAR_BACKEND_URL}/search?query=${term}&includePermissions=${checked}`,
+        `/api/search?query=${term}&includePermissions=${checked}`,
         {
           signal: newAbortController.signal,
         }
