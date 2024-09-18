@@ -24,7 +24,7 @@ const DownloadReviews = (appId) => {
             setAbortController(newAbortController);
               
             setIsLoading(true);
-            const response = await axios.get(`${SAR_BACKEND_URL}/reviews?appId=${appId}`, {
+            const response = await axios.get(`/reviews?appId=${appId}`, {
                 signal: newAbortController.signal,
                 responseType: 'blob', //handling the binary data
                 headers: {
