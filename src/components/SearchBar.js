@@ -110,7 +110,7 @@ const SearchBar = ({ flipState }) => {
 
     axios
       .get(
-        `/api/search?query=${term}&includePermissions=${checked}`,
+        `/search?query=${term}&includePermissions=${checked}`,
         {
           signal: newAbortController.signal,
         }
