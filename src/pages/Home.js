@@ -15,6 +15,9 @@ const Home = () => {
               color="success"
               onClick={function(){}}
               size="sm"
+              sx={{
+                ml: 1,
+              }}
               variant="outlined"
             >
               BETA
