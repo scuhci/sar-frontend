@@ -1,15 +1,14 @@
 import React from 'react';
 import Avatar from '@mui/material/Avatar';
-import Typography from '@mui/material/Typography';
 import Button from '@mui/material/Button';
 import { Tooltip } from '@mui/material';
 import DownloadReviews from '../components/DownloadReviews';
 
 export const columns = [
-    { field: 'title', renderHeader: () => <strong>Title</strong>, width: 200 },
-    { field: 'appId', renderHeader: () => <strong>App ID</strong>, width: 150 },
-    { field: 'reviewsCount', renderHeader: () => <strong>Reviews</strong>, width: 75, renderCell: (params) => <Typography>{params.value}</Typography>},
-    { field: 'reviews', renderHeader: () => <strong> </strong>, width: 200, renderCell: (params) => {
+    { field: 'title', renderHeader: () => <strong>Title</strong>, minWidth: 250 },
+    { field: 'appId', renderHeader: () => <strong>App ID</strong>, minWidth: 250 },
+    { field: 'reviewsCount', renderHeader: () => <strong>Reviews</strong>, minWidth: 75, renderCell: (params) => params.value},
+    { field: 'reviews', renderHeader: () => <strong> </strong>, minWidth: 200, renderCell: (params) => {
         if (params.value[0] < 100000) {
             return (
                 DownloadReviews(params.value[1])

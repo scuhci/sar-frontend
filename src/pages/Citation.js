@@ -1,5 +1,5 @@
 import React from 'react';
-import { Typography, Container, Stack, Icon, Button} from '@mui/material';
+import { Typography, Container, Stack, Button} from '@mui/material';
 import ContentCopyIcon from '@mui/icons-material/ContentCopy';
 import "../css/About.css";
 import Card from '@mui/material/Card';
@@ -7,7 +7,8 @@ import CardContent from "@mui/material/CardContent";
 import Divider from '@mui/material/Divider';
 
 
-const text = "Kai Lukoff, Akaash Trivedi, Ilona van der Linden, Vaishnavi Upadhye, Gaurav Punjabi, Varun Mangla, Katrina Ying, Crystal Chen, Maggie Lau, Rani Rajurkar, Juilee Katpatal, Soham Phadke, and Soumya Mohan. 2024. SMAR: A Tool for Systematic Mobile App Reviews to Research the Mobile App Ecosystem. Retrieved from www.tinyurl.com/smar-tool"
+const old_text = "Kai Lukoff, Akaash Trivedi, Ilona van der Linden, Vaishnavi Upadhye, Gaurav Punjabi, Varun Mangla, Katrina Ying, Crystal Chen, Maggie Lau, Rani Rajurkar, Juilee Katpatal, Soham Phadke, and Soumya Mohan. 2024. SMAR: A Tool for Systematic Mobile App Reviews to Research the Mobile App Ecosystem. Retrieved from www.tinyurl.com/smar-tool"
+const text = "SMAR: A Tool for Systematic Mobile App Reviews to Research the Mobile App Ecosystem. Retrieved from www.smar-tool.org."
 const Citation = () => {
     return (
         <Container>
