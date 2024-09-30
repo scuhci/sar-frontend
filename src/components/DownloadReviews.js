@@ -3,7 +3,6 @@ import Button from '@mui/material/Button';
 import { Tooltip } from '@mui/material';
 import ReviewsLoading from './ReviewsLoading';
 import axios from 'axios';
-import {SAR_BACKEND_URL} from '../constants/urlConstants';
 
 const DownloadReviews = (appId) => {
     const [isLoading, setIsLoading] = useState(false);

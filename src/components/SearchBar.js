@@ -1,7 +1,6 @@
 import React, { useState } from "react";
 import { TextField, Button, Typography } from "@mui/material";
 import { DataGrid } from "@mui/x-data-grid";
-import { SAR_BACKEND_URL } from "../constants/urlConstants";
 import axios from "axios";
 import "../css/SearchBar.css";
 import Loading from "./Loading";
@@ -154,7 +153,7 @@ const SearchBar = ({ flipState }) => {
   const handleDownloadAllResults = async () => {
     try {
       const response = await axios.get(
-        `${SAR_BACKEND_URL}/download-csv?query=${fixedSearchQuery}&includePermissions=${checked}`,
+        `/download-csv?query=${fixedSearchQuery}&includePermissions=${checked}`,
         {
           responseType: "blob", //handling the binary data
           headers: {
@@ -164,7 +163,7 @@ const SearchBar = ({ flipState }) => {
       );
 
       const relog_response = await axios.get(
-        `${SAR_BACKEND_URL}/download-relog?query=${fixedSearchQuery}&includePermissions=${checked}&totalCount=${totalCount}`,
+        `/download-relog?query=${fixedSearchQuery}&includePermissions=${checked}&totalCount=${totalCount}`,
         {
           responseType: "blob", //handling the binary data
           headers: {
