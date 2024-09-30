@@ -15,8 +15,6 @@ import Collapse from '@mui/material/Collapse';
 import Typography from '@mui/material/Typography';
 
 import "../css/SearchBar.css"
-import { SAR_BACKEND_URL } from '../constants/urlConstants';
-
 const SearchBar = () => {
     const [searchQuery, setSearchQuery] = useState('');
     const [searchResults, setSearchResults] = useState([]);
@@ -30,7 +28,7 @@ const SearchBar = () => {
     const handleSearchSubmit = () => {
         setIsLoading(true);
         axios
-        .get(`${SAR_BACKEND_URL}/search?query=${searchQuery}`)
+        .get(`/search?query=${searchQuery}`)
         .then((response) => {
             setSearchResults(response.data.results);
             console.log(response.data.results);
