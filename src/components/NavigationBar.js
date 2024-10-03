@@ -3,7 +3,6 @@ import AppBar from '@mui/material/AppBar';
 import Toolbar from '@mui/material/Toolbar';
 import { Typography, Button } from '@mui/material';
 import { Link } from 'react-router-dom';
-// import { SMAR_USER_GUIDE_URL } from '../constants/externalLinks';
 
 const NavigationBar = () => {
   return (
@@ -25,4 +24,4 @@ const NavigationBar = () => {
   );
 };
 
-export default NavigationBar;
+export default NavigationBar

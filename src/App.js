@@ -12,12 +12,11 @@ function App() {
       <NavigationBar />
       <Routes className="App">
         <Route path="/" element={<Home />} />
-        <Route path="/about" element={<About />} />
         <Route path="/citation" element={<Citation />} />
         <Route path="/userguide" element={<UserGuide />} />
       </Routes>
     </div>
   );
 }
-
+ // can add between home and citation: <Route path="/about" element={<About />} />
 export default App;
