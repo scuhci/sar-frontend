@@ -1,0 +1,51 @@
+html {
+    scroll-behavior: smooth;
+}
+
+.main-header {
+    text-align: center;
+    padding: 15px;
+}
+
+.toc-first-subitem {
+    text-indent: 15px;
+    padding-top: 10px;
+    padding-bottom: 5px;
+}
+
+.toc-subitem {
+    text-indent: 15px;
+    padding-top: 5px;
+    padding-bottom: 5px;
+}
+
+.toc-last-subitem {
+    text-indent: 15px;
+    padding-top: 5px;
+    padding-bottom: 10px;
+}
+
+.toc-only-subitem {
+    text-indent: 15px;
+    padding-top: 10px;
+    padding-bottom: 10px;
+}
+
+.section-header {
+    padding-bottom: 20px;
+}
+
+.section-sub-header {
+    padding-top: 10px;
+    padding-bottom: 15px;
+}
+  
+.main-text {
+    margin-bottom: 15px;
+}
+
+.inline-image {
+    max-width: 70%;
+    height: auto;
+    padding: 15px;
+}
