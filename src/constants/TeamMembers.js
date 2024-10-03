@@ -6,25 +6,13 @@ export const teamMembers = [
         linkedInUrl: 'https://www.linkedin.com/in/klukoff/'
     },
     {
-        name: 'Akaash Trivedi', 
-        role: 'Team Lead & Developer',
-        imageUrl: 'https://smar-team.s3.us-west-1.amazonaws.com/profile-photo/AkaashTrivedi.jpg',
-        linkedInUrl: 'https://www.linkedin.com/in/akaash-trivedi/'
-    },
-    {
-        name: 'Vaishnavi Upadhye', 
-        role: 'Developer',
-        imageUrl: 'https://smar-team.s3.us-west-1.amazonaws.com/profile-photo/VaishnaviUpadhye.jpeg',
-        linkedInUrl: 'https://www.linkedin.com/in/vaishnaviupadhye/'
-    },
-    {
         name: 'Varun Mangla', 
         role: 'Developer',
         imageUrl: 'https://smar-team.s3.us-west-1.amazonaws.com/profile-photo/VarunMangla.jpeg',
         linkedInUrl: 'https://www.linkedin.com/in/varunmangla/'
     },
     {
-        name: 'Llona van der Linden', 
+        name: 'Ilona van der Linden', 
         role: 'Developer',
         imageUrl: 'https://smar-team.s3.us-west-1.amazonaws.com/profile-photo/LonaLinden.jpg',
         linkedInUrl: 'https://www.linkedin.com/in/lonavdlin/'
@@ -76,5 +64,17 @@ export const teamMembers = [
         role: 'PM',
         imageUrl: 'https://smar-team.s3.us-west-1.amazonaws.com/profile-photo/SoumyaMohan.jpeg',
         linkedInUrl: 'https://www.linkedin.com/in/soumyaiim/'
+    },
+    {
+        name: 'Akaash Trivedi', 
+        role: 'Project Alumni',
+        imageUrl: 'https://smar-team.s3.us-west-1.amazonaws.com/profile-photo/AkaashTrivedi.jpg',
+        linkedInUrl: 'https://www.linkedin.com/in/akaash-trivedi/'
+    },
+    {
+        name: 'Vaishnavi Upadhye', 
+        role: 'Project Alumni',
+        imageUrl: 'https://smar-team.s3.us-west-1.amazonaws.com/profile-photo/VaishnaviUpadhye.jpeg',
+        linkedInUrl: 'https://www.linkedin.com/in/vaishnaviupadhye/'
     },
 ];

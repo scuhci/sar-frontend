@@ -13,10 +13,12 @@ function ReviewsLoading({ open, onCancel, appId }) {
             <div className="loading-backdrop" open={open}></div>
             <DialogContent>
                 <DialogContentText id="loading-dialog-title" className="loading-dialog-content">
-                    <strong>Scraping reviews for App Id: {appId}`...</strong>
+                    <strong>Scraping reviews for AppName: {appId}`...</strong>
                 </DialogContentText>
                 <DialogContentText className="loading-dialog-subtext">
-                    On average, searches take 1-5 minutes.
+                    This usually takes 1-5 minutes. <br></br>
+
+                    Scrapes all of the user reviews available for this app.
                 </DialogContentText>
                 <LinearProgress className="loading-progress-bar"/>
             </DialogContent>
