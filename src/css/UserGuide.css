@@ -47,5 +47,12 @@ html {
 .inline-image {
     max-width: 70%;
     height: auto;
-    padding: 15px;
+    margin: 15px;
+    border: 1px solid black;
+}
+
+.inline-image-nb {
+    max-width: 70%;
+    height: auto;
+    margin: 15px;
 }

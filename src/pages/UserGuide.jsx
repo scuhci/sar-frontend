@@ -84,32 +84,50 @@ const UserGuide = () => {
             <Typography variant="h4" className="main-header">User Guide</Typography>
 
             <Typography variant="h4" className="section-header">Contents</Typography>
-            <Typography variant="h6" className="">
-                <Link href="#SMAR_Background" variant="inherit" color="inherit" underline="hover">SMAR Background</Link>
+            <Typography variant="h6">
+                <Link href="#SMAR_Background" variant="inherit" color="inherit" underline="hover">
+                    SMAR Background
+                </Link>
             </Typography>
             <Typography variant="body1" className="toc-first-subitem">
-                <Link href="#SMAR_Study" variant="inherit" color="inherit" underline="hover">What is a SMAR Study?</Link>
+                <Link href="#SMAR_Study" variant="inherit" color="inherit" underline="hover">
+                    What is a SMAR Study?
+                </Link>
             </Typography>
             <Typography variant="body1" className="toc-last-subitem">
-                <Link href="#Why_SMAR" variant="inherit" color="inherit" underline="hover">Why would I want to conduct an SMAR?</Link>
+                <Link href="#Why_SMAR" variant="inherit" color="inherit" underline="hover">
+                    Why would I want to conduct an SMAR?
+                </Link>
             </Typography>
-            <Typography variant="h6" className="">
-                <Link href="#SMAR_Tool_Usage" variant="inherit" color="inherit" underline="hover">SMAR Tool Usage</Link>
+            <Typography variant="h6">
+                <Link href="#SMAR_Tool_Usage" variant="inherit" color="inherit" underline="hover">
+                    SMAR Tool Usage
+                </Link>
             </Typography>
             <Typography variant="body1" className="toc-only-subitem">
-                <Link href="#Keyword_Search" variant="inherit" color="inherit" underline="hover">Conducting a Keyword Search</Link>
+                <Link href="#Keyword_Search" variant="inherit" color="inherit" underline="hover">
+                    Conducting a Keyword Search
+                </Link>
             </Typography>
-            <Typography variant="h6" className="">
-                <Link href="#SMAR_Metadata_Breakdown" variant="inherit" color="inherit" underline="hover">SMAR Metadata Breakdown</Link>
+            <Typography variant="h6">
+                <Link href="#SMAR_Metadata_Breakdown" variant="inherit" color="inherit" underline="hover">
+                    SMAR Metadata Breakdown
+                </Link>
             </Typography>
             <Typography variant="body1" className="toc-first-subitem">
-                <Link href="#App_Metadata" variant="inherit" color="inherit" underline="hover">App Metadata</Link>
+                <Link href="#App_Metadata" variant="inherit" color="inherit" underline="hover">
+                    App Metadata
+                </Link>
             </Typography>
             <Typography variant="body1" className="toc-last-subitem">
-                <Link href="#Review_Metadata" variant="inherit" color="inherit" underline="hover">Review Metadata</Link>
+                <Link href="#Review_Metadata" variant="inherit" color="inherit" underline="hover">
+                    Review Metadata
+                </Link>
             </Typography>
-            <Typography variant="h6" className="">
-                <Link href="#References" variant="inherit" color="inherit" underline="hover">References</Link>
+            <Typography variant="h6">
+                <Link href="#References" variant="inherit" color="inherit" underline="hover">
+                    References
+                </Link>
             </Typography>
 
             <br></br>
@@ -136,7 +154,7 @@ const UserGuide = () => {
             </Typography>
 
             <Box display="flex" justifyContent="center" alignItems="center">
-                <img src={require('../res/SMAR_Steps.png')} className="inline-image" alt="SMAR steps" />
+                <img src={require('../res/SMAR_Steps.png')} className="inline-image-nb" alt="SMAR steps"/>
             </Box>
 
             <Typography variant="h5" className="section-sub-header" id="Why_SMAR">Why would I want to conduct an SMAR?</Typography>
