@@ -9,6 +9,7 @@ import Loading from "./Loading";
 import ExampleSearches from "./ExampleSearches";
 import { columns } from "../constants/columns";
 import { permissionColumns } from "../constants/permissionColumns";
+import { countryCode_list } from "../constants/countryCodes"
 import Link from "@mui/material/Link";
 
 // For the checkbox
@@ -181,7 +182,16 @@ const SearchBar = () => {
     let temp_countryCode = "us";
     if (term.startsWith("COUNTRY:")) {
       temp_countryCode = term.substring(term.indexOf(":") + 1, term.indexOf(" "));
-      setCountryCode(temp_countryCode);
+      if (countryCode_list.some((country) => country.Code === temp_countryCode.toUpperCase()))
+      {
+        console.log("Country Code -> Matched %s\n", temp_countryCode);
+      } 
+      else 
+      { 
+        console.log("Country Code -> Not Matched: %s\n", temp_countryCode);
+        temp_countryCode = "us"; 
+      }
+      setCountryCode(temp_countryCode) 
       term = term.slice(term.indexOf(" ") + 1);
     }
     setFixedSearchQuery(term);
