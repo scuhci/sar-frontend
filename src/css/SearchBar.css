@@ -43,16 +43,10 @@
 }
 
 .data-grid-container {
+    width: 100%;
     max-width: 1000px;
+    height: 370px;  /* Height to fit 5 rows + footer */
     margin: auto;
-    display:flex;
-}
-
-.datagrid-left {
-    flex: 1; 
-    display: flex;
-    flex-direction: column;
-    overflow-x: auto;
 }
 
 .download-button-container {
