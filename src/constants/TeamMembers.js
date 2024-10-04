@@ -6,16 +6,22 @@ export const teamMembers = [
         linkedInUrl: 'https://www.linkedin.com/in/klukoff/'
     },
     {
+        name: 'Ilona van der Linden', 
+        role: 'Project Lead & Developer',
+        imageUrl: 'https://smar-team.s3.us-west-1.amazonaws.com/profile-photo/lona.jpg',
+        linkedInUrl: 'https://www.linkedin.com/in/lonavdlin/'
+    },
+    {
         name: 'Varun Mangla', 
         role: 'Developer',
         imageUrl: 'https://smar-team.s3.us-west-1.amazonaws.com/profile-photo/VarunMangla.jpeg',
         linkedInUrl: 'https://www.linkedin.com/in/varunmangla/'
     },
     {
-        name: 'Ilona van der Linden', 
+        name: 'Jeshwin Prince', 
         role: 'Developer',
-        imageUrl: 'https://smar-team.s3.us-west-1.amazonaws.com/profile-photo/LonaLinden.jpg',
-        linkedInUrl: 'https://www.linkedin.com/in/lonavdlin/'
+        imageUrl: 'https://smar-team.s3.us-west-1.amazonaws.com/profile-photo/jeshwin.jpg',
+        linkedInUrl: '    https://www.linkedin.com/in/jeshwinprince/'
     },
     {
         name: 'Gaurav Punjabi', 
@@ -42,18 +48,6 @@ export const teamMembers = [
         linkedInUrl: '#'
     },
     {
-        name: 'Rani Rajurkar', 
-        role: 'Technical Consultant',
-        imageUrl: 'https://smar-team.s3.us-west-1.amazonaws.com/profile-photo/RaniRajurkar.jpeg',
-        linkedInUrl: 'https://www.linkedin.com/in/rani-rajurkar/'
-    },
-    {
-        name: 'Juilee Katpatal', 
-        role: 'Technical Consultant',
-        imageUrl: 'https://smar-team.s3.us-west-1.amazonaws.com/profile-photo/JuileeKatpatal.jpeg',
-        linkedInUrl: 'https://www.linkedin.com/in/zuilee/'
-    },
-    {
         name: 'Soham Phadke', 
         role: 'Technical Consultant',
         imageUrl: 'https://smar-team.s3.us-west-1.amazonaws.com/profile-photo/SohamPhadke.jpeg',
@@ -61,20 +55,8 @@ export const teamMembers = [
     },
     {
         name: 'Soumya Mohan', 
-        role: 'PM',
+        role: 'Scrum Coach',
         imageUrl: 'https://smar-team.s3.us-west-1.amazonaws.com/profile-photo/SoumyaMohan.jpeg',
         linkedInUrl: 'https://www.linkedin.com/in/soumyaiim/'
-    },
-    {
-        name: 'Akaash Trivedi', 
-        role: 'Project Alumni',
-        imageUrl: 'https://smar-team.s3.us-west-1.amazonaws.com/profile-photo/AkaashTrivedi.jpg',
-        linkedInUrl: 'https://www.linkedin.com/in/akaash-trivedi/'
-    },
-    {
-        name: 'Vaishnavi Upadhye', 
-        role: 'Project Alumni',
-        imageUrl: 'https://smar-team.s3.us-west-1.amazonaws.com/profile-photo/VaishnaviUpadhye.jpeg',
-        linkedInUrl: 'https://www.linkedin.com/in/vaishnaviupadhye/'
     },
 ];
