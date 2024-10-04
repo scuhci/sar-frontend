@@ -27,6 +27,7 @@ let JSZip = require("jszip");
 const SearchBar = () => {
   const [searchQuery, setSearchQuery] = useState("");
   const [fixedSearchQuery, setFixedSearchQuery] = useState("");
+  const [countryCode, setCountryCode] = useState("us");
   const [searchResults, setSearchResults] = useState([]);
   const [isLoading, setIsLoading] = useState(false);
   const [totalCount, setTotalCount] = useState(0);
@@ -175,13 +176,18 @@ const SearchBar = () => {
     }
     const newAbortController = new AbortController();
     setAbortController(newAbortController);
-
     setIsLoading(true);
+    // query: 'COUNTRY:xx search term'
+    let temp_countryCode = "us";
+    if (term.startsWith("COUNTRY:")) {
+      temp_countryCode = term.substring(term.indexOf(":") + 1, term.indexOf(" "));
+      setCountryCode(temp_countryCode);
+      term = term.slice(term.indexOf(" ") + 1);
+    }
     setFixedSearchQuery(term);
-
     axios
       .get(
-        `${SAR_BACKEND_URL}/search?query=${term}&includePermissions=${checked}`,
+        `${SAR_BACKEND_URL}/search?query=${term}&includePermissions=${checked}&countryCode=${temp_countryCode}`,
         {
           signal: newAbortController.signal,
         }
@@ -224,7 +230,7 @@ const SearchBar = () => {
   const handleDownloadAllResults = async () => {
     try {
       const response = await axios.get(
-        `${SAR_BACKEND_URL}/download-csv?query=${fixedSearchQuery}&includePermissions=${checked}`,
+        `${SAR_BACKEND_URL}/download-csv?query=${fixedSearchQuery}&includePermissions=${checked}&countryCode=${countryCode}`,
         {
           responseType: "blob", //handling the binary data
           headers: {
@@ -234,7 +240,7 @@ const SearchBar = () => {
       );
 
       const relog_response = await axios.get(
-        `${SAR_BACKEND_URL}/download-relog?query=${fixedSearchQuery}&includePermissions=${checked}&totalCount=${totalCount}`,
+        `${SAR_BACKEND_URL}/download-relog?query=${fixedSearchQuery}&includePermissions=${checked}&totalCount=${totalCount}&countryCode=${countryCode}`,
         {
           responseType: "blob", //handling the binary data
           headers: {
@@ -296,116 +302,146 @@ const SearchBar = () => {
       headerAlign: 'center'
     })); */
 
-    return (
-        <div className="search-bar-container">
-            <div className="search-and-button-container">
-                <TextField
-                    label="Scrape by keyword (e.g., puzzle games) or package name (e.g., com.facebook.katana)"
-                    variant="outlined"
-                    value={searchQuery}
-                    onChange={handleSearchChange}
-                    onKeyDown={handleKeyDown}
-                    
-                    className="search-input"
+  return (
+    <div className="search-bar-container">
+      <div className="search-and-button-container">
+        <TextField
+          label="Scrape by keyword (e.g., puzzle games) or package name (e.g., com.facebook.katana)"
+          variant="outlined"
+          value={searchQuery}
+          onChange={handleSearchChange}
+          onKeyDown={handleKeyDown}
+          className="search-input"
+        />
+        <Button
+          className="search-button"
+          onClick={() => {
+            handleSearchSubmit(searchQuery);
+          }}
+          variant="contained"
+          color="primary"
+          disabled={isLoading}
+        >
+          Scrape Data
+        </Button>
+      </div>
+      <div className="permissions-checkbox">
+        <Stack
+          direction="row"
+          justifyContent="flex-start"
+          alignItems="center"
+          spacing={0.1}
+        >
+          <FormGroup>
+            <FormControlLabel
+              control={
+                <Checkbox
+                  size="small"
+                  checked={checked}
+                  onChange={handleChange}
                 />
-                <Button className="search-button" onClick={() => {handleSearchSubmit(searchQuery)}} variant="contained" color="primary" disabled={isLoading}>
-                        Scrape Data
+              }
+              label={
+                <React.Fragment>
+                  <Stack alignItems="center" direction="row" gap={0.3}>
+                    Include permissions in scrape
+                    <Tooltip title="It takes an additional 1-5 minutes to scrape the permissions that apps access (e.g, “read your contacts” and “take pictures and videos”)">
+                      <InfoIcon fontSize="small" />
+                    </Tooltip>
+                  </Stack>
+                </React.Fragment>
+              }
+            />
+          </FormGroup>
+        </Stack>
+      </div>
+      <Loading
+        open={isLoading}
+        onCancel={handleCancel}
+        searchQuery={searchQuery}
+      />
+      {searchResults.length > 0 ? (
+        <>
+          <div className="search-result-text">
+            <Typography variant="h5">Results for "{searchQuery}"</Typography>
+            <Typography>
+              Preview of first 5 out of {totalCount} results
+            </Typography>
+          </div>
+          <div className="data-grid-container" style={{ width: "100%" }}>
+            <div className="datagrid-left">
+              <DataGrid
+                rows={rows}
+                columns={displayPermissions ? permissionColumns : columns}
+                pageSize={5}
+                getRowId={(row) => row.appId}
+                disableRowSelectionOnClick
+                hideFooter
+                autosizeOnMount
+                disableVirtualization
+              />
+              <div className="download-button-container">
+                <Button
+                  variant="contained"
+                  color="primary"
+                  onClick={handleDownloadAllResults}
+                  className="download-button"
+                >
+                  Download ({totalCount} Results + Reproducibility Log as ZIP)
                 </Button>
+              </div>
             </div>
-            <div className='permissions-checkbox'>
-              <Stack 
-                direction="row" 
-                justifyContent="flex-start"
-                alignItems="center"
-                spacing={0.1}>
-                  <FormGroup>
-                    <FormControlLabel 
-                    control={
-                      <Checkbox
-                      size="small"
-                      checked={checked}
-                      onChange={handleChange}
-                      />} 
-                    label={<React.Fragment>
-                      <Stack alignItems="center" direction="row" gap={0.3}>
-                        Include permissions in scrape
-                        <Tooltip title="It takes an additional 1-5 minutes to scrape the permissions that apps access (e.g, “read your contacts” and “take pictures and videos”)">
-                          <InfoIcon fontSize='small'/>
-                        </Tooltip>
-                      </Stack>
-                      </React.Fragment>}/>
-                  </FormGroup>
-              </Stack>
+          </div>
+        </>
+      ) : (
+        !isLoading && (
+          <div className="example-searches-container">
+            <div style={{ textAlign: "left" }}>
+              <ExampleSearches
+                sampleSearch={sampleSearch}
+                onExampleSearch={handleExampleSearchClick}
+              />
+              <Typography variant="h5" className="no-search-message">
+                Example Research:{" "}
+              </Typography>
+              <Typography variant="body1" className="no-search-message">
+                <Link
+                  href="https://dl.acm.org/doi/10.1145/2556288.2557079"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                >
+                  Stawarz et al.
+                </Link>{" "}
+                (2014) reviewed the functionality and user reviews for 229
+                medication reminder apps
+              </Typography>
+              <Typography variant="body1" className="no-search-message">
+                <Link
+                  href="https://dl.acm.org/doi/10.1145/3290605.3300361"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                >
+                  Lyngs et al.
+                </Link>{" "}
+                (2019) coded the features in 96 digital self-control apps
+              </Typography>
+              <Typography variant="body1" className="no-search-message">
+                <Link
+                  href="https://dl.acm.org/doi/10.1145/3411764.3445500"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                >
+                  Spors et al.
+                </Link>{" "}
+                (2021) employed feminist content analysis to review the
+                descriptions of 69 self-care apps
+              </Typography>
             </div>
-            <Loading open={isLoading} onCancel={handleCancel} searchQuery={searchQuery}/>
-            {searchResults.length > 0 ? (
-              <>
-                <div className="search-result-text">
-                  <Typography variant="h5">Results for "{searchQuery}"</Typography>
-                  <Typography >Preview of first 5 out of {totalCount} results</Typography>
-                </div>
-                <div className="data-grid-container" style={{width: "100%"}}>
-                  <div className="datagrid-left">
-                    <DataGrid
-                      rows={rows}
-                      columns={displayPermissions ? permissionColumns : columns}
-                      pageSize={5}
-                      getRowId={(row) => row.appId}
-                      disableRowSelectionOnClick
-                      hideFooter
-                      autosizeOnMount
-                      disableVirtualization
-                    />
-                    <div className="download-button-container">
-                      <Button 
-                        variant="contained" 
-                        color="primary"
-                        onClick={handleDownloadAllResults}
-                        className="download-button"
-                      >
-                        Download ({totalCount} Results + Reproducibility Log as ZIP)
-                      </Button>
-                    </div>
-                  </div>
-                </div>
-              </> 
-              ) : (
-                !isLoading && 
-                ( <div className="example-searches-container">
-                    <div style={{ textAlign: 'left' }}> 
-                      <ExampleSearches 
-                        sampleSearch={sampleSearch} 
-                        onExampleSearch={handleExampleSearchClick}
-                      />
-                      <Typography variant="h5" className="no-search-message">Example Research: </Typography>
-                      <Typography variant="body1" className="no-search-message">
-                        <Link 
-                          href="https://dl.acm.org/doi/10.1145/2556288.2557079"
-                          target="_blank" 
-                          rel="noopener noreferrer"
-                          >Stawarz et al.</Link> (2014) reviewed the functionality and user reviews for 229 medication reminder apps
-                      </Typography>
-                      <Typography variant="body1" className="no-search-message">
-                        <Link 
-                          href="https://dl.acm.org/doi/10.1145/3290605.3300361"
-                          target="_blank" 
-                          rel="noopener noreferrer"
-                          >Lyngs et al.</Link> (2019) coded the features in 96 digital self-control apps 
-                      </Typography>
-                      <Typography variant="body1" className="no-search-message">
-                        <Link 
-                          href="https://dl.acm.org/doi/10.1145/3411764.3445500"
-                          target="_blank" 
-                          rel="noopener noreferrer"
-                          >Spors et al.</Link> (2021) employed feminist content analysis to review the descriptions of 69 self-care apps 
-                      </Typography>
-                    </div>
-                  </div>  
-                )
-              )
-            }
-        </div>
-    );
+          </div>
+        )
+      )}
+    </div>
+  );
 };
 
 export default SearchBar;
