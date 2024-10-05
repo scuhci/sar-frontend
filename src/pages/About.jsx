@@ -28,6 +28,7 @@ const About = () => {
         ))}
       </Grid>
       <Footer />
+      <br/>
     </Container>
   );
 };
