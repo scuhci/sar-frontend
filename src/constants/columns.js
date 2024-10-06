@@ -5,9 +5,9 @@ import { Tooltip } from '@mui/material';
 import DownloadReviews from '../components/DownloadReviews';
 
 export const columns = [
-    { field: 'title', renderHeader: () => <strong>Title</strong>, minWidth: 250 },
+    { field: 'title', renderHeader: () => <strong>App Name</strong>, minWidth: 250 },
     { field: 'appId', renderHeader: () => <strong>App ID</strong>, minWidth: 250 },
-    { field: 'reviewsCount', renderHeader: () => <strong>Reviews</strong>, minWidth: 75, renderCell: (params) => params.value},
+    { field: 'reviewsCount', renderHeader: () => <strong>Total Reviews</strong>, minWidth: 120, renderCell: (params) => params.value},
     { field: 'reviews', renderHeader: () => <strong> </strong>, minWidth: 200, renderCell: (params) => {
         if (params.value[0] < 100000) {
             return (

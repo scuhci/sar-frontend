@@ -9,10 +9,10 @@ import DownloadReviews from '../components/DownloadReviews';
 const renderPermissionsCell = (params) => params.value ? <CheckIcon color="success"/> : <CloseIcon color="error"/>;
 
 export const permissionColumns = [
-    { field: 'title', renderHeader: () => <strong>Title</strong>, minWidth: 250 },
+    { field: 'title', renderHeader: () => <strong>App Name</strong>, minWidth: 250 },
     { field: 'appId', renderHeader: () => <strong>App ID</strong>, minWidth: 250 },
-    { field: 'reviewsCount', renderHeader: () => <strong>Reviews</strong>, minWidth: 150, renderCell: (params) => params.value},
-    { field: 'reviews',renderHeader: () => <strong> </strong>, minWidth: 260, renderCell: (params) => {
+    { field: 'reviewsCount', renderHeader: () => <strong>Total Reviews</strong>, minWidth: 120, renderCell: (params) => params.value},
+    { field: 'reviews', renderHeader: () => <strong> </strong>, minWidth: 200, renderCell: (params) => {
         if (params.value[0] < 100000) {
             return (
                 DownloadReviews(params.value[1])
