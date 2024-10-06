@@ -337,7 +337,7 @@ const SearchBar = () => {
               <>
                 <div className="search-result-text">
                   <Typography variant="h5">Results for "{searchQuery}"</Typography>
-                  <Typography >Preview of first 5 out of {totalCount} results</Typography>
+                  <Typography >Preview of first {totalCount < 5 ? totalCount : 5} out of {totalCount} results</Typography>
                 </div>
                 <div className="data-grid-container" style={{width: "100%"}}>
                   <div className="datagrid-left">
