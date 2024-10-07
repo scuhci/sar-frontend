@@ -7,11 +7,25 @@ import NavigationBar from './components/NavigationBar';
 import UserGuide from './pages/UserGuide';
 
 function App() {
+  let curHomeState = 'HOMEPAGE'
+  const refresh = () => {
+    if (curHomeState === 'SEARCH_RESULTS') {
+      window.location.reload()
+    }
+  }
+  const flipState = () => {
+    if (curHomeState === 'HOMEPAGE') {
+      curHomeState = 'SEARCH_RESULTS'
+    } else {
+      curHomeState = 'HOMEPAGE'
+    }
+  }
+
   return (
     <div >
-      <NavigationBar />
+      <NavigationBar refresh={refresh}/>
       <Routes className="App">
-        <Route path="/" element={<Home />} />
+        <Route path="/" element={<Home flipState={flipState}/>} />
         <Route path="/citation" element={<Citation />} />
         <Route path="/userguide" element={<UserGuide />} />
         <Route path="/about" element={<About />} />

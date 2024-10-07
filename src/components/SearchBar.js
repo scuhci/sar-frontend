@@ -1,6 +1,5 @@
 import React, { useState } from "react";
 import { TextField, Button, Typography } from "@mui/material";
-import SearchIcon from "@mui/icons-material/Search";
 import { DataGrid } from "@mui/x-data-grid";
 import { SAR_BACKEND_URL } from "../constants/urlConstants";
 import axios from "axios";
@@ -24,7 +23,7 @@ import { Tooltip } from "@mui/material";
 // zip
 let JSZip = require("jszip");
 
-const SearchBar = () => {
+const SearchBar = ({ flipState }) => {
   const [searchQuery, setSearchQuery] = useState("");
   const [fixedSearchQuery, setFixedSearchQuery] = useState("");
   const [searchResults, setSearchResults] = useState([]);
@@ -187,6 +186,7 @@ const SearchBar = () => {
         }
       )
       .then((response) => {
+        flipState()
         if (checked) {
           setDisplayPermissions(true);
         } else {
