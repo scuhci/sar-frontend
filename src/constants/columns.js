@@ -137,11 +137,12 @@ const minWidth = (fieldName) => {
 // List of all column field names
 // Used to generate final GridColDef array for the DataGrid component
 const fieldNames = [
+  "icon",  // Move Icon column to far left (first column) of results spreadsheet
   "title",
   "appId",
   "reviewsCount",
   "reviews",
-  "icon",
+  // "icon",  // Move Icon column to far left (first column) of results spreadsheet
   "developer",
   "currency",
   "price",
