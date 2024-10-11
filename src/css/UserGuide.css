@@ -44,6 +44,10 @@ html {
     margin-bottom: 15px;
 }
 
+.refs {
+    margin-top: 5px;
+}
+
 .inline-image {
     max-width: 70%;
     height: auto;
