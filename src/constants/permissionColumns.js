@@ -15,7 +15,7 @@ export const permissionColumns = [
     { field: 'reviews',renderHeader: () => <strong> </strong>, minWidth: 260, renderCell: (params) => {
         if (params.value[0] < 100000) {
             return (
-                DownloadReviews(params.value[1])
+                DownloadReviews(params.value[1], params.value[2])
             );
         }
         else {
@@ -41,6 +41,7 @@ export const permissionColumns = [
     { field: 'url', renderHeader: () => <strong>URL</strong>, minWidth: 200 },
     { field: 'scoreText', renderHeader: () => <strong>Score Text</strong>, minWidth: 100 },
     { field: 'score', renderHeader: () => <strong>Score</strong>, minWidth: 100 },
+    { field: 'country', renderHeader: () => <strong>Country</strong>, minWidth: 100},
     { field: 'source', renderHeader: () => <strong>Source</strong>, minWidth: 100 },
     { field: 'installs', renderHeader: () => <strong>Installs</strong>, minWidth: 100 },
     { field: 'maxInstalls', renderHeader: () => <strong>Max Installs</strong>, minWidth: 100 },

@@ -57,6 +57,7 @@ const SearchBar = () => {
           url: application.url,
           scoreText: application.scoreText,
           score: application.score,
+          country: application.country,
           source: application.source,
           installs: application.installs,
           maxInstalls: application.maxInstalls,
@@ -129,7 +130,7 @@ const SearchBar = () => {
           title: application.title,
           appId: application.appId,
           reviewsCount: application.reviews,
-          reviews: [application.reviews, application.appId],
+          reviews: [application.reviews, application.appId, application.country],
           icon: application.icon,
           developer: application.developer,
           currency: application.currency,
@@ -139,6 +140,7 @@ const SearchBar = () => {
           url: application.url,
           scoreText: application.scoreText,
           score: application.score,
+          country: application.country,
           source: application.source,
           installs: application.installs,
           maxInstalls: application.maxInstalls,
@@ -179,19 +181,19 @@ const SearchBar = () => {
     setAbortController(newAbortController);
     setIsLoading(true);
     // query: 'COUNTRY:xx search term'
-    let temp_countryCode = "us";
+    let temp_countryCode = "US";
     if (term.startsWith("COUNTRY:")) {
-      temp_countryCode = term.substring(term.indexOf(":") + 1, term.indexOf(" "));
-      if (countryCode_list.some((country) => country.Code === temp_countryCode.toUpperCase()))
+      temp_countryCode = (term.substring(term.indexOf(":") + 1, term.indexOf(" "))).toUpperCase();
+      if (countryCode_list.some((country) => country.Code === temp_countryCode))
       {
         console.log("Country Code -> Matched %s\n", temp_countryCode);
       } 
       else 
       { 
         console.log("Country Code -> Not Matched: %s\n", temp_countryCode);
-        temp_countryCode = "us"; 
+        temp_countryCode = "US"; 
       }
-      setCountryCode(temp_countryCode) 
+      setCountryCode(temp_countryCode);
       term = term.slice(term.indexOf(" ") + 1);
     }
     setFixedSearchQuery(term);
