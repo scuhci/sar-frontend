@@ -30,7 +30,7 @@ const ExpandMore = styled((props) => {
   ],
 }));
 
-const TeamMemberCard = ({ name, role, imageUrl, linkedInUrl }) => {
+const TeamMemberCard = ({ name, role, imageUrl, linkedInUrl, bio }) => {
   const [expanded, setExpanded] = React.useState(false);
 
   const handleExpandClick = () => {
@@ -63,7 +63,7 @@ const TeamMemberCard = ({ name, role, imageUrl, linkedInUrl }) => {
         </CardActions>
         <Collapse in={expanded} timeout="auto" unmountOnExit>
         <CardContent>
-          content
+          {bio}
         </CardContent>
         </Collapse>
      </Card>
