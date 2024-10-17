@@ -6,7 +6,7 @@ import { UserAgent } from "express-useragent";
 import "../css/Home.css";
 import Chip from "@mui/joy/Chip";
 
-const Home = () => {
+const Home = ({ flipState }) => {
   
   const userAgent = new UserAgent().parse(navigator.userAgent);
   const isMobileDevice = userAgent.isMobile;
@@ -32,7 +32,7 @@ const Home = () => {
         A tool for academic researchers to scrape data about mobile apps from the Google Play store.
         </Typography>
       </div>
-      <SearchBar />
+      <SearchBar flipState={flipState}/>
     </>
   ) : (
     <MobileScreen />

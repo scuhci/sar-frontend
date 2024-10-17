@@ -1,6 +1,5 @@
 import React, { useState } from "react";
 import { TextField, Button, Typography } from "@mui/material";
-import SearchIcon from "@mui/icons-material/Search";
 import { DataGrid } from "@mui/x-data-grid";
 import axios from "axios";
 import "../css/SearchBar.css";
@@ -23,61 +22,27 @@ import { Tooltip } from "@mui/material";
 // zip
 let JSZip = require("jszip");
 
-const SearchBar = () => {
+const SearchBar = ({ flipState }) => {
   const [searchQuery, setSearchQuery] = useState("");
   const [fixedSearchQuery, setFixedSearchQuery] = useState("");
   const [searchResults, setSearchResults] = useState([]);
   const [isLoading, setIsLoading] = useState(false);
   const [totalCount, setTotalCount] = useState(0);
   const [abortController, setAbortController] = useState(null);
-  const [checked, setChecked] = React.useState(false);
+  const [checked, setChecked] = useState(false);
   const sampleSearch = [
     "medication reminders",
     "self-care",
     "smartphone addiction",
   ];
-  const [displayPermissions, setDisplayPermissions] = React.useState(false);
+  const [displayPermissions, setDisplayPermissions] = useState(false);
 
   const rows = displayPermissions
     ? searchResults
         .map((application) => ({
-          title: application.title,
-          appId: application.appId,
+          ...application,
           reviewsCount: application.reviews,
           reviews: [application.reviews, application.appId],
-          icon: application.icon,
-          developer: application.developer,
-          currency: application.currency,
-          price: application.price,
-          free: application.free,
-          summary: application.summary,
-          url: application.url,
-          scoreText: application.scoreText,
-          score: application.score,
-          source: application.source,
-          installs: application.installs,
-          maxInstalls: application.maxInstalls,
-          ratings: application.ratings,
-          originalPrice: application.originalPrice,
-          discountEndDate: application.discountEndDate,
-          available: application.available,
-          offersIAP: application.offersIAP,
-          IAPRange: application.IAPRange,
-          androidVersion: application.androidVersion,
-          androidMaxVersion: application.androidMaxVersion,
-          developerId: application.developerId,
-          developerEmail: application.developerEmail,
-          developerWebsite: application.developerWebsite,
-          developerAddress: application.developerAddress,
-          privacyPolicy: application.privacyPolicy,
-          genre: application.genre,
-          genreId: application.genreId,
-          previewVideo: application.previewVideo,
-          contentRating: application.contentRating,
-          adSupported: application.adSupported,
-          released: application.released,
-          version: application.version,
-          recentChanges: application.recentChanges,
 
           // PERMISSIONS
           // All truncated to two(ish) most relevant words.'
@@ -120,48 +85,12 @@ const SearchBar = () => {
           installShortcuts: application.permissions[36].isPermissionRequired,
           readGoogleConfig: application.permissions[37].isPermissionRequired,
         }))
-        .slice(0, 5)
     : searchResults
         .map((application) => ({
-          title: application.title,
-          appId: application.appId,
+          ...application,
           reviewsCount: application.reviews,
           reviews: [application.reviews, application.appId],
-          icon: application.icon,
-          developer: application.developer,
-          currency: application.currency,
-          price: application.price,
-          free: application.free,
-          summary: application.summary,
-          url: application.url,
-          scoreText: application.scoreText,
-          score: application.score,
-          source: application.source,
-          installs: application.installs,
-          maxInstalls: application.maxInstalls,
-          ratings: application.ratings,
-          originalPrice: application.originalPrice,
-          discountEndDate: application.discountEndDate,
-          available: application.available,
-          offersIAP: application.offersIAP,
-          IAPRange: application.IAPRange,
-          androidVersion: application.androidVersion,
-          androidMaxVersion: application.androidMaxVersion,
-          developerId: application.developerId,
-          developerEmail: application.developerEmail,
-          developerWebsite: application.developerWebsite,
-          developerAddress: application.developerAddress,
-          privacyPolicy: application.privacyPolicy,
-          genre: application.genre,
-          genreId: application.genreId,
-          previewVideo: application.previewVideo,
-          contentRating: application.contentRating,
-          adSupported: application.adSupported,
-          released: application.released,
-          version: application.version,
-          recentChanges: application.recentChanges,
         }))
-        .slice(0, 5);
 
   const handleSearchChange = (event) => {
     setSearchQuery(event.target.value);
@@ -186,6 +115,7 @@ const SearchBar = () => {
         }
       )
       .then((response) => {
+        flipState()
         if (checked) {
           setDisplayPermissions(true);
         } else {
@@ -284,17 +214,6 @@ const SearchBar = () => {
     handleSearchSubmit(term);
   };
 
-  //Making column header bold // this does not work
-  /* const modifiedColumns = columns.map(column => ({
-      ...column,
-      renderHeader: (params) => (
-        <span className="centeredHeader">
-          <strong>{params.colDef.headerName || ''}</strong>
-        </span>
-      ),
-      headerAlign: 'center'
-    })); */
-
     return (
         <div className="search-bar-container">
             <div className="search-and-button-container">
@@ -341,30 +260,30 @@ const SearchBar = () => {
               <>
                 <div className="search-result-text">
                   <Typography variant="h5">Results for "{searchQuery}"</Typography>
-                  <Typography >Preview of first {totalCount < 5 ? totalCount : 5} out of {totalCount} results</Typography>
                 </div>
-                <div className="data-grid-container" style={{width: "100%"}}>
-                  <div className="datagrid-left">
-                    <DataGrid
-                      rows={rows}
-                      columns={displayPermissions ? permissionColumns : columns}
-                      pageSize={5}
-                      getRowId={(row) => row.appId}
-                      disableRowSelectionOnClick
-                      hideFooter
-                      autosizeOnMount
-                      disableVirtualization
-                    />
-                    <div className="download-button-container">
-                      <Button 
-                        variant="contained" 
-                        color="primary"
-                        onClick={handleDownloadAllResults}
-                        className="download-button"
-                      >
-                        Download ({totalCount} Results + Reproducibility Log as ZIP)
-                      </Button>
-                    </div>
+                <div className="data-grid-container">
+                  <DataGrid
+                    rows={rows}
+                    columns={displayPermissions ? Array.prototype.concat(columns, permissionColumns) : columns}
+                    initialState={{
+                      pagination: {
+                        paginationModel: { pageSize: 5 },
+                      },
+                    }}
+                    pageSizeOptions={[5, 10, 25]}
+                    disableColumnSelector
+                    getRowId={(row) => row.appId}
+                    disableRowSelectionOnClick
+                  />
+                  <div className="download-button-container">
+                    <Button 
+                      variant="contained" 
+                      color="primary"
+                      onClick={handleDownloadAllResults}
+                      className="download-button"
+                    >
+                      Download ({totalCount} Results + Reproducibility Log as ZIP)
+                    </Button>
                   </div>
                 </div>
               </> 
