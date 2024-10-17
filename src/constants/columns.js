@@ -3,7 +3,6 @@ import Avatar from "@mui/material/Avatar";
 import Button from "@mui/material/Button";
 import { Tooltip } from "@mui/material";
 import DownloadReviews from "../components/DownloadReviews";
-
 // Map of field names to header names
 // Keeps track of fields where the header name is distinct from the field name
 // Used to generate renderHeader attribute
