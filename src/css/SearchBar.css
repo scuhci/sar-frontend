@@ -45,7 +45,7 @@
 .data-grid-container {
     width: 100%;
     max-width: 1000px;
-    height: 370px;  /* Height to fit 5 rows + footer */
+    flex-direction: column; /* Flex height to fit selected number of rows */
     margin: auto;
 }
 
