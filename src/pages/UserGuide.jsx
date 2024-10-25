@@ -198,6 +198,7 @@ const UserGuide = () => {
                     <img src={require('../res/SMAR_Searching_Dialog.png')} className="inline-image" alt="SMAR steps" />
                 </Box>
                 <br/><br/>
+            {/* TODO - make a note about special characters and csv encoding */}
             <Typography variant="body1" className="main-text">
                 <b>3.</b> Once the search has completed, a portion of the page will update with search results. A preview of the first 
                 few results will be visible (3) and are horizontally scrollable, and the rest of the results can be downloaded by 
