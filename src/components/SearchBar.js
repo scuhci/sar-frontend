@@ -189,7 +189,7 @@ const SearchBar = ({ flipState }) => {
       console.log(`Relog filename from header: ${filename_relog}`);
       // Create a URL from the blob
       const csv_file = new Blob(["\ufeff", response.data], { type: 'text/csv;charset=utf-8' });
-      const relog_file = new Blob(["\ufeff", relog_response.data], { type: 'text/csv;charset=utf-8' });
+      const relog_file = new Blob(["\ufeff", relog_response.data], { type: 'text/plain;charset=utf-8' });
       const zip = new JSZip();
       zip.file(filename, csv_file);
       zip.file(filename_relog, relog_file);
