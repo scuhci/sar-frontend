@@ -8,6 +8,7 @@ import Loading from "./Loading";
 import ExampleSearches from "./ExampleSearches";
 import { columns } from "../constants/columns";
 import { permissionColumns } from "../constants/permissionColumns";
+import { countryCode_list } from "../constants/countryCodes"
 import Link from "@mui/material/Link";
 
 // For the checkbox
@@ -27,6 +28,7 @@ let JSZip = require("jszip");
 const SearchBar = ({ flipState }) => {
   const [searchQuery, setSearchQuery] = useState("");
   const [fixedSearchQuery, setFixedSearchQuery] = useState("");
+  const [countryCode, setCountryCode] = useState("us");
   const [searchResults, setSearchResults] = useState([]);
   const [isLoading, setIsLoading] = useState(false);
   const [totalCount, setTotalCount] = useState(0);
@@ -56,6 +58,7 @@ const SearchBar = ({ flipState }) => {
           url: application.url,
           scoreText: application.scoreText,
           score: application.score,
+          country: application.country,
           source: application.source,
           installs: application.installs,
           maxInstalls: application.maxInstalls,
@@ -128,7 +131,7 @@ const SearchBar = ({ flipState }) => {
           title: application.title,
           appId: application.appId,
           reviewsCount: application.reviews,
-          reviews: [application.reviews, application.appId],
+          reviews: [application.reviews, application.appId, application.country],
           icon: application.icon,
           developer: application.developer,
           currency: application.currency,
@@ -138,6 +141,7 @@ const SearchBar = ({ flipState }) => {
           url: application.url,
           scoreText: application.scoreText,
           score: application.score,
+          country: application.country,
           source: application.source,
           installs: application.installs,
           maxInstalls: application.maxInstalls,
@@ -180,13 +184,27 @@ const SearchBar = ({ flipState }) => {
     }
     const newAbortController = new AbortController();
     setAbortController(newAbortController);
-
     setIsLoading(true);
+    // query: 'COUNTRY:xx search term'
+    let temp_countryCode = "US";
+    if (term.startsWith("COUNTRY:")) {
+      temp_countryCode = (term.substring(term.indexOf(":") + 1, term.indexOf(" "))).toUpperCase();
+      if (countryCode_list.some((country) => country.Code === temp_countryCode))
+      {
+        console.log("Country Code -> Matched %s\n", temp_countryCode);
+      } 
+      else 
+      { 
+        console.log("Country Code -> Not Matched: %s\n", temp_countryCode);
+        temp_countryCode = "US"; 
+      }
+      setCountryCode(temp_countryCode);
+      term = term.slice(term.indexOf(" ") + 1);
+    }
     setFixedSearchQuery(term);
-
     axios
       .get(
-        `${SAR_BACKEND_URL}/search?query=${term}&country=${country}&includePermissions=${checked}`,
+        `${SAR_BACKEND_URL}/search?query=${term}&includePermissions=${checked}&countryCode=${country}`,
         {
           signal: newAbortController.signal,
         }
@@ -230,7 +248,7 @@ const SearchBar = ({ flipState }) => {
   const handleDownloadAllResults = async () => {
     try {
       const response = await axios.get(
-        `${SAR_BACKEND_URL}/download-csv?query=${fixedSearchQuery}&includePermissions=${checked}`,
+        `${SAR_BACKEND_URL}/download-csv?query=${fixedSearchQuery}&includePermissions=${checked}&countryCode=${countryCode}`,
         {
           responseType: "blob", //handling the binary data
           headers: {
@@ -240,7 +258,7 @@ const SearchBar = ({ flipState }) => {
       );
 
       const relog_response = await axios.get(
-        `${SAR_BACKEND_URL}/download-relog?query=${fixedSearchQuery}&includePermissions=${checked}&totalCount=${totalCount}`,
+        `${SAR_BACKEND_URL}/download-relog?query=${fixedSearchQuery}&includePermissions=${checked}&totalCount=${totalCount}&countryCode=${countryCode}`,
         {
           responseType: "blob", //handling the binary data
           headers: {
