@@ -28,7 +28,6 @@ let JSZip = require("jszip");
 const SearchBar = ({ flipState }) => {
   const [searchQuery, setSearchQuery] = useState("");
   const [fixedSearchQuery, setFixedSearchQuery] = useState("");
-  const [countryCode, setCountryCode] = useState("us");
   const [searchResults, setSearchResults] = useState([]);
   const [isLoading, setIsLoading] = useState(false);
   const [totalCount, setTotalCount] = useState(0);
@@ -186,21 +185,21 @@ const SearchBar = ({ flipState }) => {
     setAbortController(newAbortController);
     setIsLoading(true);
     // query: 'COUNTRY:xx search term'
-    let temp_countryCode = "US";
-    if (term.startsWith("COUNTRY:")) {
-      temp_countryCode = (term.substring(term.indexOf(":") + 1, term.indexOf(" "))).toUpperCase();
-      if (countryCode_list.some((country) => country.Code === temp_countryCode))
-      {
-        console.log("Country Code -> Matched %s\n", temp_countryCode);
-      } 
-      else 
-      { 
-        console.log("Country Code -> Not Matched: %s\n", temp_countryCode);
-        temp_countryCode = "US"; 
-      }
-      setCountryCode(temp_countryCode);
-      term = term.slice(term.indexOf(" ") + 1);
-    }
+    // let temp_countryCode = "US";
+    // if (term.startsWith("COUNTRY:")) {
+    //   temp_countryCode = (term.substring(term.indexOf(":") + 1, term.indexOf(" "))).toUpperCase();
+    //   if (countryCode_list.some((country) => country.Code === temp_countryCode))
+    //   {
+    //     console.log("Country Code -> Matched %s\n", temp_countryCode);
+    //   } 
+    //   else 
+    //   { 
+    //     console.log("Country Code -> Not Matched: %s\n", temp_countryCode);
+    //     temp_countryCode = "US"; 
+    //   }
+    //   setCountryCode(temp_countryCode);
+    //   term = term.slice(term.indexOf(" ") + 1);
+    // }
     setFixedSearchQuery(term);
     axios
       .get(
@@ -248,7 +247,7 @@ const SearchBar = ({ flipState }) => {
   const handleDownloadAllResults = async () => {
     try {
       const response = await axios.get(
-        `${SAR_BACKEND_URL}/download-csv?query=${fixedSearchQuery}&includePermissions=${checked}&countryCode=${countryCode}`,
+        `${SAR_BACKEND_URL}/download-csv?query=${fixedSearchQuery}&includePermissions=${checked}&countryCode=${country}`,
         {
           responseType: "blob", //handling the binary data
           headers: {
@@ -258,7 +257,7 @@ const SearchBar = ({ flipState }) => {
       );
 
       const relog_response = await axios.get(
-        `${SAR_BACKEND_URL}/download-relog?query=${fixedSearchQuery}&includePermissions=${checked}&totalCount=${totalCount}&countryCode=${countryCode}`,
+        `${SAR_BACKEND_URL}/download-relog?query=${fixedSearchQuery}&includePermissions=${checked}&totalCount=${totalCount}&countryCode=${country}`,
         {
           responseType: "blob", //handling the binary data
           headers: {
