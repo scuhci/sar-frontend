@@ -13,7 +13,7 @@ import { Android, Apple } from "@mui/icons-material";
 const Home = ({ flipState }) => {
   // State for choosing Play Store / iOS App Store
   const [selectedScraper, setSelectedScraper] = React.useState("Play Store");
-  
+
   const userAgent = new UserAgent().parse(navigator.userAgent);
   const isMobileDevice = userAgent.isMobile;
 
