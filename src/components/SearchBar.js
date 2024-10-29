@@ -26,6 +26,7 @@ let JSZip = require("jszip");
 
 const SearchBar = ({ flipState }) => {
   const [searchQuery, setSearchQuery] = useState("");
+  const [resultsText, setResultsText] = useState("");
   const [fixedSearchQuery, setFixedSearchQuery] = useState("");
   const [searchResults, setSearchResults] = useState([]);
   const [isLoading, setIsLoading] = useState(false);
@@ -144,6 +145,8 @@ const SearchBar = ({ flipState }) => {
           setDisplayPermissions(false);
         }
         setSearchResults(response.data.results);
+        // Only set results text after getting search results
+        setResultsText(term);
         setTotalCount(response.data.totalCount);
         setIsLoading(false);
       })
@@ -291,7 +294,7 @@ const SearchBar = ({ flipState }) => {
             {searchResults.length > 0 ? (
               <>
                 <div className="search-result-text">
-                  <Typography variant="h5">Results for "{searchQuery}"</Typography>
+            <Typography variant="h5">Results for "{resultsText}"</Typography>
                 </div>
                 <div className="data-grid-container">
                   <DataGrid
