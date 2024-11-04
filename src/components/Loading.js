@@ -20,7 +20,6 @@ function Loading({ open, onCancel, searchQuery }) {
                 <DialogContentText className="loading-dialog-subtext">
                     Scrapes data from two sources:  <br></br>
                     <br></br>
-                    Returns results from two sources: <br></br>
                     {'\t'}1. <strong>Keyword search results</strong> - Results from searching for this keyword in Google Play (Google Play returns a max of 30 results)<br></br>
                     {'\t'}2. <strong>Similar app links</strong> - Links (if any) to “Similar Apps/Games” shown on the app profile page for each of the keyword search results
                     <br></br>

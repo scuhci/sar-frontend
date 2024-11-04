@@ -1,7 +1,6 @@
 import React, { useState } from "react";
 import { TextField, Button, Typography } from "@mui/material";
 import { DataGrid } from "@mui/x-data-grid";
-import { SAR_BACKEND_URL } from "../constants/urlConstants";
 import axios from "axios";
 import "../css/SearchBar.css";
 import Loading from "./Loading";
@@ -32,7 +31,7 @@ const SearchBar = ({ flipState }) => {
   const [isLoading, setIsLoading] = useState(false);
   const [totalCount, setTotalCount] = useState(0);
   const [abortController, setAbortController] = useState(null);
-  const [checked, setChecked] = React.useState(false);
+  const [checked, setChecked] = useState(false);
   const sampleSearch = [
     "medication reminders",
     "self-care",
@@ -41,47 +40,13 @@ const SearchBar = ({ flipState }) => {
   const [displayPermissions, setDisplayPermissions] = React.useState(false);
   const [country, setCountry] = useState("US")
 
+
   const rows = displayPermissions
     ? searchResults
         .map((application) => ({
-          title: application.title,
-          appId: application.appId,
+          ...application,
           reviewsCount: application.reviews,
           reviews: [application.reviews, application.appId],
-          icon: application.icon,
-          developer: application.developer,
-          currency: application.currency,
-          price: application.price,
-          free: application.free,
-          summary: application.summary,
-          url: application.url,
-          scoreText: application.scoreText,
-          score: application.score,
-          country: application.country,
-          source: application.source,
-          installs: application.installs,
-          maxInstalls: application.maxInstalls,
-          ratings: application.ratings,
-          originalPrice: application.originalPrice,
-          discountEndDate: application.discountEndDate,
-          available: application.available,
-          offersIAP: application.offersIAP,
-          IAPRange: application.IAPRange,
-          androidVersion: application.androidVersion,
-          androidMaxVersion: application.androidMaxVersion,
-          developerId: application.developerId,
-          developerEmail: application.developerEmail,
-          developerWebsite: application.developerWebsite,
-          developerAddress: application.developerAddress,
-          privacyPolicy: application.privacyPolicy,
-          genre: application.genre,
-          genreId: application.genreId,
-          previewVideo: application.previewVideo,
-          contentRating: application.contentRating,
-          adSupported: application.adSupported,
-          released: application.released,
-          version: application.version,
-          recentChanges: application.recentChanges,
 
           // PERMISSIONS
           // All truncated to two(ish) most relevant words.'
@@ -124,49 +89,12 @@ const SearchBar = ({ flipState }) => {
           installShortcuts: application.permissions[36].isPermissionRequired,
           readGoogleConfig: application.permissions[37].isPermissionRequired,
         }))
-        .slice(0, 5)
     : searchResults
         .map((application) => ({
-          title: application.title,
-          appId: application.appId,
+          ...application,
           reviewsCount: application.reviews,
-          reviews: [application.reviews, application.appId, application.country],
-          icon: application.icon,
-          developer: application.developer,
-          currency: application.currency,
-          price: application.price,
-          free: application.free,
-          summary: application.summary,
-          url: application.url,
-          scoreText: application.scoreText,
-          score: application.score,
-          country: application.country,
-          source: application.source,
-          installs: application.installs,
-          maxInstalls: application.maxInstalls,
-          ratings: application.ratings,
-          originalPrice: application.originalPrice,
-          discountEndDate: application.discountEndDate,
-          available: application.available,
-          offersIAP: application.offersIAP,
-          IAPRange: application.IAPRange,
-          androidVersion: application.androidVersion,
-          androidMaxVersion: application.androidMaxVersion,
-          developerId: application.developerId,
-          developerEmail: application.developerEmail,
-          developerWebsite: application.developerWebsite,
-          developerAddress: application.developerAddress,
-          privacyPolicy: application.privacyPolicy,
-          genre: application.genre,
-          genreId: application.genreId,
-          previewVideo: application.previewVideo,
-          contentRating: application.contentRating,
-          adSupported: application.adSupported,
-          released: application.released,
-          version: application.version,
-          recentChanges: application.recentChanges,
+          reviews: [application.reviews, application.appId],
         }))
-        .slice(0, 5);
 
   const handleCountryChange = (newCountry) => {
     setCountry(newCountry)
@@ -203,7 +131,7 @@ const SearchBar = ({ flipState }) => {
     setFixedSearchQuery(term);
     axios
       .get(
-        `${SAR_BACKEND_URL}/search?query=${term}&includePermissions=${checked}&countryCode=${country}`,
+        `/search?query=${term}&includePermissions=${checked}&countryCode=${country}`,
         {
           signal: newAbortController.signal,
         }
@@ -247,7 +175,7 @@ const SearchBar = ({ flipState }) => {
   const handleDownloadAllResults = async () => {
     try {
       const response = await axios.get(
-        `${SAR_BACKEND_URL}/download-csv?query=${fixedSearchQuery}&includePermissions=${checked}&countryCode=${country}`,
+        `/download-csv?query=${fixedSearchQuery}&includePermissions=${checked}&countryCode=${country}`,
         {
           responseType: "blob", //handling the binary data
           headers: {
@@ -257,7 +185,7 @@ const SearchBar = ({ flipState }) => {
       );
 
       const relog_response = await axios.get(
-        `${SAR_BACKEND_URL}/download-relog?query=${fixedSearchQuery}&includePermissions=${checked}&totalCount=${totalCount}&countryCode=${country}`,
+        `/download-relog?query=${fixedSearchQuery}&includePermissions=${checked}&totalCount=${totalCount}&countryCode=${country}`,
         {
           responseType: "blob", //handling the binary data
           headers: {
@@ -307,17 +235,6 @@ const SearchBar = ({ flipState }) => {
     setSearchQuery(term);
     handleSearchSubmit(term);
   };
-
-  //Making column header bold // this does not work
-  /* const modifiedColumns = columns.map(column => ({
-      ...column,
-      renderHeader: (params) => (
-        <span className="centeredHeader">
-          <strong>{params.colDef.headerName || ''}</strong>
-        </span>
-      ),
-      headerAlign: 'center'
-    })); */
 
     return (
         <div className="search-bar-container">
@@ -374,31 +291,31 @@ const SearchBar = ({ flipState }) => {
             {searchResults.length > 0 ? (
               <>
                 <div className="search-result-text">
-                  <Typography variant="h5">Results for "{fixedSearchQuery}"</Typography>
-                  <Typography >Preview of first 5 out of {totalCount} results</Typography>
+                  <Typography variant="h5">Results for "{searchQuery}"</Typography>
                 </div>
-                <div className="data-grid-container" style={{width: "100%"}}>
-                  <div className="datagrid-left">
-                    <DataGrid
-                      rows={rows}
-                      columns={displayPermissions ? permissionColumns : columns}
-                      pageSize={5}
-                      getRowId={(row) => row.appId}
-                      disableRowSelectionOnClick
-                      hideFooter
-                      autosizeOnMount
-                      disableVirtualization
-                    />
-                    <div className="download-button-container">
-                      <Button 
-                        variant="contained" 
-                        color="primary"
-                        onClick={handleDownloadAllResults}
-                        className="download-button"
-                      >
-                        Download ({totalCount} Results + Reproducibility Log as ZIP)
-                      </Button>
-                    </div>
+                <div className="data-grid-container">
+                  <DataGrid
+                    rows={rows}
+                    columns={displayPermissions ? Array.prototype.concat(columns, permissionColumns) : columns}
+                    initialState={{
+                      pagination: {
+                        paginationModel: { pageSize: 5 },
+                      },
+                    }}
+                    pageSizeOptions={[5, 10, 25]}
+                    disableColumnSelector
+                    getRowId={(row) => row.appId}
+                    disableRowSelectionOnClick
+                  />
+                  <div className="download-button-container">
+                    <Button 
+                      variant="contained" 
+                      color="primary"
+                      onClick={handleDownloadAllResults}
+                      className="download-button"
+                    >
+                      Download ({totalCount} Results + Reproducibility Log as ZIP)
+                    </Button>
                   </div>
                 </div>
               </> 
