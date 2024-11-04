@@ -3,7 +3,6 @@ import Button from '@mui/material/Button';
 import { Tooltip } from '@mui/material';
 import ReviewsLoading from './ReviewsLoading';
 import axios from 'axios';
-import {SAR_BACKEND_URL} from '../constants/urlConstants';
 
 const DownloadReviews = (appId) => {
     const [isLoading, setIsLoading] = useState(false);
@@ -24,7 +23,7 @@ const DownloadReviews = (appId) => {
             setAbortController(newAbortController);
               
             setIsLoading(true);
-            const response = await axios.get(`${SAR_BACKEND_URL}/reviews?appId=${appId}`, {
+            const response = await axios.get(`/reviews?appId=${appId}`, {
                 signal: newAbortController.signal,
                 responseType: 'blob', //handling the binary data
                 headers: {

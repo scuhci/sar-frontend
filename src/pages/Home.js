@@ -4,6 +4,7 @@ import MobileScreen from "../components/MobileScreen";
 import Typography from "@mui/material/Typography";
 import { UserAgent } from "express-useragent";
 import "../css/Home.css";
+import Citation from "../components/Citation";
 import Chip from "@mui/joy/Chip";
 
 const Home = ({ flipState }) => {
@@ -33,6 +34,7 @@ const Home = ({ flipState }) => {
         </Typography>
       </div>
       <SearchBar flipState={flipState}/>
+      <Citation />
     </>
   ) : (
     <MobileScreen />
