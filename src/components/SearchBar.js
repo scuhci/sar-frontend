@@ -183,7 +183,8 @@ const SearchBar = ({ flipState }) => {
           filename = matches[2];
         }
       }
-      console.log(`Filename from header: ${filename}`);
+      console.log(`Filename from header: ${decodeURI(filename)}`);
+      filename = decodeURI(filename);
       const filename_relog = filename.slice(0, -4) + "_relog.txt";
       const filename_zip = filename.slice(0, -4) + ".zip";
       console.log(`Relog filename from header: ${filename_relog}`);
