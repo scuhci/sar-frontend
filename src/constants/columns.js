@@ -26,7 +26,6 @@ const headerNames = {
   version: "Current App Version",
   recentChanges: "Current Version Changes",
 };
-
 // Helper function to convert field names to header names
 // Splits the field string into multiple readable words
 const fieldNameToHeader = (fieldName) => {
