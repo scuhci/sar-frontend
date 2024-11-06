@@ -4,6 +4,7 @@ import Home from './pages/Home';
 import About from './pages/About'; 
 import NavigationBar from './components/NavigationBar';
 import UserGuide from './pages/UserGuide';
+import TopList from './pages/TopList';
 
 function App() {
   let curHomeState = 'HOMEPAGE'
@@ -25,8 +26,10 @@ function App() {
       <NavigationBar refresh={refresh}/>
       <Routes className="App">
         <Route path="/" element={<Home flipState={flipState}/>} />
+        <Route path="/toplists" element={<TopList />} />
         <Route path="/userguide" element={<UserGuide />} />
         <Route path="/about" element={<About />} />
+
       </Routes>
     </div>
   );

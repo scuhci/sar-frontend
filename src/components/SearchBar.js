@@ -26,6 +26,8 @@ const SearchBar = ({ flipState }) => {
   const [searchQuery, setSearchQuery] = useState("");
   const [fixedSearchQuery, setFixedSearchQuery] = useState("");
   const [searchResults, setSearchResults] = useState([]);
+  const [collectionCode, setCollectionCode] = useState("");
+  const [categoryCode, setCategoryCode] = useState("");
   const [isLoading, setIsLoading] = useState(false);
   const [totalCount, setTotalCount] = useState(0);
   const [abortController, setAbortController] = useState(null);
@@ -96,6 +98,14 @@ const SearchBar = ({ flipState }) => {
     setSearchQuery(event.target.value);
   };
 
+  const handleCategoryChange = () => {
+    setCategoryCode();
+  }
+
+  const handleCollectionChange = () => {
+    setCollectionCode();
+  }
+
   const handleSearchSubmit = (term = searchQuery) => {
     // If there is an existing search, cancel it before starting a new one
     if (abortController) {
@@ -105,6 +115,9 @@ const SearchBar = ({ flipState }) => {
     setAbortController(newAbortController);
 
     setIsLoading(true);
+    let temp_category = "";
+    let temp_category_name = "";
+
     setFixedSearchQuery(term);
 
     axios
