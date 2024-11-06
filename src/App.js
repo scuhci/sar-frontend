@@ -25,7 +25,6 @@ function App() {
       <NavigationBar refresh={refresh}/>
       <Routes className="App">
         <Route path="/" element={<Home flipState={flipState}/>} />
-        <Route path="/citation" element={<Citation />} />
         <Route path="/userguide" element={<UserGuide />} />
         <Route path="/about" element={<About />} />
       </Routes>

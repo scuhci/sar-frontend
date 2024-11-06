@@ -25,7 +25,7 @@ const DownloadReviews = (appId, countryCode) => {
             setAbortController(newAbortController);
             // console.log("Country Code is %s\n", countryCode);
             setIsLoading(true);
-            const response = await axios.get(`${SAR_BACKEND_URL}/reviews?appId=${appId}&countryCode=${countryCode}`, {
+            const response = await axios.get(`/reviews?appId=${appId}&countryCode=${countryCode}`, {
                 signal: newAbortController.signal,
                 responseType: 'blob', //handling the binary data
                 headers: {
