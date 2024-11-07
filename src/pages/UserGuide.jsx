@@ -138,9 +138,11 @@ const UserGuide = () => {
                 from the SMAR include large-scale app metadata - such as user reviews and app permissions 
                 - as well as app contents such as functionality or accessibility.
             </Typography>
+            <br/>
             <Typography variant="body1" className="main-text">
                 The general steps of an SMAR can be classified as follows:
             </Typography>
+            <br/>
             <Typography variant="body1" className="main-text">
                 First, the researcher plans the topic, scope, and timeline of their app review. Second, they select a corpus 
                 of mobile apps. Third, they extract data for analysis, e.g., user reviews or app files. Fourth, 
@@ -158,6 +160,7 @@ const UserGuide = () => {
                 application data at scale. This is the starting point for many research studies aiming to analyze a 
                 subset of the existing catalog of millions of mobile applications across different platforms.
             </Typography>
+            <br/>
             <Typography variant="body1" className="main-text">
                 The SMAR method has been used in many fields. In the field of HCI (Human-Computer Interaction), researchers 
                 have studied how children perceive parental control apps [1,5,8], user reviews of mental health apps [6], 
@@ -165,6 +168,7 @@ const UserGuide = () => {
                 researchers have examined apps for child development [3], support functions in pain management apps [2], and 
                 menstrual tracking apps [9]. All of these studies started with a systematic search of app store(s).
             </Typography>
+            <br/>
             <Typography variant="body1" className="main-text">
                 Existing SMAR tools are either paid products targeted towards commercial developers, or free tools that 
                 require technical expertise to get up and running. Our free SMAR tool aims to provide a flexible feature 
@@ -180,15 +184,17 @@ const UserGuide = () => {
             <Typography variant="h5" className="section-sub-header" id="Keyword_Search">Conducting a Keyword Search</Typography>
             <Typography variant="body1" className="main-text">
                 The SMAR Tool is designed around the central search bar that allows 
-                users to quickly retrieve a filtered list of applications from the Google Play Store. 
+                users to quickly retrieve a filtered list of applications from the Google Play Store in a certain country. 
             </Typography>
+            <br/>
             <Typography variant="body1" className="main-text">
-                <b>1.</b> To get started, type in a search keyword (1). Optionally, check the 'Include permissions in scrape' button a) 
-                to also retrieve individual app permissions (such as microphone or camera access). Click on the 'Scrape Data'  button 
-                (2) to begin the search process.
+                <b>1.</b> To get started, type in a search keyword (1). The Google Play Store country can be changed using the dropdown menu 
+                (a), which also supports type to search. Optionally, check the 'Include permissions in scrape' button b) to also 
+                retrieve individual app permissions (such as microphone or camera access). Click on the 'Scrape Data'  button (2) to 
+                begin the search process.
             </Typography>
                 <Box display="flex" justifyContent="center" alignItems="center">
-                    <img src={require('../res/SMAR_Search_Screen.png')} className="inline-image" alt="SMAR steps" />
+                    <img src={require('../res/SMAR_Home_Screen.png')} className="inline-image" alt="SMAR steps" />
                 </Box>
                 <br/><br/>
             <Typography variant="body1" className="main-text">
@@ -202,9 +208,10 @@ const UserGuide = () => {
 
             <Typography variant="body1" className="main-text">
                 <b>3.</b> Once the search has completed, a portion of the page will update with search results. A preview of the first 
-                few results will be visible (3) and are horizontally scrollable, and the rest of the results can be downloaded by 
-                clicking the button at the bottom of the page (4). Additionally, user reviews for each application can be scraped by 
-                clicking the corresponding row's 'scrape reviews' button (5).
+                few results will be visible (3) and are horizontally scrollable, while additional results can be viewed using the 
+                pagination controls (4). User reviews for each application can be scraped by clicking the corresponding 
+                row's 'scrape reviews' button (5). The full list of results, along with a reproducibility log containing SMAR search 
+                metadata can be downloaded by clicking the button at the bottom of the page (6). 
             </Typography>
                 <Box display="flex" justifyContent="center" alignItems="center">
                     <img src={require('../res/SMAR_Results_Screen.png')} className="inline-image" alt="SMAR steps" />
