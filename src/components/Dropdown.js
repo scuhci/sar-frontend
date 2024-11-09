@@ -48,7 +48,7 @@ export default function Dropdown({ handler }) {
           onBlur={handleBlur}     // Mark as not editing when blurred
         />
       )}
-      sx={{ width: '400px' }}
+      sx={{ width: '200px' }}
     />
   );
 }
