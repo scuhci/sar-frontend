@@ -7,7 +7,7 @@ import CardContent from "@mui/material/CardContent";
 import Divider from '@mui/material/Divider';
 
 
-const text = "Kai Lukoff, Ilona van der Linden, Akaash Trivedi, Vaishnavi Upadhye, Gaurav Punjabi, Varun Mangla, Jeshwin Prince, Katrina Ying, Crystal Chen, Maggie Lau, Rani Rajurkar, Juilee Katpatal, Soham Phadke, and Soumya Mohan. 2024. SMAR: A Tool for Systematic Mobile App Reviews to Research the Mobile App Ecosystem. Retrieved from www.tinyurl.com/smar-tool"
+const text = "Kai Lukoff, Ilona van der Linden, Akaash Trivedi, Vaishnavi Upadhye, Gaurav Punjabi, Varun Mangla, Jeshwin Prince, Katrina Ying, Crystal Chen, Maggie Lau, Rani Rajurkar, Juilee Katpatal, Soham Phadke, Kyle Zhang, and Soumya Mohan. 2024. SMAR: A Tool for Systematic Mobile App Reviews to Research the Mobile App Ecosystem. Retrieved from www.tinyurl.com/smar-tool"
 const Citation = () => {
     return (
         <Container>

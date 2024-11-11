@@ -2,7 +2,6 @@ import './css/App.css';
 import { Routes, Route } from 'react-router-dom';
 import Home from './pages/Home';
 import About from './pages/About'; 
-import Citation from './pages/Citation';
 import NavigationBar from './components/NavigationBar';
 import UserGuide from './pages/UserGuide';
 
@@ -26,7 +25,6 @@ function App() {
       <NavigationBar refresh={refresh}/>
       <Routes className="App">
         <Route path="/" element={<Home flipState={flipState}/>} />
-        <Route path="/citation" element={<Citation />} />
         <Route path="/userguide" element={<UserGuide />} />
         <Route path="/about" element={<About />} />
       </Routes>

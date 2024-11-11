@@ -7,6 +7,7 @@ import Loading from "./Loading";
 import ExampleSearches from "./ExampleSearches";
 import { columns } from "../constants/columns";
 import { permissionColumns } from "../constants/permissionColumns";
+import { countryCode_list } from "../constants/countryCodes"
 import Link from "@mui/material/Link";
 
 // For the checkbox
@@ -18,12 +19,14 @@ import Stack from "@mui/material/Stack";
 //Tooltip
 import InfoIcon from "@mui/icons-material/Info";
 import { Tooltip } from "@mui/material";
+import Dropdown from "./Dropdown";
 
 // zip
 let JSZip = require("jszip");
 
 const SearchBar = ({ flipState }) => {
   const [searchQuery, setSearchQuery] = useState("");
+  const [resultsText, setResultsText] = useState("");
   const [fixedSearchQuery, setFixedSearchQuery] = useState("");
   const [searchResults, setSearchResults] = useState([]);
   const [isLoading, setIsLoading] = useState(false);
@@ -35,7 +38,9 @@ const SearchBar = ({ flipState }) => {
     "self-care",
     "smartphone addiction",
   ];
-  const [displayPermissions, setDisplayPermissions] = useState(false);
+  const [displayPermissions, setDisplayPermissions] = React.useState(false);
+  const [country, setCountry] = useState("US")
+
 
   const rows = displayPermissions
     ? searchResults
@@ -92,6 +97,10 @@ const SearchBar = ({ flipState }) => {
           reviews: [application.reviews, application.appId],
         }))
 
+  const handleCountryChange = (newCountry) => {
+    setCountry(newCountry)
+  }
+
   const handleSearchChange = (event) => {
     setSearchQuery(event.target.value);
   };
@@ -103,13 +112,27 @@ const SearchBar = ({ flipState }) => {
     }
     const newAbortController = new AbortController();
     setAbortController(newAbortController);
-
     setIsLoading(true);
+    // query: 'COUNTRY:xx search term'
+    // let temp_countryCode = "US";
+    // if (term.startsWith("COUNTRY:")) {
+    //   temp_countryCode = (term.substring(term.indexOf(":") + 1, term.indexOf(" "))).toUpperCase();
+    //   if (countryCode_list.some((country) => country.Code === temp_countryCode))
+    //   {
+    //     console.log("Country Code -> Matched %s\n", temp_countryCode);
+    //   } 
+    //   else 
+    //   { 
+    //     console.log("Country Code -> Not Matched: %s\n", temp_countryCode);
+    //     temp_countryCode = "US"; 
+    //   }
+    //   setCountryCode(temp_countryCode);
+    //   term = term.slice(term.indexOf(" ") + 1);
+    // }
     setFixedSearchQuery(term);
-
     axios
       .get(
-        `/search?query=${term}&includePermissions=${checked}`,
+        `/search?query=${term}&includePermissions=${checked}&countryCode=${country}`,
         {
           signal: newAbortController.signal,
         }
@@ -122,6 +145,8 @@ const SearchBar = ({ flipState }) => {
           setDisplayPermissions(false);
         }
         setSearchResults(response.data.results);
+        // Only set results text after getting search results
+        setResultsText(term);
         setTotalCount(response.data.totalCount);
         setIsLoading(false);
       })
@@ -153,7 +178,7 @@ const SearchBar = ({ flipState }) => {
   const handleDownloadAllResults = async () => {
     try {
       const response = await axios.get(
-        `/download-csv?query=${fixedSearchQuery}&includePermissions=${checked}`,
+        `/download-csv?query=${fixedSearchQuery}&includePermissions=${checked}&countryCode=${country}`,
         {
           responseType: "blob", //handling the binary data
           headers: {
@@ -163,7 +188,7 @@ const SearchBar = ({ flipState }) => {
       );
 
       const relog_response = await axios.get(
-        `/download-relog?query=${fixedSearchQuery}&includePermissions=${checked}&totalCount=${totalCount}`,
+        `/download-relog?query=${fixedSearchQuery}&includePermissions=${checked}&totalCount=${totalCount}&countryCode=${country}`,
         {
           responseType: "blob", //handling the binary data
           headers: {
@@ -182,13 +207,14 @@ const SearchBar = ({ flipState }) => {
           filename = matches[2];
         }
       }
-      console.log(`Filename from header: ${filename}`);
+      console.log(`Filename from header: ${decodeURI(filename)}`);
+      filename = decodeURI(filename);
       const filename_relog = filename.slice(0, -4) + "_relog.txt";
       const filename_zip = filename.slice(0, -4) + ".zip";
       console.log(`Relog filename from header: ${filename_relog}`);
       // Create a URL from the blob
-      const csv_file = new Blob([response.data]);
-      const relog_file = new Blob([relog_response.data]);
+      const csv_file = new Blob(["\ufeff", response.data], { type: 'text/csv;charset=utf-8' });
+      const relog_file = new Blob(["\ufeff", relog_response.data], { type: 'text/plain;charset=utf-8' });
       const zip = new JSZip();
       zip.file(filename, csv_file);
       zip.file(filename_relog, relog_file);
@@ -230,36 +256,46 @@ const SearchBar = ({ flipState }) => {
                         Scrape Data
                 </Button>
             </div>
-            <div className='permissions-checkbox'>
+            <div className='search-bar-params'>
               <Stack 
                 direction="row" 
                 justifyContent="flex-start"
                 alignItems="center"
-                spacing={0.1}>
-                  <FormGroup>
-                    <FormControlLabel 
-                    control={
-                      <Checkbox
-                      size="small"
-                      checked={checked}
-                      onChange={handleChange}
-                      />} 
-                    label={<React.Fragment>
-                      <Stack alignItems="center" direction="row" gap={0.3}>
-                        Include permissions in scrape
-                        <Tooltip title="It takes an additional 1-5 minutes to scrape the permissions that apps access (e.g, “read your contacts” and “take pictures and videos”)">
-                          <InfoIcon fontSize='small'/>
-                        </Tooltip>
-                      </Stack>
-                      </React.Fragment>}/>
-                  </FormGroup>
+                spacing={3}>
+                  <Dropdown handler={handleCountryChange}/>
+                  <div className='permissions-checkbox'>
+                    <Stack 
+                      direction="row" 
+                      justifyContent="flex-start"
+                      alignItems="center"
+                      spacing={0.1}>
+                        <FormGroup>
+                          <FormControlLabel 
+                          control={
+                            <Checkbox
+                            size="small"
+                            checked={checked}
+                            onChange={handleChange}
+                            />}
+                          label={<React.Fragment>
+                            <Stack alignItems="center" direction="row" gap={0.3}>
+                              Include permissions in scrape
+                              <Tooltip title="It takes an additional 1-5 minutes to scrape the permissions that apps access (e.g, “read your contacts” and “take pictures and videos”)">
+                                <InfoIcon fontSize='small'/>
+                              </Tooltip>
+                            </Stack>
+                            </React.Fragment>}/>
+                        </FormGroup>
+                    </Stack>
+                  </div>
               </Stack>
             </div>
+
             <Loading open={isLoading} onCancel={handleCancel} searchQuery={searchQuery}/>
             {searchResults.length > 0 ? (
               <>
                 <div className="search-result-text">
-                  <Typography variant="h5">Results for "{searchQuery}"</Typography>
+            <Typography variant="h5">Results for "{resultsText}"</Typography>
                 </div>
                 <div className="data-grid-container">
                   <DataGrid

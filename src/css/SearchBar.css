@@ -10,12 +10,20 @@
     padding: 40px;
 }
 
+.search-bar-params {
+    display: flex;
+    align-items: flex-start; 
+    justify-content: flex-start; 
+    width: 100%;
+    margin-bottom: 25px;
+    margin-top: 5px;
+}
+
 .permissions-checkbox {
     display: flex;
     align-items: flex-start; 
     justify-content: flex-start; 
     width: 100%;
-    margin-bottom: 10px;
 }
 
 .search-button {
@@ -27,7 +35,7 @@
     align-items: center;
     justify-content: flex-start;
     width: 100%;
-    margin-bottom: 20px;
+    margin-bottom: 10px;
 }
 .search-and-button-container {
     gap: 10px;
@@ -45,7 +53,7 @@
 .data-grid-container {
     width: 100%;
     max-width: 1000px;
-    height: 370px;  /* Height to fit 5 rows + footer */
+    flex-direction: column; /* Flex height to fit selected number of rows */
     margin: auto;
 }
 
