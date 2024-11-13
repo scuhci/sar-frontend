@@ -2,7 +2,7 @@ import React, {useState} from 'react';
 import '../css/TopList.css';
 import { Select, FormControl, MenuItem, InputLabel, Typography, Button } from '@mui/material';
 import { DataGrid } from "@mui/x-data-grid";
-import { gplayCategories } from '../constants/topListCategories';
+import { gplayCategories, gplayCollections } from '../constants/topListCategories';
 import { countrycode_list } from '../constants/countryCodes';
 import axios from "axios";
 import { columns } from "../constants/columns";
@@ -122,8 +122,7 @@ const TopLists = ({flipState}) => {
     setAbortController(newAbortController);
 
     setIsLoading(true);
-
-    console.log("top lists query")
+    
     axios
       .get(
         `/toplists?collection=${collection}&category=${category}&country=${country}`,
@@ -216,8 +215,8 @@ const TopLists = ({flipState}) => {
       { showTable && (
         <>
         <div className="search-result-text">
-            {totalCount == 1 ? (<Typography variant="h5">{totalCount} Result for {collection} {gplayCategories.find(item => item.code === category)} in {country}</Typography>) :
-            (<Typography variant="h5">{totalCount} Results for {collection} {getNameByCode(gplayCategories, category)} in {country}</Typography>)}
+            {totalCount === 1 ? (<Typography variant="h5">{totalCount} Result for {getNameByCode(gplayCollections, collection)} {getNameByCode(gplayCategories, category)} in {getNameByCode(countrycode_list, country)}</Typography>) :
+            (<Typography variant="h5">{totalCount} Results for {getNameByCode(gplayCollections, collection)} {getNameByCode(gplayCategories, category)} in {getNameByCode(countrycode_list, country)}</Typography>)}
         </div>
         <div className="data-grid-container">
             <DataGrid
