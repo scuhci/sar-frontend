@@ -1,0 +1,22 @@
+.toplist-container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center; 
+    max-width: 1000px;
+    margin: auto;
+    padding: 40px;
+}
+
+.toplist-search-button-container{
+    display: flex;
+    align-items: center;
+    justify-content: flex-start;
+    width: 100%;
+    margin: 0 auto;
+    gap: 10px;
+}
+
+.toplist-dropdown-container{
+    width: 100%;
+}
