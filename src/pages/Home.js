@@ -34,7 +34,7 @@ const Home = ({ flipState }) => {
           
           <Typography variant="p" className='home-text'>A tool for academic researchers to conduct a keyword search of Google Play and get back the metadata for all relevant apps.</Typography>
         </div>
-        < SearchBar/>
+        < SearchBar flipState={flipState}/>
     </>
   ) : (
     <MobileScreen />
