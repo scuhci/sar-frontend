@@ -179,9 +179,11 @@ const TopLists = ({flipState}) => {
           label="collection"
           onChange={handleCollectionChange}
           >
-          <MenuItem value={'TOP_FREE'}>Top Free</MenuItem>
-          <MenuItem value={'TOP_PAID'}>Top Paid</MenuItem>
-          <MenuItem value={'GROSSING'}>Top Grossing</MenuItem>
+            {gplayCollections.map(({code, name}, index) => (
+                <MenuItem key={index} value={code}>
+                  {name}
+                </MenuItem>
+            ))}
           </Select>
         </FormControl>
         <FormControl fullWidth>
