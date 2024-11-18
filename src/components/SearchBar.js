@@ -26,6 +26,7 @@ let JSZip = require("jszip");
 
 const SearchBar = ({ flipState }) => {
   const [searchQuery, setSearchQuery] = useState("");
+  const [resultsText, setResultsText] = useState("");
   const [fixedSearchQuery, setFixedSearchQuery] = useState("");
   const [searchResults, setSearchResults] = useState([]);
   const [isLoading, setIsLoading] = useState(false);
@@ -144,6 +145,8 @@ const SearchBar = ({ flipState }) => {
           setDisplayPermissions(false);
         }
         setSearchResults(response.data.results);
+        // Only set results text after getting search results
+        setResultsText(term);
         setTotalCount(response.data.totalCount);
         setIsLoading(false);
       })
@@ -204,13 +207,14 @@ const SearchBar = ({ flipState }) => {
           filename = matches[2];
         }
       }
-      console.log(`Filename from header: ${filename}`);
+      console.log(`Filename from header: ${decodeURI(filename)}`);
+      filename = decodeURI(filename);
       const filename_relog = filename.slice(0, -4) + "_relog.txt";
       const filename_zip = filename.slice(0, -4) + ".zip";
       console.log(`Relog filename from header: ${filename_relog}`);
       // Create a URL from the blob
-      const csv_file = new Blob([response.data]);
-      const relog_file = new Blob([relog_response.data]);
+      const csv_file = new Blob(["\ufeff", response.data], { type: 'text/csv;charset=utf-8' });
+      const relog_file = new Blob(["\ufeff", relog_response.data], { type: 'text/plain;charset=utf-8' });
       const zip = new JSZip();
       zip.file(filename, csv_file);
       zip.file(filename_relog, relog_file);
@@ -291,7 +295,7 @@ const SearchBar = ({ flipState }) => {
             {searchResults.length > 0 ? (
               <>
                 <div className="search-result-text">
-                  <Typography variant="h5">Results for "{searchQuery}"</Typography>
+            <Typography variant="h5">Results for "{resultsText}"</Typography>
                 </div>
                 <div className="data-grid-container">
                   <DataGrid
