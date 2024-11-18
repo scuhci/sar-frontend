@@ -93,7 +93,7 @@ const renderIcon = (params) => <Avatar src={params.value} alt="Icon" />;
 
 // Keep track of fields that are boolean values
 // so their renderCell attribute is diferent
-const booleanFields = ["available", "offersIAP", "adSupported"];
+const booleanFields = ["available", "offersIAP", "adSupported", "downloadable"];
 
 // Helper function for creating renderCell attribute
 // For fields "review" and "icon", returns their respective renderCell functions
@@ -178,6 +178,7 @@ const fieldNames = [
   "contentRating",
   "adSupported",
   "released",
+  "country",
   "version",
   "recentChanges",
 ];
@@ -223,12 +224,13 @@ const removedFieldNames = [
   "originalPrice",
   "discountEndDate",
   "downloadable",
-  "inAppPurchases",
-  "inAppPurchasesPriceRange",
+  "available",
+  "offersIAP",
+  "IAPRange",
   "developerEmail",
   "developerAddress",
-  "privacyPolicyURL",
-  "inAppAdvertisements",
+  "privacyPolicy",
+  "adSupported",
 ];
 
 // List of fields that are renamed in 'App Store' scraper

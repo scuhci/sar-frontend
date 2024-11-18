@@ -15,7 +15,10 @@ import { countryCode_list } from "../constants/countryCodes";
 import Link from "@mui/material/Link";
 
 // Import Scraper backend URLs
-import { SAR_BACKEND_URL } from "../constants/urlConstants";
+import {
+  SAR_BACKEND_URL,
+  SAR_IOS_BACKEND_URL,
+} from "../constants/urlConstants";
 
 // For the checkbox
 import FormGroup from "@mui/material/FormGroup";
@@ -137,8 +140,8 @@ const SearchBar = ({ flipState, selectedScraper }) => {
     axios
       .get(
         selectedScraper === "Play Store"
-          ? `${SAR_BACKEND_URL}/search?query=${term}&includePermissions=${checked}`
-          : `${SAR_BACKEND_URL}/search?query=${term}`, // Change to URL for app store scraper
+          ? `${SAR_BACKEND_URL}/search?query=${term}&includePermissions=${checked}&countryCode=${country}`
+          : `${SAR_IOS_BACKEND_URL}/search?query=${term}`, // Change to URL for app store scraper
         {
           signal: newAbortController.signal,
         }
@@ -186,7 +189,7 @@ const SearchBar = ({ flipState, selectedScraper }) => {
       const response = await axios.get(
         selectedScraper === "Play Store"
           ? `${SAR_BACKEND_URL}/download-csv?query=${fixedSearchQuery}&includePermissions=${checked}`
-          : `${SAR_BACKEND_URL}/download-csv?query=${fixedSearchQuery}`, // Change to URL for app store scraper
+          : `${SAR_IOS_BACKEND_URL}/download-csv?query=${fixedSearchQuery}`, // Change to URL for app store scraper
         {
           responseType: "blob", //handling the binary data
           headers: {
@@ -198,7 +201,7 @@ const SearchBar = ({ flipState, selectedScraper }) => {
       const relog_response = await axios.get(
         selectedScraper === "Play Store"
           ? `${SAR_BACKEND_URL}/download-relog?query=${fixedSearchQuery}&includePermissions=${checked}&totalCount=${totalCount}`
-          : `${SAR_BACKEND_URL}/download-relog?query=${fixedSearchQuery}&totalCount=${totalCount}`, // Change to URL for app store scraper
+          : `${SAR_IOS_BACKEND_URL}/download-relog?query=${fixedSearchQuery}&totalCount=${totalCount}`, // Change to URL for app store scraper
         {
           responseType: "blob", //handling the binary data
           headers: {
@@ -253,6 +256,10 @@ const SearchBar = ({ flipState, selectedScraper }) => {
     setSearchQuery(term);
     handleSearchSubmit(term);
   };
+
+  useEffect(() => {
+    setSearchResults([]);
+  }, [selectedScraper]);
 
   return (
     <div className="search-bar-container">
@@ -326,6 +333,7 @@ const SearchBar = ({ flipState, selectedScraper }) => {
         open={isLoading}
         onCancel={handleCancel}
         searchQuery={searchQuery}
+        selectedScraper={selectedScraper}
       />
       {searchResults.length > 0 ? (
         <>
