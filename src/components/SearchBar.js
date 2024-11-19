@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { TextField, Button, Typography } from "@mui/material";
+import { TextField, Button, Typography, Box } from "@mui/material";
 import { DataGrid } from "@mui/x-data-grid";
 import axios from "axios";
 import "../css/SearchBar.css";
@@ -40,6 +40,7 @@ const SearchBar = ({ flipState }) => {
   ];
   const [displayPermissions, setDisplayPermissions] = React.useState(false);
   const [country, setCountry] = useState("US")
+  const [showTable, setShowTable] = useState(false);
 
 
   const rows = displayPermissions
@@ -149,20 +150,27 @@ const SearchBar = ({ flipState }) => {
         setResultsText(term);
         setTotalCount(response.data.totalCount);
         setIsLoading(false);
+        setShowTable(true);
       })
       .catch((error) => {
         if (axios.isCancel(error)) {
+          setShowTable(false);
           console.log("Request canceled:", error.message);
         } else {
+          flipState()
+          setShowTable(true);
           console.error("Error fetching search results:", error);
         }
         setIsLoading(false);
+        setTotalCount(0);
+        setSearchResults([]);
       });
   };
 
   const handleCancel = () => {
     abortController.abort();
     setIsLoading(false);
+    setShowTable(false);
   };
 
   const handleKeyDown = (event) => {
@@ -292,7 +300,7 @@ const SearchBar = ({ flipState }) => {
             </div>
 
             <Loading open={isLoading} onCancel={handleCancel} searchQuery={searchQuery}/>
-            {searchResults.length > 0 ? (
+            {showTable ? (searchResults.length > 0 ? (
               <>
                 <div className="search-result-text">
             <Typography variant="h5">Results for "{resultsText}"</Typography>
@@ -324,6 +332,15 @@ const SearchBar = ({ flipState }) => {
                 </div>
               </> 
               ) : (
+                <>
+                <div>
+                  <Typography variant="h5">No Results found for "{fixedSearchQuery}"</Typography>
+                  <Box display="flex" justifyContent="center" alignItems="center">
+                      <img src={'/noresultsfound.png'} className="inline-image-nb" alt="image"/>
+                  </Box>
+                </div>
+                </>
+              )) : (
                 !isLoading && 
                 ( <div className="example-searches-container">
                     <div style={{ textAlign: 'left' }}> 
