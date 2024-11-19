@@ -1,7 +1,7 @@
 import React, {useState} from 'react';
 import '../css/TopList.css';
 import "../css/SearchBar.css";
-import { Select, FormControl, MenuItem, InputLabel, Typography, Button } from '@mui/material';
+import { Select, FormControl, MenuItem, InputLabel, Typography, Button, Box } from '@mui/material';
 import { DataGrid } from "@mui/x-data-grid";
 import { gplayCategories, gplayCollections } from '../constants/topListCategories';
 import { countrycode_list } from '../constants/countryCodes';
@@ -161,11 +161,12 @@ const TopLists = ({flipState}) => {
       })
       .catch((error) => {
         if (axios.isCancel(error)) {
-          console.log("Request canceled:", error.message);
           setShowTable(false);
+          console.log("Request canceled:", error.message);
         } else {
-          console.error("Error fetching top lists:", error);
+          flipState()
           setShowTable(true);
+          console.error("Error fetching top lists:", error);
         }
         setSearchResults([]);
         setTotalCount(0);
@@ -320,7 +321,7 @@ const TopLists = ({flipState}) => {
         </Stack>
       </div>
       <LoadingTopLists open={isLoading} onCancel={handleCancel} country={getNameByCode(countrycode_list, country)} collection={getNameByCode(gplayCollections, collection)} category={getNameByCode(gplayCategories, category)}/>
-      { showTable && (
+      { showTable && (totalCount > 0 ? (
         <>
         <div className="search-result-text">
             {totalCount === 1 ? (<Typography variant="h5">{totalCount} Result for {getNameByCode(gplayCollections, collection)} {getNameByCode(gplayCategories, category)} Apps in {getNameByCode(countrycode_list, country)}</Typography>) :
@@ -352,7 +353,16 @@ const TopLists = ({flipState}) => {
             </div>
         </div>
         </>
-        )
+        ) : (
+          <>
+          <div>
+            <Typography variant="h5">No Results found for {getNameByCode(gplayCollections, collection)} {getNameByCode(gplayCategories, category)} Apps in {getNameByCode(countrycode_list, country)}</Typography>
+            <Box display="flex" justifyContent="center" alignItems="center">
+                <img src={'/noresultsfound.png'} className="inline-image-nb" alt="image"/>
+            </Box>
+          </div>
+          </>
+        ))
       }
     </div>
   );
