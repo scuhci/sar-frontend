@@ -20,3 +20,8 @@
 .toplist-dropdown-container{
     width: 100%;
 }
+
+.toplist-search-button{
+    width: 25%;
+    height: 55px;
+}

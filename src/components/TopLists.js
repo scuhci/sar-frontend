@@ -1,5 +1,6 @@
 import React, {useState} from 'react';
 import '../css/TopList.css';
+import "../css/SearchBar.css";
 import { Select, FormControl, MenuItem, InputLabel, Typography, Button } from '@mui/material';
 import { DataGrid } from "@mui/x-data-grid";
 import { gplayCategories, gplayCollections } from '../constants/topListCategories';
@@ -7,8 +8,21 @@ import { countrycode_list } from '../constants/countryCodes';
 import axios from "axios";
 import { columns } from "../constants/columns";
 import { permissionColumns } from "../constants/permissionColumns";
-import "../css/SearchBar.css";
-import Loading from "./Loading";
+import LoadingTopLists from "./LoadingTopLists";
+
+// For the checkbox
+import FormGroup from "@mui/material/FormGroup";
+import FormControlLabel from "@mui/material/FormControlLabel";
+import Checkbox from "@mui/material/Checkbox";
+import Stack from "@mui/material/Stack";
+
+//Tooltip
+import InfoIcon from "@mui/icons-material/Info";
+import { Tooltip } from "@mui/material";
+
+// zip
+let JSZip = require("jszip");
+
 
 const TopLists = ({flipState}) => {  
   const [collection, setCollection] = useState('TOP_FREE');
@@ -20,6 +34,8 @@ const TopLists = ({flipState}) => {
   const [abortController, setAbortController] = useState(null);
   const [displayPermissions, setDisplayPermissions] = useState(false);
   const [showTable, setShowTable] = useState(false);
+  const [checked, setChecked] = useState(false);
+  const [downloadQuery, setDownloadQuery] = useState('TOP_FREEUS');
 
   const rows = displayPermissions
     ? searchResults
@@ -79,21 +95,18 @@ const TopLists = ({flipState}) => {
   const handleCategoryChange = (event) => {
     if (event.target) {
       setCategory(event.target.value);
-      console.log(event.target.value);
     }
   };
 
   const handleCollectionChange = (event) => {
     if (event.target) {
       setCollection(event.target.value);
-      console.log(event.target.value);
     }
   };
 
   const handleCountryChange = (event) => {
     if (event.target) {
       setCountry(event.target.value);
-      console.log(event.target.value);
     }
   };
 
@@ -101,6 +114,10 @@ const TopLists = ({flipState}) => {
     abortController.abort();
     setShowTable(false);
     setIsLoading(false);
+  };
+
+  const handlePermissionChange = () => {
+    setChecked(!checked);
   };
 
   const handleKeyDown = (event) => {
@@ -111,7 +128,7 @@ const TopLists = ({flipState}) => {
 
   const getNameByCode = (list, code) => {
     const entry = list.find(item => item.code === code);
-    return entry ? entry.name : null;
+    return entry ? (entry.code === "" ? "" : entry.name) : null;
   };
 
   const handleTopListQuery = () => {
@@ -125,13 +142,18 @@ const TopLists = ({flipState}) => {
     
     axios
       .get(
-        `/toplists?collection=${collection}&category=${category}&country=${country}`,
+        `/toplists?collection=${collection}&category=${category}&country=${country}&includePermissions=${checked}`,
         {
           signal: newAbortController.signal,
         }
       )
       .then((response) => {
         flipState()
+        if (checked) {
+          setDisplayPermissions(true);
+        } else {
+          setDisplayPermissions(false);
+        }
         setShowTable(true);
         setSearchResults(response.data.results);
         setTotalCount(response.data.totalCount);
@@ -149,6 +171,67 @@ const TopLists = ({flipState}) => {
         setTotalCount(0);
         setIsLoading(false);
       });
+  };
+
+  const handleDownloadAllResults = async () => {
+    try {
+      setDownloadQuery(collection.concat(category, country));
+      console.log(downloadQuery);
+      const response = await axios.get(
+        `/download-top-csv?query=${downloadQuery}&includePermissions=${checked}`,
+        {
+          responseType: "blob", //handling the binary data
+          headers: {
+            // Include authorization tokens
+          },
+        }
+      );
+
+      const relog_response = await axios.get(
+        `/download-top-relog?query=${downloadQuery}&includePermissions=${checked}&totalCount=${totalCount}`,
+        {
+          responseType: "blob", //handling the binary data
+          headers: {
+            // Include authorization tokens
+          },
+        }
+      );
+
+      // Extract the filename from the Content-Disposition header
+      const contentDisposition = response.headers["content-disposition"];
+      let filename = "download.csv";
+      if (contentDisposition) {
+        const filenameRegex = /filename\s*=\s*(["'])(.*?)\1/;
+        const matches = filenameRegex.exec(contentDisposition);
+        if (matches && matches[2]) {
+          filename = matches[2];
+        }
+      }
+      console.log(`Filename from header: ${filename}`);
+      const filename_relog = filename.slice(0, -4) + "_relog.txt";
+      const filename_zip = filename.slice(0, -4) + ".zip";
+      console.log(`Relog filename from header: ${filename_relog}`);
+      // Create a URL from the blob
+      const csv_file = new Blob([response.data]);
+      const relog_file = new Blob([relog_response.data]);
+      const zip = new JSZip();
+      zip.file(filename, csv_file);
+      zip.file(filename_relog, relog_file);
+      zip.generateAsync({ type: "blob" }).then(function (zipFile) {
+        // Create a link element, set the href to the blob URL, and trigger a download
+        const url = window.URL.createObjectURL(zipFile);
+        const link = document.createElement("a");
+        link.href = url;
+        link.setAttribute("download", filename_zip);
+        document.body.appendChild(link);
+        link.click();
+        // Clean up and revoke the URL
+        document.body.removeChild(link);
+        window.URL.revokeObjectURL(url);
+      });
+    } catch (error) {
+      console.error("Error fetching or downloading the file:", error);
+    }
   };
 
   return (
@@ -202,23 +285,46 @@ const TopLists = ({flipState}) => {
             ))}
           </Select>
         </FormControl>
-        <div className="toplist-search-button-container">
-          <Button 
-            className="search-button" 
-            variant="contained" 
-            color="primary"
-            onClick={handleTopListQuery}
-            onKeyDown={handleKeyDown}>
-            Search
-          </Button>
-        </div>
+        <Button 
+          className="toplist-search-button" 
+          variant="contained" 
+          color="primary"
+          onClick={handleTopListQuery}
+          onKeyDown={handleKeyDown}>
+          Search
+        </Button>
       </div>
-      <Loading open={isLoading} onCancel={handleCancel} searchQuery={"hello"}/>
+      <div className='permissions-checkbox'>
+        <Stack 
+          direction="row" 
+          justifyContent="flex-start"
+          alignItems="center"
+          spacing={0.1}>
+            <FormGroup>
+              <FormControlLabel 
+              control={
+                <Checkbox
+                size="small"
+                checked={checked}
+                onChange={handlePermissionChange}
+                />} 
+              label={<React.Fragment>
+                <Stack alignItems="center" direction="row" gap={0.3}>
+                  Include permissions in scrape
+                  <Tooltip title="It takes an additional 1-5 minutes to scrape the permissions that apps access (e.g, “read your contacts” and “take pictures and videos”)">
+                    <InfoIcon fontSize='small'/>
+                  </Tooltip>
+                </Stack>
+                </React.Fragment>}/>
+            </FormGroup>
+        </Stack>
+      </div>
+      <LoadingTopLists open={isLoading} onCancel={handleCancel} country={getNameByCode(countrycode_list, country)} collection={getNameByCode(gplayCollections, collection)} category={getNameByCode(gplayCategories, category)}/>
       { showTable && (
         <>
         <div className="search-result-text">
-            {totalCount === 1 ? (<Typography variant="h5">{totalCount} Result for {getNameByCode(gplayCollections, collection)} {getNameByCode(gplayCategories, category)} in {getNameByCode(countrycode_list, country)}</Typography>) :
-            (<Typography variant="h5">{totalCount} Results for {getNameByCode(gplayCollections, collection)} {getNameByCode(gplayCategories, category)} in {getNameByCode(countrycode_list, country)}</Typography>)}
+            {totalCount === 1 ? (<Typography variant="h5">{totalCount} Result for {getNameByCode(gplayCollections, collection)} {getNameByCode(gplayCategories, category)} Apps in {getNameByCode(countrycode_list, country)}</Typography>) :
+            (<Typography variant="h5">{totalCount} Results for {getNameByCode(gplayCollections, collection)} {getNameByCode(gplayCategories, category)} Apps in {getNameByCode(countrycode_list, country)}</Typography>)}
         </div>
         <div className="data-grid-container">
             <DataGrid
@@ -234,6 +340,16 @@ const TopLists = ({flipState}) => {
             getRowId={(row) => row.appId}
             disableRowSelectionOnClick
             />
+            <div className="download-button-container">
+              <Button 
+                variant="contained" 
+                color="primary"
+                onClick={handleDownloadAllResults}
+                className="download-button"
+              >
+                Download ({totalCount} Results + Reproducibility Log as ZIP)
+              </Button>
+            </div>
         </div>
         </>
         )

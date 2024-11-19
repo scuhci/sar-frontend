@@ -13,7 +13,7 @@ export const gplayCategories = [
  {code: "APPLICATION", name: "Application"},
  {code: "ANDROID_WEAR", name: "Android Wear"},
  {code: "ART_AND_DESIGN", name: "Art and Design"},
- {code: "AUTO_AND_VEHICLES", name: "Auto and Vehicles"},
+ {code: "AUTO_AND_VEHICLES", name: "Auto and Vehicle"},
  {code: "BEAUTY", name: "Beauty"},
  {code: "BOOKS_AND_REFERENCE", name: "Books and Reference"},
  {code: "BUSINESS", name: "Business"},
