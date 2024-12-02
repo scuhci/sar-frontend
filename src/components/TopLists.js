@@ -201,7 +201,7 @@ const TopLists = ({flipState}) => {
       );
 
       const relog_response = await axios.get(
-        `/download-top-relog?query=${downloadQuery}&includePermissions=${checked}&totalCount=${totalCount}`,
+        `/download-top-relog?collection=${collection}&category=${category}&country=${country}&includePermissions=${checked}&totalCount=${totalCount}`,
         {
           responseType: "blob", //handling the binary data
           headers: {
