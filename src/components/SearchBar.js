@@ -1,10 +1,11 @@
 import React, { useState } from "react";
-import { TextField, Button, Typography } from "@mui/material";
+import { TextField, Button, Typography} from "@mui/material";
 import { DataGrid } from "@mui/x-data-grid";
 import axios from "axios";
 import "../css/SearchBar.css";
 import Loading from "./Loading";
 import ExampleSearches from "./ExampleSearches";
+import ExampleTopCharts from "./ExampleTopCharts";
 import { columns } from "../constants/columns";
 import { permissionColumns } from "../constants/permissionColumns";
 import Link from "@mui/material/Link";

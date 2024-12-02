@@ -36,6 +36,7 @@ const TopLists = ({flipState}) => {
   const [showTable, setShowTable] = useState(false);
   const [checked, setChecked] = useState(false);
   const [downloadQuery, setDownloadQuery] = useState('TOP_FREEUS');
+  const [fullQuery, setFullQuery] = useState(['Top Free']);
 
   const rows = displayPermissions
     ? searchResults
@@ -158,6 +159,11 @@ const TopLists = ({flipState}) => {
         setSearchResults(response.data.results);
         setTotalCount(response.data.totalCount);
         setIsLoading(false);
+        setFullQuery([
+          getNameByCode(gplayCategories, category),
+          getNameByCode(gplayCollections, collection),
+          getNameByCode(countrycode_list, country),
+        ]);
       })
       .catch((error) => {
         if (axios.isCancel(error)) {
@@ -171,6 +177,11 @@ const TopLists = ({flipState}) => {
         setSearchResults([]);
         setTotalCount(0);
         setIsLoading(false);
+        setFullQuery([
+          getNameByCode(gplayCategories, category),
+          getNameByCode(gplayCollections, collection),
+          getNameByCode(countrycode_list, country),
+        ]);
       });
   };
 
@@ -324,8 +335,8 @@ const TopLists = ({flipState}) => {
       { showTable && (totalCount > 0 ? (
         <>
         <div className="search-result-text">
-            {totalCount === 1 ? (<Typography variant="h5">{totalCount} Result for {getNameByCode(gplayCollections, collection)} {getNameByCode(gplayCategories, category)} Apps in {getNameByCode(countrycode_list, country)}</Typography>) :
-            (<Typography variant="h5">{totalCount} Results for {getNameByCode(gplayCollections, collection)} {getNameByCode(gplayCategories, category)} Apps in {getNameByCode(countrycode_list, country)}</Typography>)}
+            {totalCount === 1 ? (<Typography variant="h5">{totalCount} Result for {fullQuery[0]} {fullQuery[1]} Apps in the {fullQuery[2]}</Typography>) :
+            (<Typography variant="h5">{totalCount} Results for {fullQuery[0]} {fullQuery[1]} Apps in the {fullQuery[2]}</Typography>)}
         </div>
         <div className="data-grid-container">
             <DataGrid
@@ -356,7 +367,13 @@ const TopLists = ({flipState}) => {
         ) : (
           <>
           <div>
-            <Typography variant="h5">No Results found for {getNameByCode(gplayCollections, collection)} {getNameByCode(gplayCategories, category)} Apps in {getNameByCode(countrycode_list, country)}</Typography>
+            <Typography variant="h4" align="center">
+              No Results Found 
+            </Typography>
+            <Typography variant="body1">
+              We could not fetch the <strong>{fullQuery[0]} {fullQuery[1]}</strong> Apps in the <strong>{fullQuery[2]}</strong> right now.
+              This might be due to restrictions or unavailability. Please try again later or explore other options.
+            </Typography>
             <Box display="flex" justifyContent="center" alignItems="center">
                 <img src={'/noresultsfound.png'} className="inline-image-nb" alt="image"/>
             </Box>

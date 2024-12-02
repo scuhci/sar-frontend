@@ -15,7 +15,7 @@ const NavigationBar = ({ refresh, refreshTopLists }) => {
                 </Typography>
                 <div>
                   <Button onClick={refresh} color="inherit" component={Link} to="/">Home</Button>
-                  <Button onClick={refreshTopLists} color="inherit" component={Link} to="/toplists">Top Lists</Button>
+                  <Button onClick={refreshTopLists} color="inherit" component={Link} to="/toplists">Top Charts</Button>
                   <Button color="inherit" component={Link} to="/userguide">User Guide</Button>
                   <Button color="inherit" component={Link} to="/about">About</Button>
                 </div>
