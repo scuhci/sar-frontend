@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { TextField, Button, Typography, Box } from "@mui/material";
+import { TextField, Button, Typography} from "@mui/material";
 import { DataGrid } from "@mui/x-data-grid";
 import axios from "axios";
 import "../css/SearchBar.css";
@@ -8,6 +8,7 @@ import ExampleSearches from "./ExampleSearches";
 import { columns } from "../constants/columns";
 import { permissionColumns } from "../constants/permissionColumns";
 import { countryCode_list } from "../constants/countryCodes"
+import NoResults from "./NoResults";
 import Link from "@mui/material/Link";
 
 // For the checkbox
@@ -332,14 +333,7 @@ const SearchBar = ({ flipState }) => {
                 </div>
               </> 
               ) : (
-                <>
-                <div>
-                  <Typography variant="h5">No Results found for "{fixedSearchQuery}"</Typography>
-                  <Box display="flex" justifyContent="center" alignItems="center">
-                      <img src={'/noresultsfound.png'} className="inline-image-nb" alt="image"/>
-                  </Box>
-                </div>
-                </>
+                <NoResults fixedSearchQuery={fixedSearchQuery}/>
               )) : (
                 !isLoading && 
                 ( <div className="example-searches-container">
