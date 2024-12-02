@@ -18,7 +18,7 @@ const TopCharts = ({ flipState }) => {
     <>
       <div className="home-container">
         <Typography variant="h3" className="home-header">
-          Systematic Mobile Application Reviews - Top Lists
+          Systematic Mobile Application Reviews - Top Charts
           <Chip
             color="success"
             onClick={function () {}}

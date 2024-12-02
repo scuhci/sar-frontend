@@ -160,8 +160,8 @@ const TopLists = ({flipState}) => {
         setTotalCount(response.data.totalCount);
         setIsLoading(false);
         setFullQuery([
-          getNameByCode(gplayCategories, category),
           getNameByCode(gplayCollections, collection),
+          getNameByCode(gplayCategories, category),
           getNameByCode(countrycode_list, country),
         ]);
       })
@@ -178,8 +178,8 @@ const TopLists = ({flipState}) => {
         setTotalCount(0);
         setIsLoading(false);
         setFullQuery([
-          getNameByCode(gplayCategories, category),
           getNameByCode(gplayCollections, collection),
+          getNameByCode(gplayCategories, category),
           getNameByCode(countrycode_list, country),
         ]);
       });
@@ -335,8 +335,8 @@ const TopLists = ({flipState}) => {
       { showTable && (totalCount > 0 ? (
         <>
         <div className="search-result-text">
-            {totalCount === 1 ? (<Typography variant="h5">{totalCount} Result for {fullQuery[0]} {fullQuery[1]} Apps in the {fullQuery[2]}</Typography>) :
-            (<Typography variant="h5">{totalCount} Results for {fullQuery[0]} {fullQuery[1]} Apps in the {fullQuery[2]}</Typography>)}
+            {totalCount === 1 ? (<Typography variant="h5">{totalCount} Result for {fullQuery[0]} {fullQuery[1]} Apps in {fullQuery[2]}</Typography>) :
+            (<Typography variant="h5">{totalCount} Results for {fullQuery[0]} {fullQuery[1]} Apps in {fullQuery[2]}</Typography>)}
         </div>
         <div className="data-grid-container">
             <DataGrid
@@ -371,7 +371,7 @@ const TopLists = ({flipState}) => {
               No Results Found 
             </Typography>
             <Typography variant="body1">
-              We could not fetch the <strong>{fullQuery[0]} {fullQuery[1]}</strong> Apps in the <strong>{fullQuery[2]}</strong> right now.
+              We could not fetch the <strong>{fullQuery[0]} {fullQuery[1]}</strong> Apps in <strong>{fullQuery[2]}</strong> right now.
               This might be due to restrictions or unavailability. Please try again later or explore other options.
             </Typography>
             <Box display="flex" justifyContent="center" alignItems="center">
