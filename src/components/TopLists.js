@@ -1,7 +1,7 @@
 import React, {useState} from 'react';
 import '../css/TopList.css';
 import "../css/SearchBar.css";
-import { Select, FormControl, MenuItem, InputLabel, Typography, Button, Box } from '@mui/material';
+import { Select, FormControl, MenuItem, InputLabel, Typography, Button} from '@mui/material';
 import { DataGrid } from "@mui/x-data-grid";
 import { gplayCategories, gplayCollections } from '../constants/topListCategories';
 import { countrycode_list } from '../constants/countryCodes';
@@ -9,6 +9,7 @@ import axios from "axios";
 import { columns } from "../constants/columns";
 import { permissionColumns } from "../constants/permissionColumns";
 import LoadingTopLists from "./LoadingTopLists";
+import NoResults from "./NoResults";
 
 // For the checkbox
 import FormGroup from "@mui/material/FormGroup";
@@ -365,20 +366,7 @@ const TopLists = ({flipState}) => {
         </div>
         </>
         ) : (
-          <>
-          <div>
-            <Typography variant="h4" align="center">
-              No Results Found 
-            </Typography>
-            <Typography variant="body1">
-              We could not fetch the <strong>{fullQuery[0]} {fullQuery[1]}</strong> Apps in <strong>{fullQuery[2]}</strong> right now.
-              This might be due to restrictions or unavailability. Please try again later or explore other options.
-            </Typography>
-            <Box display="flex" justifyContent="center" alignItems="center">
-                <img src={'/noresultsfound.png'} className="inline-image-nb" alt="image"/>
-            </Box>
-          </div>
-          </>
+          <NoResults/>
         ))
       }
     </div>
