@@ -55,7 +55,7 @@ const SearchBar = ({ flipState, selectedScraper }) => {
     ? searchResults.map((application) => ({
         ...application,
         reviewsCount: application.reviews,
-        reviews: [application.reviews, application.appId],
+        reviews: [application.reviews, application.appId, application.country],
 
         // PERMISSIONS
         // All truncated to two(ish) most relevant words.'
@@ -101,7 +101,7 @@ const SearchBar = ({ flipState, selectedScraper }) => {
     : searchResults.map((application) => ({
         ...application,
         reviewsCount: application.reviews,
-        reviews: [application.reviews, application.appId],
+        reviews: [application.reviews, application.appId, application.country],
       }));
 
   const handleCountryChange = (newCountry) => {
@@ -141,7 +141,7 @@ const SearchBar = ({ flipState, selectedScraper }) => {
       .get(
         selectedScraper === "Play Store"
           ? `${SAR_BACKEND_URL}/search?query=${term}&includePermissions=${checked}&countryCode=${country}`
-          : `${SAR_IOS_BACKEND_URL}/search?query=${term}`, // Change to URL for app store scraper
+          : `${SAR_IOS_BACKEND_URL}/search?query=${term}&countryCode=${country}`, // Change to URL for app store scraper
         {
           signal: newAbortController.signal,
         }
@@ -188,8 +188,8 @@ const SearchBar = ({ flipState, selectedScraper }) => {
     try {
       const response = await axios.get(
         selectedScraper === "Play Store"
-          ? `${SAR_BACKEND_URL}/download-csv?query=${fixedSearchQuery}&includePermissions=${checked}`
-          : `${SAR_IOS_BACKEND_URL}/download-csv?query=${fixedSearchQuery}`, // Change to URL for app store scraper
+          ? `${SAR_BACKEND_URL}/download-csv?query=${fixedSearchQuery}&includePermissions=${checked}&countryCode=${country}`
+          : `${SAR_IOS_BACKEND_URL}/download-csv?query=${fixedSearchQuery}&countryCode=${country}`, // Change to URL for app store scraper
         {
           responseType: "blob", //handling the binary data
           headers: {
@@ -200,8 +200,8 @@ const SearchBar = ({ flipState, selectedScraper }) => {
 
       const relog_response = await axios.get(
         selectedScraper === "Play Store"
-          ? `${SAR_BACKEND_URL}/download-relog?query=${fixedSearchQuery}&includePermissions=${checked}&totalCount=${totalCount}`
-          : `${SAR_IOS_BACKEND_URL}/download-relog?query=${fixedSearchQuery}&totalCount=${totalCount}`, // Change to URL for app store scraper
+          ? `${SAR_BACKEND_URL}/download-relog?query=${fixedSearchQuery}&includePermissions=${checked}&totalCount=${totalCount}&countryCode=${country}&store=${'Google Play Store'}`
+          : `${SAR_IOS_BACKEND_URL}/download-relog?query=${fixedSearchQuery}&totalCount=${totalCount}&countryCode=${country}&store=${'iOS App Store'}`, // Change to URL for app store scraper
         {
           responseType: "blob", //handling the binary data
           headers: {
