@@ -55,11 +55,24 @@ const renderHeader = (fieldName) => {
 };
 
 // Function to render a button to scrape reviews from an app
-// only if review count does not exceed 100,000
+// only if review count is greater than 0 and less than 100,000
 const renderScrapeReviewButton = (params) => {
-  if (params.value[0] < 100000) {
-    return DownloadReviews(params.value[1]);
-  } else {
+  // Disable button if no reviews found
+  if (params.value[0] <= 0) {
+    return (
+      <div className="Reviews count & button">
+        <Tooltip title="Unable to scrape reviews for this app due to no reviews being found.">
+          <span>
+            <Button disabled variant="outlined" size="small">
+              <strong>Scrape Reviews</strong>
+            </Button>
+          </span>
+        </Tooltip>
+      </div>
+    );
+  }
+  // Disable button if too many reviews found
+  if (params.value[0] >= 100000) {
     return (
       <div className="Reviews count & button">
         <Tooltip title="Unable to scrape reviews for this app due to review count being greater than max 100000 reviews.">
@@ -72,6 +85,7 @@ const renderScrapeReviewButton = (params) => {
       </div>
     );
   }
+  return DownloadReviews(params.value[1], params.value[2]);
 };
 
 // Function to render avatar for icon column
@@ -79,7 +93,7 @@ const renderIcon = (params) => <Avatar src={params.value} alt="Icon" />;
 
 // Keep track of fields that are boolean values
 // so their renderCell attribute is diferent
-const booleanFields = ["available", "offersIAP", "adSupported"];
+const booleanFields = ["available", "offersIAP", "adSupported", "downloadable"];
 
 // Helper function for creating renderCell attribute
 // For fields "review" and "icon", returns their respective renderCell functions
@@ -164,6 +178,7 @@ const fieldNames = [
   "contentRating",
   "adSupported",
   "released",
+  "country",
   "version",
   "recentChanges",
 ];
@@ -209,12 +224,13 @@ const removedFieldNames = [
   "originalPrice",
   "discountEndDate",
   "downloadable",
-  "inAppPurchases",
-  "inAppPurchasesPriceRange",
+  "available",
+  "offersIAP",
+  "IAPRange",
   "developerEmail",
   "developerAddress",
-  "privacyPolicyURL",
-  "inAppAdvertisements",
+  "privacyPolicy",
+  "adSupported",
 ];
 
 // List of fields that are renamed in 'App Store' scraper

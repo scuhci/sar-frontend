@@ -8,7 +8,7 @@ const DownloadReviews = (appId, countryCode) => {
     const [isLoading, setIsLoading] = useState(false);
     const [abortController, setAbortController] = useState(null);
 
-    // console.log("Country Code: %s\n", countryCode);
+    console.log("Country Code: %s\n", countryCode);
 
     const handleCancel = () => {
         abortController.abort();
@@ -23,9 +23,9 @@ const DownloadReviews = (appId, countryCode) => {
           
             const newAbortController = new AbortController();
             setAbortController(newAbortController);
-            // console.log("Country Code is %s\n", countryCode);
+            console.log("Country Code is %s\n", countryCode);
             setIsLoading(true);
-            const response = await axios.get(`${SAR_BACKEND_URL}/reviews?appId=${appId}&countryCode=${countryCode}`, {
+            const response = await axios.get(`/reviews?appId=${appId}&countryCode=${countryCode}`, {
                 signal: newAbortController.signal,
                 responseType: 'blob', //handling the binary data
                 headers: {
@@ -50,7 +50,7 @@ const DownloadReviews = (appId, countryCode) => {
             console.log(`Filename from header: ${filename}`);
 
             // Create a URL from the blob
-            const url = window.URL.createObjectURL(new Blob([response.data]));
+            const url = window.URL.createObjectURL(new Blob(["\ufeff", response.data], { type: 'text/csv;charset=utf-8' }));
 
             // Create a link element, set the href to the blob URL, and trigger a download
             const link = document.createElement('a');

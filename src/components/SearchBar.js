@@ -11,8 +11,14 @@ import {
   playStoreColumns,
 } from "../constants/columns";
 import { permissionColumns } from "../constants/permissionColumns";
-import { countryCode_list } from "../constants/countryCodes"
+import { countryCode_list } from "../constants/countryCodes";
 import Link from "@mui/material/Link";
+
+// Import Scraper backend URLs
+import {
+  SAR_BACKEND_URL,
+  SAR_IOS_BACKEND_URL,
+} from "../constants/urlConstants";
 
 // For the checkbox
 import FormGroup from "@mui/material/FormGroup";
@@ -30,6 +36,7 @@ let JSZip = require("jszip");
 
 const SearchBar = ({ flipState, selectedScraper }) => {
   const [searchQuery, setSearchQuery] = useState("");
+  const [resultsText, setResultsText] = useState("");
   const [fixedSearchQuery, setFixedSearchQuery] = useState("");
   const [searchResults, setSearchResults] = useState([]);
   const [isLoading, setIsLoading] = useState(false);
@@ -42,14 +49,13 @@ const SearchBar = ({ flipState, selectedScraper }) => {
     "smartphone addiction",
   ];
   const [displayPermissions, setDisplayPermissions] = React.useState(false);
-  const [country, setCountry] = useState("US")
-
+  const [country, setCountry] = useState("US");
 
   const rows = displayPermissions
     ? searchResults.map((application) => ({
         ...application,
         reviewsCount: application.reviews,
-        reviews: [application.reviews, application.appId],
+        reviews: [application.reviews, application.appId, application.country],
 
         // PERMISSIONS
         // All truncated to two(ish) most relevant words.'
@@ -95,8 +101,12 @@ const SearchBar = ({ flipState, selectedScraper }) => {
     : searchResults.map((application) => ({
         ...application,
         reviewsCount: application.reviews,
-        reviews: [application.reviews, application.appId],
+        reviews: [application.reviews, application.appId, application.country],
       }));
+
+  const handleCountryChange = (newCountry) => {
+    setCountry(newCountry);
+  };
 
   const handleSearchChange = (event) => {
     setSearchQuery(event.target.value);
@@ -117,11 +127,11 @@ const SearchBar = ({ flipState, selectedScraper }) => {
     //   if (countryCode_list.some((country) => country.Code === temp_countryCode))
     //   {
     //     console.log("Country Code -> Matched %s\n", temp_countryCode);
-    //   } 
-    //   else 
-    //   { 
+    //   }
+    //   else
+    //   {
     //     console.log("Country Code -> Not Matched: %s\n", temp_countryCode);
-    //     temp_countryCode = "US"; 
+    //     temp_countryCode = "US";
     //   }
     //   setCountryCode(temp_countryCode);
     //   term = term.slice(term.indexOf(" ") + 1);
@@ -130,8 +140,8 @@ const SearchBar = ({ flipState, selectedScraper }) => {
     axios
       .get(
         selectedScraper === "Play Store"
-          ? `${SAR_BACKEND_URL}/search?query=${term}&includePermissions=${checked}`
-          : `${SAR_BACKEND_URL}/search?query=${term}`, // Change to URL for app store scraper
+          ? `${SAR_BACKEND_URL}/search?query=${term}&includePermissions=${checked}&countryCode=${country}`
+          : `${SAR_IOS_BACKEND_URL}/search?query=${term}&countryCode=${country}`, // Change to URL for app store scraper
         {
           signal: newAbortController.signal,
         }
@@ -144,6 +154,8 @@ const SearchBar = ({ flipState, selectedScraper }) => {
           setDisplayPermissions(false);
         }
         setSearchResults(response.data.results);
+        // Only set results text after getting search results
+        setResultsText(term);
         setTotalCount(response.data.totalCount);
         setIsLoading(false);
       })
@@ -176,8 +188,8 @@ const SearchBar = ({ flipState, selectedScraper }) => {
     try {
       const response = await axios.get(
         selectedScraper === "Play Store"
-          ? `${SAR_BACKEND_URL}/download-csv?query=${fixedSearchQuery}&includePermissions=${checked}`
-          : `${SAR_BACKEND_URL}/download-csv?query=${fixedSearchQuery}`, // Change to URL for app store scraper
+          ? `${SAR_BACKEND_URL}/download-csv?query=${fixedSearchQuery}&includePermissions=${checked}&countryCode=${country}`
+          : `${SAR_IOS_BACKEND_URL}/download-csv?query=${fixedSearchQuery}&countryCode=${country}`, // Change to URL for app store scraper
         {
           responseType: "blob", //handling the binary data
           headers: {
@@ -188,8 +200,8 @@ const SearchBar = ({ flipState, selectedScraper }) => {
 
       const relog_response = await axios.get(
         selectedScraper === "Play Store"
-          ? `${SAR_BACKEND_URL}/download-relog?query=${fixedSearchQuery}&includePermissions=${checked}&totalCount=${totalCount}`
-          : `${SAR_BACKEND_URL}/download-relog?query=${fixedSearchQuery}&totalCount=${totalCount}`, // Change to URL for app store scraper
+          ? `${SAR_BACKEND_URL}/download-relog?query=${fixedSearchQuery}&includePermissions=${checked}&totalCount=${totalCount}&countryCode=${country}&store=${'Google Play Store'}`
+          : `${SAR_IOS_BACKEND_URL}/download-relog?query=${fixedSearchQuery}&totalCount=${totalCount}&countryCode=${country}&store=${'iOS App Store'}`, // Change to URL for app store scraper
         {
           responseType: "blob", //handling the binary data
           headers: {
@@ -208,13 +220,18 @@ const SearchBar = ({ flipState, selectedScraper }) => {
           filename = matches[2];
         }
       }
-      console.log(`Filename from header: ${filename}`);
+      console.log(`Filename from header: ${decodeURI(filename)}`);
+      filename = decodeURI(filename);
       const filename_relog = filename.slice(0, -4) + "_relog.txt";
       const filename_zip = filename.slice(0, -4) + ".zip";
       console.log(`Relog filename from header: ${filename_relog}`);
       // Create a URL from the blob
-      const csv_file = new Blob([response.data]);
-      const relog_file = new Blob([relog_response.data]);
+      const csv_file = new Blob(["\ufeff", response.data], {
+        type: "text/csv;charset=utf-8",
+      });
+      const relog_file = new Blob(["\ufeff", relog_response.data], {
+        type: "text/plain;charset=utf-8",
+      });
       const zip = new JSZip();
       zip.file(filename, csv_file);
       zip.file(filename_relog, relog_file);
@@ -240,8 +257,6 @@ const SearchBar = ({ flipState, selectedScraper }) => {
     handleSearchSubmit(term);
   };
 
-  //! How should we add this functionality?
-  // Clear search results when the scraper switches
   useEffect(() => {
     setSearchResults([]);
   }, [selectedScraper]);
@@ -267,46 +282,58 @@ const SearchBar = ({ flipState, selectedScraper }) => {
           disabled={isLoading}
         >
           {selectedScraper === "Play Store"
-            ? "Search Play Store"
-            : "Search App Store"}
+            ? "Scrape Play Store"
+            : "Scrape App Store"}
         </Button>
       </div>
-      {selectedScraper === "Play Store" && (
-        <div className="permissions-checkbox">
-          <Stack
-            direction="row"
-            justifyContent="flex-start"
-            alignItems="center"
-            spacing={0.1}
-          >
-            <FormGroup>
-              <FormControlLabel
-                control={
-                  <Checkbox
-                    size="small"
-                    checked={checked}
-                    onChange={handleChange}
+      <div className="search-bar-params">
+        <Stack
+          direction="row"
+          justifyContent="flex-start"
+          alignItems="center"
+          spacing={3}
+        >
+          <Dropdown handler={handleCountryChange} />
+          {selectedScraper === "Play Store" && (
+            <div className="permissions-checkbox">
+              <Stack
+                direction="row"
+                justifyContent="flex-start"
+                alignItems="center"
+                spacing={0.1}
+              >
+                <FormGroup>
+                  <FormControlLabel
+                    control={
+                      <Checkbox
+                        size="small"
+                        checked={checked}
+                        onChange={handleChange}
+                      />
+                    }
+                    label={
+                      <React.Fragment>
+                        <Stack alignItems="center" direction="row" gap={0.3}>
+                          Include permissions in scrape
+                          <Tooltip title="It takes an additional 1-5 minutes to scrape the permissions that apps access (e.g, “read your contacts” and “take pictures and videos”)">
+                            <InfoIcon fontSize="small" />
+                          </Tooltip>
+                        </Stack>
+                      </React.Fragment>
+                    }
                   />
-                }
-                label={
-                  <React.Fragment>
-                    <Stack alignItems="center" direction="row" gap={0.3}>
-                      Include permissions in scrape
-                      <Tooltip title="It takes an additional 1-5 minutes to scrape the permissions that apps access (e.g, “read your contacts” and “take pictures and videos”)">
-                        <InfoIcon fontSize="small" />
-                      </Tooltip>
-                    </Stack>
-                  </React.Fragment>
-                }
-              />
-            </FormGroup>
-          </Stack>
-        </div>
-      )}
+                </FormGroup>
+              </Stack>
+            </div>
+          )}
+        </Stack>
+      </div>
+
       <Loading
         open={isLoading}
         onCancel={handleCancel}
         searchQuery={searchQuery}
+        selectedScraper={selectedScraper}
       />
       {searchResults.length > 0 ? (
         <>
