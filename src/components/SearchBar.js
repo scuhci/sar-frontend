@@ -264,6 +264,7 @@ const SearchBar = ({ flipState, selectedScraper }) => {
   return (
     <div className="search-bar-container">
       <div className="search-and-button-container">
+        <Dropdown handler={handleCountryChange} />
         <TextField
           label="Scrape by keyword (e.g., puzzle games) or package name (e.g., com.facebook.katana)"
           variant="outlined"
@@ -293,9 +294,8 @@ const SearchBar = ({ flipState, selectedScraper }) => {
           alignItems="center"
           spacing={3}
         >
-          <Dropdown handler={handleCountryChange} />
           {selectedScraper === "Play Store" && (
-            <div className="permissions-checkbox">
+            <div className='permissions-checkbox' style={{ marginLeft: '10px' }}>
               <Stack
                 direction="row"
                 justifyContent="flex-start"
