@@ -1,4 +1,5 @@
-import React, {useState} from 'react';
+import React, {useState, useEffect} from 'react';
+import { useLocation } from 'react-router-dom';
 import '../css/TopList.css';
 import "../css/SearchBar.css";
 import { Select, FormControl, MenuItem, InputLabel, Typography, Button} from '@mui/material';
@@ -26,6 +27,7 @@ let JSZip = require("jszip");
 
 
 const TopLists = ({flipState}) => {  
+  const location = useLocation();
   const [collection, setCollection] = useState('TOP_FREE');
   const [category, setCategory] = useState('');
   const [country, setCountry] = useState('US');
@@ -38,6 +40,12 @@ const TopLists = ({flipState}) => {
   const [checked, setChecked] = useState(false);
   const [downloadQuery, setDownloadQuery] = useState('TOP_FREEUS');
   const [fullQuery, setFullQuery] = useState(['Top Free']);
+
+  useEffect(() => {
+    if (location.state && location.state.collectionState) {
+      setCollection(location.state.collectionState);
+    }
+  }, [location.state]);
 
   const rows = displayPermissions
     ? searchResults

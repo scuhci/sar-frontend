@@ -36,6 +36,11 @@ const SearchBar = ({ flipState }) => {
     "self-care",
     "smartphone addiction",
   ];
+  const sampleTopChart = [
+    {code: "TOP_FREE", name: "Top Free"},
+    {code: "TOP_PAID", name: "Top Paid"},
+    {code: "GROSSING", name: "Top Grossing"},
+  ];
   const [displayPermissions, setDisplayPermissions] = useState(false);
 
   const rows = displayPermissions
@@ -296,6 +301,9 @@ const SearchBar = ({ flipState }) => {
                       <ExampleSearches 
                         sampleSearch={sampleSearch} 
                         onExampleSearch={handleExampleSearchClick}
+                      />
+                      <ExampleTopCharts 
+                        sampleTopChart={sampleTopChart}
                       />
                       <Typography variant="h5" className="no-search-message">Example Research: </Typography>
                       <Typography variant="body1" className="no-search-message">

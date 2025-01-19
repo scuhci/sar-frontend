@@ -1,31 +1,30 @@
 import React from 'react';
-import { Button, Typography, Chip } from '@mui/material';
+import { Button, Typography, Chip, Box } from '@mui/material';
 import "../css/ExampleSearches.css";
 import { useNavigate } from "react-router-dom";
 
-const ExampleTopCharts = () => {
+const ExampleTopCharts = ({sampleTopChart}) => {
   const navigate = useNavigate();
 
   const handleButtonClick = (dropdownValue) => {
-    navigate(`/toplists?dropdownValue=${dropdownValue}`);
+    navigate('/toplists', { state: { collectionState: dropdownValue } });
   };
   return (
     <div className="example-searches-container" style={{ textAlign: 'left' }}>
-      <Typography variant="h5">
-            Fetch Top Charts:
+      <Box display="flex" alignItems="center" gap={1}>
+        <Typography variant="h5" className='fetch-top-list'>
+              Fetch Top Charts:
         </Typography>
-      <Chip 
-        label="Top Free"
-        onClick={handleButtonClick("Top Free")}
-      />
-      <Chip 
-        label="Top Paid"
-        onClick={handleButtonClick("Top Paid")}
-      />
-      <Chip 
-        label="Top Grossing"
-        onClick={handleButtonClick("Top Grossing")}
-      />
+        {sampleTopChart.map(({code, name}, index) => (
+          <Button 
+            variant='outlined'
+            key={index}
+            className="example-top-list-button" 
+            onClick={() => handleButtonClick(code)}>
+            {name}
+          </Button>
+        ))}
+      </Box>
     </div>
   );
 }
