@@ -7,14 +7,11 @@
     font-size: 1.1rem; 
 }
 
-.fetch-top-list {
-    margin-right: 8px;
+.example-top-list-button {
+    background-color:#2196F30A;
+    border-color: #2196F33A;
 }
 
-.example-top-list-button {
-    margin-left: 8px;
-    margin-right: 8px;
-    margin-bottom: 8px;
-    text-transform: none;
-    font-size: 1.1rem; 
+.example-top-list-button:hover {
+    background-color: #2196F34A;
 }

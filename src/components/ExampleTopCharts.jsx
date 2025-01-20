@@ -1,6 +1,7 @@
 import React from 'react';
 import { Button, Typography, Chip, Box } from '@mui/material';
 import "../css/ExampleSearches.css";
+import { StyledEngineProvider } from '@mui/material';
 import { useNavigate } from "react-router-dom";
 
 const ExampleTopCharts = ({sampleTopChart}) => {
@@ -10,9 +11,10 @@ const ExampleTopCharts = ({sampleTopChart}) => {
     navigate('/toplists', { state: { collectionState: dropdownValue } });
   };
   return (
-    <div className="example-searches-container" style={{ textAlign: 'left' }}>
+    <StyledEngineProvider injectFirst>
+      <div className="example-searches-container" style={{ textAlign: 'left' }}>
       <Box display="flex" alignItems="center" gap={1}>
-        <Typography variant="h5" className='fetch-top-list'>
+        <Typography variant="h5">
               Fetch Top Charts:
         </Typography>
         {sampleTopChart.map(({code, name}, index) => (
@@ -25,7 +27,8 @@ const ExampleTopCharts = ({sampleTopChart}) => {
           </Button>
         ))}
       </Box>
-    </div>
+      </div>
+    </StyledEngineProvider>
   );
 }
 
