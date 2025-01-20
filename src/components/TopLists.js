@@ -173,6 +173,8 @@ const TopLists = ({flipState}) => {
           getNameByCode(gplayCategories, category),
           getNameByCode(countrycode_list, country),
         ]);
+        setDownloadQuery(collection.concat(category, country));
+        console.log(downloadQuery);
       })
       .catch((error) => {
         if (axios.isCancel(error)) {
@@ -191,13 +193,13 @@ const TopLists = ({flipState}) => {
           getNameByCode(gplayCategories, category),
           getNameByCode(countrycode_list, country),
         ]);
+        setDownloadQuery(collection.concat(category, country));
+        console.log(downloadQuery);
       });
   };
 
   const handleDownloadAllResults = async () => {
     try {
-      setDownloadQuery(collection.concat(category, country));
-      console.log(downloadQuery);
       const response = await axios.get(
         `/download-top-csv?query=${downloadQuery}&includePermissions=${checked}`,
         {
