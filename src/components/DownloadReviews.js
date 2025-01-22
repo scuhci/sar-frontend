@@ -8,7 +8,7 @@ const DownloadReviews = (appId, countryCode) => {
     const [isLoading, setIsLoading] = useState(false);
     const [abortController, setAbortController] = useState(null);
 
-    // console.log("Country Code: %s\n", countryCode);
+    console.log("Country Code: %s\n", countryCode);
 
     const handleCancel = () => {
         abortController.abort();
@@ -23,7 +23,7 @@ const DownloadReviews = (appId, countryCode) => {
           
             const newAbortController = new AbortController();
             setAbortController(newAbortController);
-            // console.log("Country Code is %s\n", countryCode);
+            console.log("Country Code is %s\n", countryCode);
             setIsLoading(true);
             const response = await axios.get(`/reviews?appId=${appId}&countryCode=${countryCode}`, {
                 signal: newAbortController.signal,
