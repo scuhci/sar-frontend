@@ -14,12 +14,6 @@ import { permissionColumns } from "../constants/permissionColumns";
 import { countryCode_list } from "../constants/countryCodes";
 import Link from "@mui/material/Link";
 
-// Import Scraper backend URLs
-import {
-  SAR_BACKEND_URL,
-  SAR_IOS_BACKEND_URL,
-} from "../constants/urlConstants";
-
 // For the checkbox
 import FormGroup from "@mui/material/FormGroup";
 import FormControlLabel from "@mui/material/FormControlLabel";
@@ -140,8 +134,8 @@ const SearchBar = ({ flipState, selectedScraper }) => {
     axios
       .get(
         selectedScraper === "Play Store"
-          ? `${SAR_BACKEND_URL}/search?query=${term}&includePermissions=${checked}&countryCode=${country}`
-          : `${SAR_IOS_BACKEND_URL}/search?query=${term}&countryCode=${country}`, // Change to URL for app store scraper
+          ? `/search?query=${term}&includePermissions=${checked}&countryCode=${country}`
+          : `/ios/search?query=${term}&countryCode=${country}`, // Change to URL for app store scraper
         {
           signal: newAbortController.signal,
         }
@@ -188,8 +182,8 @@ const SearchBar = ({ flipState, selectedScraper }) => {
     try {
       const response = await axios.get(
         selectedScraper === "Play Store"
-          ? `${SAR_BACKEND_URL}/download-csv?query=${fixedSearchQuery}&includePermissions=${checked}&countryCode=${country}`
-          : `${SAR_IOS_BACKEND_URL}/download-csv?query=${fixedSearchQuery}&countryCode=${country}`, // Change to URL for app store scraper
+          ? `/download-csv?query=${fixedSearchQuery}&includePermissions=${checked}&countryCode=${country}`
+          : `/ios/download-csv?query=${fixedSearchQuery}&countryCode=${country}`, // Change to URL for app store scraper
         {
           responseType: "blob", //handling the binary data
           headers: {
@@ -200,8 +194,8 @@ const SearchBar = ({ flipState, selectedScraper }) => {
 
       const relog_response = await axios.get(
         selectedScraper === "Play Store"
-          ? `${SAR_BACKEND_URL}/download-relog?query=${fixedSearchQuery}&includePermissions=${checked}&totalCount=${totalCount}&countryCode=${country}&store=${'Google Play Store'}`
-          : `${SAR_IOS_BACKEND_URL}/download-relog?query=${fixedSearchQuery}&totalCount=${totalCount}&countryCode=${country}&store=${'iOS App Store'}`, // Change to URL for app store scraper
+          ? `/download-relog?query=${fixedSearchQuery}&includePermissions=${checked}&totalCount=${totalCount}&countryCode=${country}&store=${'Google Play Store'}`
+          : `/ios/download-relog?query=${fixedSearchQuery}&totalCount=${totalCount}&countryCode=${country}&store=${'iOS App Store'}`, // Change to URL for app store scraper
         {
           responseType: "blob", //handling the binary data
           headers: {
