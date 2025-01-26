@@ -2,10 +2,10 @@ import React, {useState, useEffect} from 'react';
 import { useLocation } from 'react-router-dom';
 import '../css/TopList.css';
 import "../css/SearchBar.css";
-import { Select, FormControl, MenuItem, InputLabel, Typography, Button} from '@mui/material';
+import { Select, FormControl, MenuItem, InputLabel, Typography, Button, FormLabel, RadioGroup, Radio} from '@mui/material';
 import { DataGrid } from "@mui/x-data-grid";
-import { gplayCategories, gplayCollections } from '../constants/topListCategories';
-import { countrycode_list } from '../constants/countryCodes';
+import { gplayCategories, gplayCollections, iosCategories, iosCollections, iosDevices } from '../constants/topListCategories';
+import { gplayCountries, iosCountries } from '../constants/countryCodes';
 import axios from "axios";
 import { columns } from "../constants/columns";
 import { permissionColumns } from "../constants/permissionColumns";
@@ -26,9 +26,10 @@ import { Tooltip } from "@mui/material";
 let JSZip = require("jszip");
 
 
-const TopLists = ({flipState}) => {  
+const TopLists = ({flipState, selectedScraper}) => {  
   const location = useLocation();
   const [collection, setCollection] = useState('TOP_FREE');
+  const [device, setDevice] = useState('MAC');
   const [category, setCategory] = useState('');
   const [country, setCountry] = useState('US');
   const [searchResults, setSearchResults] = useState([]);
@@ -44,8 +45,27 @@ const TopLists = ({flipState}) => {
   useEffect(() => {
     if (location.state && location.state.collectionState) {
       setCollection(location.state.collectionState);
+    } else {
+      console.log(selectedScraper);
+      setCollection(selectedScraper === 'Play Store' ? 'TOP_FREE': 'TOP_MAC')
+      setCategory("");
+      setCountry(selectedScraper === 'Play Store' ? 'US': 143441)
+      setDevice('MAC');
     }
-  }, [location.state]);
+  }, [location.state, selectedScraper, country]);
+
+  useEffect(() => {
+    if (selectedScraper === 'App Store') {
+      if (device === 'MAC') {
+        setCollection('TOP_MAC')
+      } else if (device === 'IOS') {
+        setCollection('NEW_IOS')
+      } else if (device === 'IPAD') {
+        setCollection('TOP_FREE_IPAD')
+      }
+    }
+  }, [device, selectedScraper]);
+
 
   const rows = displayPermissions
     ? searchResults
@@ -120,6 +140,13 @@ const TopLists = ({flipState}) => {
     }
   };
 
+  const handleDeviceChange = (event) => {
+    if (event.target) {
+      setDevice(event.target.value);
+      console.log(event.target.value);
+    }
+  };
+
   const handleCancel = () => {
     abortController.abort();
     setShowTable(false);
@@ -171,7 +198,7 @@ const TopLists = ({flipState}) => {
         setFullQuery([
           getNameByCode(gplayCollections, collection),
           getNameByCode(gplayCategories, category),
-          getNameByCode(countrycode_list, country),
+          getNameByCode(gplayCountries, country),
         ]);
         setDownloadQuery(collection.concat(category, country));
         console.log(downloadQuery);
@@ -191,7 +218,7 @@ const TopLists = ({flipState}) => {
         setFullQuery([
           getNameByCode(gplayCollections, collection),
           getNameByCode(gplayCategories, category),
-          getNameByCode(countrycode_list, country),
+          getNameByCode(gplayCountries, country),
         ]);
         setDownloadQuery(collection.concat(category, country));
         console.log(downloadQuery);
@@ -259,6 +286,35 @@ const TopLists = ({flipState}) => {
 
   return (
     <div className='toplist-container'>
+      {selectedScraper === "App Store" && (
+        <div>
+          <FormControl
+            component="fieldset"
+            sx={{
+              flexDirection: "row",
+              alignItems: "center",
+              gap: 2,
+            }}
+          >
+            <FormLabel id="demo-row-radio-buttons-group-label">Device</FormLabel>
+            <RadioGroup
+              row
+              aria-labelledby="demo-row-radio-buttons-group-label"
+              name="row-radio-buttons-group"
+              defaultValue="MAC"
+            >
+              {iosDevices.map(({name, code}, index) => (
+                <FormControlLabel
+                  value={code}
+                  control={<Radio />}
+                  label={name}
+                  onChange={handleDeviceChange}
+                />
+              ))}
+            </RadioGroup>
+          </FormControl>
+        </div>)
+      }
       <div className='toplist-search-button-container'>
         <FormControl fullWidth>
           <InputLabel id="country">Country*</InputLabel>
@@ -269,7 +325,7 @@ const TopLists = ({flipState}) => {
           label="country"
           onChange={handleCountryChange}
           > 
-            {countrycode_list.map(({code, name}, index) => (
+            {(selectedScraper === "Play Store" ? gplayCountries : iosCountries).map(({code, name}, index) => (
                 <MenuItem key={index} value={code}>
                   {name}
                 </MenuItem>
@@ -285,7 +341,7 @@ const TopLists = ({flipState}) => {
           label="collection"
           onChange={handleCollectionChange}
           >
-            {gplayCollections.map(({code, name}, index) => (
+            {(selectedScraper === "Play Store" ? gplayCollections : iosCollections.filter((item) => item.device === device).flatMap((item) => item.collections)).map(({code, name}, index) => (
                 <MenuItem key={index} value={code}>
                   {name}
                 </MenuItem>
@@ -301,7 +357,7 @@ const TopLists = ({flipState}) => {
           label="category"
           onChange={handleCategoryChange}
           > 
-            {gplayCategories.map(({code, name}, index) => (
+            {(selectedScraper === "Play Store" ? gplayCategories : iosCategories).map(({code, name}, index) => (
                 <MenuItem key={index} value={code}>
                   {name}
                 </MenuItem>
@@ -342,7 +398,7 @@ const TopLists = ({flipState}) => {
             </FormGroup>
         </Stack>
       </div>
-      <LoadingTopLists open={isLoading} onCancel={handleCancel} country={getNameByCode(countrycode_list, country)} collection={getNameByCode(gplayCollections, collection)} category={getNameByCode(gplayCategories, category)}/>
+      <LoadingTopLists open={isLoading} onCancel={handleCancel} country={getNameByCode(gplayCountries, country)} collection={getNameByCode(gplayCollections, collection)} category={getNameByCode(gplayCategories, category)}/>
       { showTable && (totalCount > 0 ? (
         <>
         <div className="search-result-text">
