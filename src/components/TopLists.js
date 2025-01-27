@@ -38,7 +38,7 @@ const TopLists = ({flipState, selectedScraper}) => {
   const [abortController, setAbortController] = useState(null);
   const [displayPermissions, setDisplayPermissions] = useState(false);
   const [showTable, setShowTable] = useState(false);
-  const [checked, setChecked] = useState(false);
+  const [includePermissions, setIncludePermissions] = useState(false);
   const [downloadQuery, setDownloadQuery] = useState('TOP_FREEUS');
   const [fullQuery, setFullQuery] = useState(['Top Free']);
 
@@ -160,7 +160,7 @@ const TopLists = ({flipState, selectedScraper}) => {
   };
 
   const handlePermissionChange = () => {
-    setChecked(!checked);
+    setIncludePermissions(!includePermissions);
   };
 
   const handleKeyDown = (event) => {
@@ -185,19 +185,15 @@ const TopLists = ({flipState, selectedScraper}) => {
     
     axios
       .get(
-        selectedScraper === 'Play Store' ? `/toplists?collection=${collection}&category=${category}&country=${country}&includePermissions=${checked}`
-        : `/ios/toplists?collection=${collection}&category=${category}&country=${country}&includePermissions=${checked}`,
+        selectedScraper === 'Play Store' ? `/toplists?collection=${collection}&category=${category}&country=${country}&includePermissions=${includePermissions}`
+        : `/ios/toplists?collection=${collection}&category=${category}&country=${country}&includePermissions=${includePermissions}`,
         {
           signal: newAbortController.signal,
         }
       )
       .then((response) => {
         flipState()
-        if (checked) {
-          setDisplayPermissions(true);
-        } else {
-          setDisplayPermissions(false);
-        }
+       setDisplayPermissions(includePermissions);
         setShowTable(true);
         setSearchResults(response.data.results);
         setTotalCount(response.data.totalCount);
@@ -243,7 +239,7 @@ const TopLists = ({flipState, selectedScraper}) => {
   const handleDownloadAllResults = async () => {
     try {
       const response = await axios.get(
-        `/download-top-csv?query=${downloadQuery}&includePermissions=${checked}`,
+        `/download-top-csv?query=${downloadQuery}&includePermissions=${includePermissions}`,
         {
           responseType: "blob", //handling the binary data
           headers: {
@@ -253,7 +249,7 @@ const TopLists = ({flipState, selectedScraper}) => {
       );
 
       const relog_response = await axios.get(
-        `/download-top-relog?collection=${collection}&category=${category}&country=${country}&includePermissions=${checked}&totalCount=${totalCount}`,
+        `/download-top-relog?collection=${collection}&category=${category}&country=${country}&includePermissions=${includePermissions}&totalCount=${totalCount}`,
         {
           responseType: "blob", //handling the binary data
           headers: {
@@ -371,7 +367,7 @@ const TopLists = ({flipState, selectedScraper}) => {
                 control={
                   <Checkbox
                   size="small"
-                  checked={checked}
+                  checked={includePermissions}
                   onChange={handlePermissionChange}
                   />} 
                 label={<React.Fragment>

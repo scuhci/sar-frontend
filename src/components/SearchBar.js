@@ -30,7 +30,7 @@ const SearchBar = ({ flipState }) => {
   const [isLoading, setIsLoading] = useState(false);
   const [totalCount, setTotalCount] = useState(0);
   const [abortController, setAbortController] = useState(null);
-  const [checked, setChecked] = useState(false);
+  const [includePermissions, setIncludePermissions] = useState(false);
   const sampleSearch = [
     "medication reminders",
     "self-care",
@@ -116,18 +116,14 @@ const SearchBar = ({ flipState }) => {
 
     axios
       .get(
-        `/search?query=${term}&includePermissions=${checked}`,
+        `/search?query=${term}&includePermissions=${includePermissions}`,
         {
           signal: newAbortController.signal,
         }
       )
       .then((response) => {
         flipState()
-        if (checked) {
-          setDisplayPermissions(true);
-        } else {
-          setDisplayPermissions(false);
-        }
+        setDisplayPermissions(includePermissions)
         setSearchResults(response.data.results);
         setTotalCount(response.data.totalCount);
         setIsLoading(false);
@@ -154,13 +150,13 @@ const SearchBar = ({ flipState }) => {
   };
 
   const handleChange = () => {
-    setChecked(!checked);
+    setIncludePermissions(!includePermissions);
   };
 
   const handleDownloadAllResults = async () => {
     try {
       const response = await axios.get(
-        `/download-csv?query=${fixedSearchQuery}&includePermissions=${checked}`,
+        `/download-csv?query=${fixedSearchQuery}&includePermissions=${includePermissions}`,
         {
           responseType: "blob", //handling the binary data
           headers: {
@@ -170,7 +166,7 @@ const SearchBar = ({ flipState }) => {
       );
 
       const relog_response = await axios.get(
-        `/download-relog?query=${fixedSearchQuery}&includePermissions=${checked}&totalCount=${totalCount}`,
+        `/download-relog?query=${fixedSearchQuery}&includePermissions=${includePermissions}&totalCount=${totalCount}`,
         {
           responseType: "blob", //handling the binary data
           headers: {
@@ -248,7 +244,7 @@ const SearchBar = ({ flipState }) => {
                     control={
                       <Checkbox
                       size="small"
-                      checked={checked}
+                      checked={includePermissions}
                       onChange={handleChange}
                       />} 
                     label={<React.Fragment>
