@@ -84,7 +84,7 @@ const TopLists = ({flipState, selectedScraper}) => {
         setCollection('topfreeipadapplications')
       }
     }
-  }, [device]);
+  }, [device, selectedScraper]);
 
   const rows = displayPermissions
     ? searchResults
