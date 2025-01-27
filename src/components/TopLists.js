@@ -45,27 +45,33 @@ const TopLists = ({flipState, selectedScraper}) => {
   useEffect(() => {
     if (location.state && location.state.collectionState) {
       setCollection(location.state.collectionState);
-    } else {
-      console.log(selectedScraper);
-      setCollection(selectedScraper === 'Play Store' ? 'TOP_FREE': 'TOP_MAC')
+    }
+  }, [location.state]);
+
+  useEffect(() => {
+    if (selectedScraper === 'Play Store') {
+      setCollection('TOP_FREE');
       setCategory("");
-      setCountry(selectedScraper === 'Play Store' ? 'US': 143441)
+      setCountry('US');
+    } else if (selectedScraper === 'App Store') {
+      setCollection('topmacapps')
+      setCategory("");
+      setCountry('US');
       setDevice('MAC');
     }
-  }, [location.state, selectedScraper, country]);
+  }, [selectedScraper]);
 
   useEffect(() => {
     if (selectedScraper === 'App Store') {
       if (device === 'MAC') {
-        setCollection('TOP_MAC')
+        setCollection('topmacapps')
       } else if (device === 'IOS') {
-        setCollection('NEW_IOS')
+        setCollection('newapplications')
       } else if (device === 'IPAD') {
-        setCollection('TOP_FREE_IPAD')
+        setCollection('topfreeipadapplications')
       }
     }
-  }, [device, selectedScraper]);
-
+  }, [device]);
 
   const rows = displayPermissions
     ? searchResults
@@ -179,7 +185,8 @@ const TopLists = ({flipState, selectedScraper}) => {
     
     axios
       .get(
-        `/toplists?collection=${collection}&category=${category}&country=${country}&includePermissions=${checked}`,
+        selectedScraper === 'Play Store' ? `/toplists?collection=${collection}&category=${category}&country=${country}&includePermissions=${checked}`
+        : `/ios/toplists?collection=${collection}&category=${category}&country=${country}&includePermissions=${checked}`,
         {
           signal: newAbortController.signal,
         }
@@ -215,11 +222,19 @@ const TopLists = ({flipState, selectedScraper}) => {
         setSearchResults([]);
         setTotalCount(0);
         setIsLoading(false);
-        setFullQuery([
-          getNameByCode(gplayCollections, collection),
-          getNameByCode(gplayCategories, category),
-          getNameByCode(gplayCountries, country),
-        ]);
+        if (selectedScraper === 'Play Store') {
+          setFullQuery([
+            getNameByCode(gplayCollections, collection),
+            getNameByCode(gplayCategories, category),
+            getNameByCode(gplayCountries, country),
+          ]);
+        } else {
+          setFullQuery([
+            getNameByCode(iosCollections, collection),
+            getNameByCode(iosCategories, category),
+            getNameByCode(iosCountries, country),
+          ]);
+        }
         setDownloadQuery(collection.concat(category, country));
         console.log(downloadQuery);
       });
@@ -286,35 +301,6 @@ const TopLists = ({flipState, selectedScraper}) => {
 
   return (
     <div className='toplist-container'>
-      {selectedScraper === "App Store" && (
-        <div>
-          <FormControl
-            component="fieldset"
-            sx={{
-              flexDirection: "row",
-              alignItems: "center",
-              gap: 2,
-            }}
-          >
-            <FormLabel id="demo-row-radio-buttons-group-label">Device</FormLabel>
-            <RadioGroup
-              row
-              aria-labelledby="demo-row-radio-buttons-group-label"
-              name="row-radio-buttons-group"
-              defaultValue="MAC"
-            >
-              {iosDevices.map(({name, code}, index) => (
-                <FormControlLabel
-                  value={code}
-                  control={<Radio />}
-                  label={name}
-                  onChange={handleDeviceChange}
-                />
-              ))}
-            </RadioGroup>
-          </FormControl>
-        </div>)
-      }
       <div className='toplist-search-button-container'>
         <FormControl fullWidth>
           <InputLabel id="country">Country*</InputLabel>
@@ -325,7 +311,7 @@ const TopLists = ({flipState, selectedScraper}) => {
           label="country"
           onChange={handleCountryChange}
           > 
-            {(selectedScraper === "Play Store" ? gplayCountries : iosCountries).map(({code, name}, index) => (
+            {(selectedScraper === "Play Store" ? gplayCountries : gplayCountries).map(({code, name}, index) => (
                 <MenuItem key={index} value={code}>
                   {name}
                 </MenuItem>
@@ -373,31 +359,62 @@ const TopLists = ({flipState, selectedScraper}) => {
           Search
         </Button>
       </div>
-      <div className='permissions-checkbox'>
-        <Stack 
-          direction="row" 
-          justifyContent="flex-start"
-          alignItems="center"
-          spacing={0.1}>
-            <FormGroup>
-              <FormControlLabel 
-              control={
-                <Checkbox
-                size="small"
-                checked={checked}
-                onChange={handlePermissionChange}
-                />} 
-              label={<React.Fragment>
-                <Stack alignItems="center" direction="row" gap={0.3}>
-                  Include permissions in scrape
-                  <Tooltip title="It takes an additional 1-5 minutes to scrape the permissions that apps access (e.g, “read your contacts” and “take pictures and videos”)">
-                    <InfoIcon fontSize='small'/>
-                  </Tooltip>
-                </Stack>
-                </React.Fragment>}/>
-            </FormGroup>
-        </Stack>
-      </div>
+      { selectedScraper === "Play Store" && (
+        <div className='permissions-checkbox'>
+          <Stack 
+            direction="row" 
+            justifyContent="flex-start"
+            alignItems="center"
+            spacing={0.1}>
+              <FormGroup>
+                <FormControlLabel 
+                control={
+                  <Checkbox
+                  size="small"
+                  checked={checked}
+                  onChange={handlePermissionChange}
+                  />} 
+                label={<React.Fragment>
+                  <Stack alignItems="center" direction="row" gap={0.3}>
+                    Include permissions in scrape
+                    <Tooltip title="It takes an additional 1-5 minutes to scrape the permissions that apps access (e.g, “read your contacts” and “take pictures and videos”)">
+                      <InfoIcon fontSize='small'/>
+                    </Tooltip>
+                  </Stack>
+                  </React.Fragment>}/>
+              </FormGroup>
+          </Stack>
+        </div>)}
+        {selectedScraper === "App Store" && (
+        <div>
+          <FormControl
+            component="fieldset"
+            sx={{
+              flexDirection: "row",
+              alignItems: "center",
+              gap: 2,
+            }}
+          >
+            <FormLabel id="demo-row-radio-buttons-group-label">Device</FormLabel>
+            <RadioGroup
+              row
+              aria-labelledby="demo-row-radio-buttons-group-label"
+              name="row-radio-buttons-group"
+              defaultValue="MAC"
+            >
+              {iosDevices.map(({name, code}, index) => (
+                <FormControlLabel
+                  value={code}
+                  control={<Radio />}
+                  label={name}
+                  key={index}
+                  onChange={handleDeviceChange}
+                />
+              ))}
+            </RadioGroup>
+          </FormControl>
+        </div>)
+      }
       <LoadingTopLists open={isLoading} onCancel={handleCancel} country={getNameByCode(gplayCountries, country)} collection={getNameByCode(gplayCollections, collection)} category={getNameByCode(gplayCategories, category)}/>
       { showTable && (totalCount > 0 ? (
         <>

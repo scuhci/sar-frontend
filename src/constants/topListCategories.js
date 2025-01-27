@@ -68,31 +68,31 @@ export const gplayCategories = [
 
 export const iosCollections = [
     {device: 'MAC', collections: [
-            {code: 'TOP_MAC', name: 'Top Mac Apps'},
-            {code: 'TOP_FREE_MAC', name: ' Top Free Mac Apps'},
-            {code: 'TOP_GROSSING_MAC', name: 'Top Grossing Mac Apps'},
-            {code: 'TOP_PAID_MAC', name: 'Top Paid Mac Apps'}
+            {code: 'topmacapps', name: 'Top Mac Apps'},
+            {code: 'topfreemacapps', name: ' Top Free Mac Apps'},
+            {code: 'topgrossingmacapps', name: 'Top Grossing Mac Apps'},
+            {code: 'toppaidmacapps', name: 'Top Paid Mac Apps'}
         ]
     },
     {device: 'IOS', collections: [
-            {code: 'NEW_IOS', name: 'New iOS Apps'},
-            {code: 'NEW_FREE_IOS', name: 'New Free iOS Apps'},
-            {code: 'NEW_PAID_IOS', name: 'New Paid iOS Apps'},
-            {code: 'TOP_FREE_IOS', name: 'Top Free iOS Apps'},
-            {code: 'TOP_PAID_IOS', name: 'Top Paid iOS Apps'},
-            {code: 'TOP_GROSSING_IOS', name: 'Top Grossing iOS Apps'},
+            {code: 'newapplications', name: 'New iOS Apps'},
+            {code: 'newfreeapplications', name: 'New Free iOS Apps'},
+            {code: 'newpaidapplications', name: 'New Paid iOS Apps'},
+            {code: 'topfreeapplications', name: 'Top Free iOS Apps'},
+            {code: 'toppaidapplications', name: 'Top Paid iOS Apps'},
+            {code: 'topgrossingapplications', name: 'Top Grossing iOS Apps'},
         ]
     },
     {device: 'IPAD', collections: [
-            {code: 'TOP_FREE_IPAD', name: 'Top Free iPad Apps'},
-            {code: 'TOP_PAID_IPAD', name: 'Top Paid iPad Apps'},
-            {code: 'TOP_GROSSING_IPAD', name: 'Top Grossing iPad Apps'}
+            {code: 'topfreeipadapplications', name: 'Top Free iPad Apps'},
+            {code: 'toppaidipadapplications', name: 'Top Paid iPad Apps'},
+            {code: 'topgrossingipadapplications', name: 'Top Grossing iPad Apps'}
         ]
     }
 ];
   
 export const iosCategories = [
-    {code: "", name: "Category (Optional)"},
+    {code: '', name: "Category (Optional)"},
     {name: 'Books', code: 6018},
     {name: 'Business', code: 6000},
     {name: 'Catalogs', code: 6022},
