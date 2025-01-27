@@ -61,6 +61,7 @@ const TopLists = ({flipState, selectedScraper}) => {
   }, [searchParams]);
 
   useEffect(() => {
+    setShowTable(false);
     if (selectedScraper === 'Play Store') {
       // Already set by search parameter
       // setCollection('TOP_FREE');
@@ -71,6 +72,7 @@ const TopLists = ({flipState, selectedScraper}) => {
       setCategory("");
       setCountry('US');
       setDevice('MAC');
+      setDisplayPermissions(false)
     }
   }, [selectedScraper]);
 
@@ -187,6 +189,11 @@ const TopLists = ({flipState, selectedScraper}) => {
     return entry ? (entry.code === "" ? "" : entry.name) : null;
   };
 
+  const getIosCategoryByCode = (list, code) => {
+    const entry = list.find(item => item.code === code);
+    return entry ? (entry.code === "" ? "" : entry.csvName) : null;
+  }
+
   const handleTopListQuery = () => {
     if (abortController) {
       abortController.abort();
@@ -199,7 +206,7 @@ const TopLists = ({flipState, selectedScraper}) => {
     axios
       .get(
         selectedScraper === 'Play Store' ? `/toplists?collection=${collection}&category=${category}&country=${country}&includePermissions=${includePermissions}`
-        : `/ios/toplists?collection=${collection}&category=${category}&country=${country}&includePermissions=${includePermissions}`,
+        : `/ios/toplists?collection=${collection}&category=${category}&categoryName=${getIosCategoryByCode(iosCategories, category)}&country=${country}&includePermissions=${includePermissions}`,
         {
           signal: newAbortController.signal,
         }
@@ -210,14 +217,6 @@ const TopLists = ({flipState, selectedScraper}) => {
         setShowTable(true);
         setSearchResults(response.data.results);
         setTotalCount(response.data.totalCount);
-        setIsLoading(false);
-        setFullQuery([
-          getNameByCode(gplayCollections, collection),
-          getNameByCode(gplayCategories, category),
-          getNameByCode(gplayCountries, country),
-        ]);
-        setDownloadQuery(collection.concat(category, country));
-        console.log(downloadQuery);
       })
       .catch((error) => {
         if (axios.isCancel(error)) {
@@ -230,29 +229,30 @@ const TopLists = ({flipState, selectedScraper}) => {
         }
         setSearchResults([]);
         setTotalCount(0);
-        setIsLoading(false);
-        if (selectedScraper === 'Play Store') {
-          setFullQuery([
-            getNameByCode(gplayCollections, collection),
-            getNameByCode(gplayCategories, category),
-            getNameByCode(gplayCountries, country),
-          ]);
-        } else {
-          setFullQuery([
-            getNameByCode(iosCollections, collection),
-            getNameByCode(iosCategories, category),
-            getNameByCode(iosCountries, country),
-          ]);
-        }
-        setDownloadQuery(collection.concat(category, country));
-        console.log(downloadQuery);
       });
+      setIsLoading(false);
+      console.log(downloadQuery);
+      if (selectedScraper === 'Play Store') {
+        setFullQuery([
+          getNameByCode(gplayCollections, collection),
+          getNameByCode(gplayCategories, category),
+          getNameByCode(gplayCountries, country),
+        ]);
+        setDownloadQuery(collection.concat(category, country));
+      } else {
+        setFullQuery([
+          getNameByCode(iosCollections, collection),
+          getNameByCode(iosCategories, category),
+          getNameByCode(gplayCountries, country),
+        ]);
+        setDownloadQuery(collection.concat(getIosCategoryByCode(iosCategories, category), country));
+      }
   };
 
   const handleDownloadAllResults = async () => {
     try {
       const response = await axios.get(
-        `/download-top-csv?query=${downloadQuery}&includePermissions=${includePermissions}`,
+        `/download-top-csv?query=${downloadQuery}&includePermissions=${checked}`,
         {
           responseType: "blob", //handling the binary data
           headers: {
@@ -262,7 +262,7 @@ const TopLists = ({flipState, selectedScraper}) => {
       );
 
       const relog_response = await axios.get(
-        `/download-top-relog?collection=${collection}&category=${category}&country=${country}&includePermissions=${includePermissions}&totalCount=${totalCount}`,
+        `/download-top-relog?collection=${collection}&category=${category}&country=${country}&includePermissions=${checked}&totalCount=${totalCount}`,
         {
           responseType: "blob", //handling the binary data
           headers: {
@@ -327,6 +327,26 @@ const TopLists = ({flipState, selectedScraper}) => {
             ))}
           </Select>
         </FormControl>
+        { selectedScraper === "App Store" && (
+          <>
+          <FormControl fullWidth>
+            <InputLabel id="device">Device*</InputLabel>
+            <Select
+            labelId="device-label"
+            id="device"
+            value={device}
+            label="device"
+            onChange={handleDeviceChange}
+            >
+              {iosDevices.map(({code, name}, index) => (
+                  <MenuItem key={index} value={code}>
+                    {name}
+                  </MenuItem>
+              ))}
+            </Select>
+          </FormControl>
+          </>
+        )}
         <FormControl fullWidth>
           <InputLabel id="collection">Collection*</InputLabel>
           <Select
@@ -335,7 +355,7 @@ const TopLists = ({flipState, selectedScraper}) => {
           value={collection}
           label="collection"
           onChange={handleCollectionChange}
-          >
+          > 
             {(selectedScraper === "Play Store" ? gplayCollections : iosCollections.filter((item) => item.device === device).flatMap((item) => item.collections)).map(({code, name}, index) => (
                 <MenuItem key={index} value={code}>
                   {name}
@@ -393,35 +413,6 @@ const TopLists = ({flipState, selectedScraper}) => {
                   </React.Fragment>}/>
               </FormGroup>
           </Stack>
-        </div>)}
-        {selectedScraper === "App Store" && (
-        <div>
-          <FormControl
-            component="fieldset"
-            sx={{
-              flexDirection: "row",
-              alignItems: "center",
-              gap: 2,
-            }}
-          >
-            <FormLabel id="demo-row-radio-buttons-group-label">Device</FormLabel>
-            <RadioGroup
-              row
-              aria-labelledby="demo-row-radio-buttons-group-label"
-              name="row-radio-buttons-group"
-              defaultValue="MAC"
-            >
-              {iosDevices.map(({name, code}, index) => (
-                <FormControlLabel
-                  value={code}
-                  control={<Radio />}
-                  label={name}
-                  key={index}
-                  onChange={handleDeviceChange}
-                />
-              ))}
-            </RadioGroup>
-          </FormControl>
         </div>)
       }
       <LoadingTopLists open={isLoading} onCancel={handleCancel} country={getNameByCode(gplayCountries, country)} collection={getNameByCode(gplayCollections, collection)} category={getNameByCode(gplayCategories, category)}/>
