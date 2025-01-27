@@ -1,8 +1,8 @@
 # SMAR Tool for Systematic Mobile Application Reviews
 
-A tool for academic researchers to conduct a keyword search of Google Play and get back the metadata for all relevant apps. 
+A tool for academic researchers to conduct a keyword search of the Google Play & iOS App Stores and get back the metadata for all relevant apps. 
 
-**This project is stil a work in progress.** You can view our beta site at [smar-tool.org](http://smar-tool.org/). Also, take a look at our [User Guide](https://smar-team.s3.us-west-1.amazonaws.com/user-guide/SMAR+User+Guide.pdf) for an in-depth overview of how to use our application.
+**This project is ongoing!** You can view our beta site at [smar-tool.org](http://smar-tool.org/). Also, take a look at our [User Guide](https://smar-team.s3.us-west-1.amazonaws.com/user-guide/SMAR+User+Guide.pdf) for an in-depth overview of how to use our application.
 
 Our [backend code](https://github.com/scuhci/SAR-backend/) can be found here.
 
@@ -26,7 +26,6 @@ This project was made with love at the [Santa Clara University HCI Lab](https://
 **Technical Consulting Team** 🗒️
 
 - Soham Phadke | [LinkedIn](https://www.linkedin.com/in/soham-phadke/) | [Email](mailto:smphadke24@gmail.com)
-- Juilee Katpatal | [LinkedIn](https://www.linkedin.com/in/zuilee/) 
 
 **Literature Review Team** 📖
 - Katrina Ying | [LinkedIn](https://www.linkedin.com/in/katrinaying/)
@@ -37,6 +36,7 @@ This project was made with love at the [Santa Clara University HCI Lab](https://
 - Akaash Trivedi
 - Vaishnavi Upadhye
 - Rani Rajurkar
+- Juilee Katpatal 
 
 ## Running SMAR Locally
 
@@ -45,8 +45,10 @@ This project was made with love at the [Santa Clara University HCI Lab](https://
 
 1. Clone down the `sar-frontend` and `SAR-backend` repositories to your local machine.
 
-2. To use our stable, deployed branch: `git checkout production` in both the frontend and backend repositories.
+2. To use our stable, deployed branch: `git checkout production` in the frontend repository.  You will need to open 2 backend terminals, 1 with `git checkout gplay-backend` and 1 with `git checkout ios-backend`. By default, the production frontend connects directly to the live SMAR backend. If you would like to run the backends locally, you will need to modify backend calls to go to your local machine rather than the live backend. A guide for this will be provided soon!
 
-3. To start `sar-backend` : Run `node index.js`
+4. To start `sar-backend` : Run `node index.js`
+   
+5. To start `sar-ios-backend`: Run `node index.js`
 
-4. To start `sar-frontend` : Run `npm-start`
+6. To start `sar-frontend` : Run `npm-start`
