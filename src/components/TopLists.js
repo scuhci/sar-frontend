@@ -61,10 +61,8 @@ const TopLists = ({flipState, selectedScraper}) => {
   }, [searchParams]);
 
   useEffect(() => {
-    setShowTable(false);
     if (selectedScraper === 'Play Store') {
-      // Already set by search parameter
-      // setCollection('TOP_FREE');
+      setCollection('TOP_FREE'); // added back because for change when switching from 'App Store' to 'Play Store'
       setCategory("");
       setCountry('US');
     } else if (selectedScraper === 'App Store') {
@@ -72,7 +70,6 @@ const TopLists = ({flipState, selectedScraper}) => {
       setCategory("");
       setCountry('US');
       setDevice('MAC');
-      setDisplayPermissions(false)
     }
   }, [selectedScraper]);
 
@@ -189,8 +186,8 @@ const TopLists = ({flipState, selectedScraper}) => {
     return entry ? (entry.code === "" ? "" : entry.name) : null;
   };
 
-  const getIosCategoryByCode = (list, code) => {
-    const entry = list.find(item => item.code === code);
+  const getIosCategoryByCode = (category, code) => {
+    const entry = category.find(item => item.code === code);
     return entry ? (entry.code === "" ? "" : entry.csvName) : null;
   }
 
@@ -213,10 +210,11 @@ const TopLists = ({flipState, selectedScraper}) => {
       )
       .then((response) => {
         flipState()
-       setDisplayPermissions(includePermissions);
+        setDisplayPermissions(includePermissions);
         setShowTable(true);
         setSearchResults(response.data.results);
         setTotalCount(response.data.totalCount);
+        setIsLoading(false);
       })
       .catch((error) => {
         if (axios.isCancel(error)) {
@@ -229,9 +227,9 @@ const TopLists = ({flipState, selectedScraper}) => {
         }
         setSearchResults([]);
         setTotalCount(0);
+        setIsLoading(false);
+        console.log(downloadQuery);
       });
-      setIsLoading(false);
-      console.log(downloadQuery);
       if (selectedScraper === 'Play Store') {
         setFullQuery([
           getNameByCode(gplayCollections, collection),
@@ -241,7 +239,7 @@ const TopLists = ({flipState, selectedScraper}) => {
         setDownloadQuery(collection.concat(category, country));
       } else {
         setFullQuery([
-          getNameByCode(iosCollections, collection),
+          getNameByCode(iosCollections.filter((item) => item.device === device).flatMap((item) => item.collections), collection),
           getNameByCode(iosCategories, category),
           getNameByCode(gplayCountries, country),
         ]);
@@ -252,7 +250,8 @@ const TopLists = ({flipState, selectedScraper}) => {
   const handleDownloadAllResults = async () => {
     try {
       const response = await axios.get(
-        `/download-top-csv?query=${downloadQuery}&includePermissions=${checked}`,
+        selectedScraper === 'Play Store' ? `/download-top-csv?query=${downloadQuery}&includePermissions=${includePermissions}`
+        : `/ios/download-top-csv?query=${downloadQuery}&includePermissions=${includePermissions}`,
         {
           responseType: "blob", //handling the binary data
           headers: {
@@ -262,7 +261,8 @@ const TopLists = ({flipState, selectedScraper}) => {
       );
 
       const relog_response = await axios.get(
-        `/download-top-relog?collection=${collection}&category=${category}&country=${country}&includePermissions=${checked}&totalCount=${totalCount}`,
+        selectedScraper === 'Play Store' ? `/download-top-relog?collection=${collection}&category=${category}&country=${country}&includePermissions=${includePermissions}&totalCount=${totalCount}`
+        : `/ios/download-top-relog?collection=${fullQuery[0]}&category=${fullQuery[1]}&country=${fullQuery[2]}&device=${getNameByCode(iosDevices, device)}&includePermissions=${includePermissions}&totalCount=${totalCount}`,
         {
           responseType: "blob", //handling the binary data
           headers: {
@@ -327,26 +327,32 @@ const TopLists = ({flipState, selectedScraper}) => {
             ))}
           </Select>
         </FormControl>
-        { selectedScraper === "App Store" && (
+        {selectedScraper === 'App Store' && (
           <>
-          <FormControl fullWidth>
-            <InputLabel id="device">Device*</InputLabel>
-            <Select
-            labelId="device-label"
-            id="device"
-            value={device}
-            label="device"
-            onChange={handleDeviceChange}
+            <FormControl 
+              fullWidth 
+              sx = {{
+                width: '50%',
+              }}
             >
-              {iosDevices.map(({code, name}, index) => (
-                  <MenuItem key={index} value={code}>
-                    {name}
-                  </MenuItem>
-              ))}
-            </Select>
-          </FormControl>
+              <InputLabel id="device">Device*</InputLabel>
+              <Select
+              labelId="device-label"
+              id="device"
+              value={device}
+              label="device"
+              onChange={handleDeviceChange}
+              > 
+                {iosDevices.map(({code, name}, index) => (
+                    <MenuItem key={index} value={code}>
+                      {name}
+                    </MenuItem>
+                ))}
+              </Select>
+            </FormControl>
           </>
-        )}
+          )
+        }
         <FormControl fullWidth>
           <InputLabel id="collection">Collection*</InputLabel>
           <Select
@@ -355,7 +361,7 @@ const TopLists = ({flipState, selectedScraper}) => {
           value={collection}
           label="collection"
           onChange={handleCollectionChange}
-          > 
+          >
             {(selectedScraper === "Play Store" ? gplayCollections : iosCollections.filter((item) => item.device === device).flatMap((item) => item.collections)).map(({code, name}, index) => (
                 <MenuItem key={index} value={code}>
                   {name}
