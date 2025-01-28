@@ -71,6 +71,7 @@ const TopLists = ({flipState, selectedScraper}) => {
       setCountry('US');
       setDevice('MAC');
     }
+    setShowTable(false);
   }, [selectedScraper]);
 
   useEffect(() => {
@@ -261,7 +262,7 @@ const TopLists = ({flipState, selectedScraper}) => {
       );
 
       const relog_response = await axios.get(
-        selectedScraper === 'Play Store' ? `/download-top-relog?collection=${collection}&category=${category}&country=${country}&includePermissions=${includePermissions}&totalCount=${totalCount}`
+        selectedScraper === 'Play Store' ? `/download-top-relog?collection=${fullQuery[0]}&category=${fullQuery[1]}&country=${fullQuery[2]}&includePermissions=${includePermissions}&totalCount=${totalCount}`
         : `/ios/download-top-relog?collection=${fullQuery[0]}&category=${fullQuery[1]}&country=${fullQuery[2]}&device=${getNameByCode(iosDevices, device)}&includePermissions=${includePermissions}&totalCount=${totalCount}`,
         {
           responseType: "blob", //handling the binary data
