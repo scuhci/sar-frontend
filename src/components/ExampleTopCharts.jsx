@@ -29,7 +29,7 @@ const ExampleTopCharts = ({ sampleTopChart }) => {
                           </Button>
                         ))} */}
                     {sampleTopChart.map(({ code, name }, index) => (
-                        <Link to={`/toplists?collection=${code}`}>
+                        <Link to={`/toplists?collection=${code}`} key={index}>
                             <Button
                                 variant="outlined"
                                 key={index}
