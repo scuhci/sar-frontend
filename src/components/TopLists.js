@@ -1,5 +1,5 @@
 import React, {useState, useEffect} from 'react';
-// import { useLocation } from 'react-router-dom';
+import { useLocation } from 'react-router-dom';
 import { useSearchParams } from 'react-router-dom'
 import '../css/TopList.css';
 import "../css/SearchBar.css";
@@ -30,7 +30,7 @@ let JSZip = require("jszip");
 const TopLists = ({flipState, selectedScraper}) => {  
   // Replace location state with search parameter, for reproducability
   // Same link goes to the same place every time
-  // const location = useLocation();
+  const location = useLocation();
   let [searchParams] = useSearchParams();
   const [collection, setCollection] = useState('TOP_FREE');
   const [device, setDevice] = useState('MAC');
@@ -46,19 +46,19 @@ const TopLists = ({flipState, selectedScraper}) => {
   const [downloadQuery, setDownloadQuery] = useState('TOP_FREEUS');
   const [fullQuery, setFullQuery] = useState(['Top Free']);
 
-  // useEffect(() => {
-  //   if (location.state && location.state.collectionState) {
-  //     setCollection(location.state.collectionState);
-  //   }
-  // }, [location.state]);
-
   useEffect(() => {
+    if (location.state && location.state.collectionState) {
+      setCollection(location.state.collectionState);
+    }
+  }, [location.state]);
+
+  /*useEffect(() => {
     const collectionParam = searchParams.get('collection')
     console.log(`Got collection: ${collectionParam}`)
     if (collectionParam) {
       setCollection(collectionParam);
     }
-  }, [searchParams]);
+  }, [searchParams]);*/
 
   useEffect(() => {
     if (selectedScraper === 'Play Store') {
@@ -70,6 +70,9 @@ const TopLists = ({flipState, selectedScraper}) => {
       setCategory("");
       setCountry('US');
       setDevice('MAC');
+    }
+    if (location.state && location.state.collectionState) {
+      setCollection(location.state.collectionState);
     }
     setShowTable(false);
   }, [selectedScraper]);

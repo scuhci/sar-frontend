@@ -5,7 +5,7 @@ import { UserAgent } from "express-useragent";
 import "../css/Home.css";
 import Citation from "../components/Citation";
 
-import { Typography, Box, Tabs, Tab } from "@mui/material";
+import { Typography, Box, Tabs, Tab, Link } from "@mui/material";
 import { Chip } from "@mui/joy";
 import { Android, Apple } from "@mui/icons-material";
 
@@ -14,7 +14,6 @@ const TopCharts = ({ flipState }) => {
   
   const userAgent = new UserAgent().parse(navigator.userAgent);
   const isMobileDevice = userAgent.isMobile;
-
 
   // Switch to mobile device screen if user is on a mobile device
   return ! isMobileDevice ? (
