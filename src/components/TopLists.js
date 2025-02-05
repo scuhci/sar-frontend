@@ -27,11 +27,8 @@ import { Tooltip } from "@mui/material";
 let JSZip = require("jszip");
 
 
-const TopLists = ({flipState, selectedScraper}) => {  
-  // Replace location state with search parameter, for reproducability
-  // Same link goes to the same place every time
+const TopLists = ({flipState, selectedScraper}) => {
   const location = useLocation();
-  let [searchParams] = useSearchParams();
   const [collection, setCollection] = useState('TOP_FREE');
   const [device, setDevice] = useState('MAC');
   const [category, setCategory] = useState('');
@@ -52,14 +49,6 @@ const TopLists = ({flipState, selectedScraper}) => {
     }
   }, [location.state]);
 
-  /*useEffect(() => {
-    const collectionParam = searchParams.get('collection')
-    console.log(`Got collection: ${collectionParam}`)
-    if (collectionParam) {
-      setCollection(collectionParam);
-    }
-  }, [searchParams]);*/
-
   useEffect(() => {
     if (selectedScraper === 'Play Store') {
       setCollection('TOP_FREE'); // added back because for change when switching from 'App Store' to 'Play Store'
@@ -70,9 +59,6 @@ const TopLists = ({flipState, selectedScraper}) => {
       setCategory("");
       setCountry('US');
       setDevice('MAC');
-    }
-    if (location.state && location.state.collectionState) {
-      setCollection(location.state.collectionState);
     }
     setShowTable(false);
   }, [selectedScraper]);

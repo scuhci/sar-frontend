@@ -1,9 +1,8 @@
 import React from "react";
-import { Button, Typography, Chip, Box } from "@mui/material";
+import { Button, Typography, Box } from "@mui/material";
 import "../css/ExampleSearches.css";
 import { StyledEngineProvider } from "@mui/material";
 import { useNavigate } from "react-router-dom";
-import { Link } from "react-router-dom";
 
 const ExampleTopCharts = ({ sampleTopChart }) => {
     const navigate = useNavigate();
@@ -28,17 +27,6 @@ const ExampleTopCharts = ({ sampleTopChart }) => {
                             {name}
                           </Button>
                         ))} 
-                    
-                    {/*sampleTopChart.map(({ code, name }, index) => (
-                        <Link to={`/toplists?collection=${code}` key={index}}>
-                            <Button
-                                variant="outlined"
-                                className="example-top-list-button"
-                            >
-                                {name}
-                            </Button>
-                        </Link>
-                    ))*/}
                 </Box>
             </div>
         </StyledEngineProvider>

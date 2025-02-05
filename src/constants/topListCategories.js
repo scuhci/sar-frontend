@@ -1,6 +1,3 @@
-import React from "react";
-
-
 export const gplayCollections = [
     {code: "TOP_FREE", name: "Top Free"},
     {code: "TOP_PAID", name: "Top Paid"},
