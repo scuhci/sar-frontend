@@ -1,5 +1,5 @@
 import React, {useState, useEffect} from 'react';
-import { useLocation } from 'react-router-dom';
+import { useLocation, useNavigate } from 'react-router-dom';
 import { useSearchParams } from 'react-router-dom'
 import '../css/TopList.css';
 import "../css/SearchBar.css";
@@ -43,11 +43,7 @@ const TopLists = ({flipState, selectedScraper}) => {
   const [downloadQuery, setDownloadQuery] = useState('TOP_FREEUS');
   const [fullQuery, setFullQuery] = useState(['Top Free']);
 
-  useEffect(() => {
-    if (location.state && location.state.collectionState) {
-      setCollection(location.state.collectionState);
-    }
-  }, [location.state]);
+  const navigate = useNavigate();
 
   useEffect(() => {
     if (selectedScraper === 'Play Store') {
@@ -62,6 +58,13 @@ const TopLists = ({flipState, selectedScraper}) => {
     }
     setShowTable(false);
   }, [selectedScraper]);
+
+  useEffect(() => {
+    if (location.state && location.state.collectionState) {
+      setCollection(location.state.collectionState);
+      navigate("/toplists", { state: { collectionState: '' } });
+    }
+  }, [location.state]);
 
   useEffect(() => {
     if (selectedScraper === 'App Store') {
