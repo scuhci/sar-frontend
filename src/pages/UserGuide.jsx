@@ -281,7 +281,7 @@ const UserGuide = () => {
                 the App Store, there is a maximum of 500 reviews that can be scraped for a given application.</i> The full list of results, 
                 along with a reproducibility log containing SMAR search metadata can be downloaded by clicking the button at the bottom 
                 of the page (7). The descriptions regarding each individual metadata field, for both the Play Store and App Store, can be 
-                found in the next section 'SMAR Metadata Breakdown'.
+                found in the section 'SMAR Metadata Breakdown'.
             </Typography>
                 <Box display="flex" justifyContent="center" alignItems="center">
                     <img src={require('../res/SMAR_Results_Screen.png')} className="inline-image" alt="SMAR steps" />
@@ -298,29 +298,47 @@ const UserGuide = () => {
                 <b>1.</b> To get started, navigate to the Top Lists page by either clicking on the example collections (1) or
                 the header navigation buttons (2). 
             </Typography>
+                <Box display="flex" justifyContent="center" alignItems="center">
+                    <img src={require('../res/SMAR_Home_Screen_TL.png')} className="inline-image" alt="SMAR home screen" />
+                </Box>
+                <br/><br/>
 
             <Typography variant="body1" className="main-text">
                 <b>2.</b> Now, select which app store you would like to search (3). The dropdown menus will adjust depending on the 
-                selected app store -- select the desired filters and click on the 'Scrape Data' button (4) to begin the search process. 
+                selected app store -- now select the desired filters (4). <i>If scraping the Google Play Store, the 'Include permissions
+                 in scrape' button (a) will be visible, and can be checked to retrieve individual app permissions (such as microphone or 
+                camera access) in addition to other app metadata.</i> Click on the 'Scrape Data' button (5) to begin the search process. 
             </Typography>
+                <Box display="flex" justifyContent="center" alignItems="center">
+                    <img src={require('../res/SMAR_TL.png')} className="inline-image" alt="SMAR top lists" />
+                </Box>
+                <br/><br/>
 
             <Typography variant="body1" className="main-text">
-                <b>3.</b> Now a dialog box will appear with the following message: “Scraping data for apps”. This will take 
-                a few seconds to complete.
+                <b>3.</b> Now a dialog box will appear with the following message: “Scraping data for *Your collection* apps in *your selected
+                country* ”. This will take a few seconds to complete.
             </Typography>
+                <Box display="flex" justifyContent="center" alignItems="center">
+                    <img src={require('../res/SMAR_Searching_Dialog_TL.png')} className="inline-image" alt="SMAR steps" />
+                </Box>
+                <br/><br/>
 
             <Typography variant="body1" className="main-text">
                 <b>3.</b> Once the search has completed, a portion of the page will update with search results - this is the same as
                 the interface for displaying keyword search results. 
                 <br/><br/>
-                A preview of the first few results will be visible (5) and are horizontally scrollable, while additional results can be 
-                viewed using the pagination controls (6). User reviews for applications can be scraped by clicking the corresponding row's 
-                'scrape reviews' button (7) which will be enabled if the application contains less than 100,000 reviews -- <i>note that for 
+                A preview of the first few results will be visible (6) and are horizontally scrollable, while additional results can be 
+                viewed using the pagination controls (7). User reviews for applications can be scraped by clicking the corresponding row's 
+                'scrape reviews' button (8) which will be enabled if the application contains less than 100,000 reviews -- <i>note that for 
                 the App Store, there is a maximum of 500 reviews that can be scraped for a given application.</i> The full list of results, 
                 along with a reproducibility log containing SMAR search metadata can be downloaded by clicking the button at the bottom 
-                of the page (8). The descriptions regarding each individual metadata field, for both the Play Store and App Store, can be 
+                of the page (9). The descriptions regarding each individual metadata field, for both the Play Store and App Store, can be 
                 found in the next section 'SMAR Metadata Breakdown'.
             </Typography>
+                <Box display="flex" justifyContent="center" alignItems="center">
+                    <img src={require('../res/SMAR_Results_Screen_TL.png')} className="inline-image" alt="SMAR steps" />
+                </Box>
+                <br/><br/>
 
             <br/><br/>
             <Divider variant="li" />
