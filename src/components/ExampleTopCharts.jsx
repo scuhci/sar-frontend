@@ -2,15 +2,15 @@ import React from "react";
 import { Button, Typography, Chip, Box } from "@mui/material";
 import "../css/ExampleSearches.css";
 import { StyledEngineProvider } from "@mui/material";
-// import { useNavigate } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 import { Link } from "react-router-dom";
 
 const ExampleTopCharts = ({ sampleTopChart }) => {
-    // const navigate = useNavigate();
+    const navigate = useNavigate();
 
-    // const handleButtonClick = (dropdownValue) => {
-    //     navigate("/toplists", { state: { collectionState: dropdownValue } });
-    // };
+    const handleButtonClick = (dropdownValue) => {
+        navigate("/toplists", { state: { collectionState: dropdownValue } });
+    };
     return (
         <StyledEngineProvider injectFirst>
             <div
@@ -19,7 +19,7 @@ const ExampleTopCharts = ({ sampleTopChart }) => {
             >
                 <Box display="flex" alignItems="center" gap={1}>
                     <Typography variant="h5">Fetch Top Charts:</Typography>
-                    {/* {sampleTopChart.map(({code, name}, index) => (
+                     {sampleTopChart.map(({code, name}, index) => (
                           <Button 
                             variant='outlined'
                             key={index}
@@ -27,18 +27,18 @@ const ExampleTopCharts = ({ sampleTopChart }) => {
                             onClick={() => handleButtonClick(code)}>
                             {name}
                           </Button>
-                        ))} */}
-                    {sampleTopChart.map(({ code, name }, index) => (
-                        <Link to={`/toplists?collection=${code}`} key={index}>
+                        ))} 
+                    
+                    {/*sampleTopChart.map(({ code, name }, index) => (
+                        <Link to={`/toplists?collection=${code}` key={index}}>
                             <Button
                                 variant="outlined"
-                                key={index}
                                 className="example-top-list-button"
                             >
                                 {name}
                             </Button>
                         </Link>
-                    ))}
+                    ))*/}
                 </Box>
             </div>
         </StyledEngineProvider>
