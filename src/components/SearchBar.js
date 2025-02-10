@@ -5,6 +5,8 @@ import axios from "axios";
 import "../css/SearchBar.css";
 import Loading from "./Loading";
 import ExampleSearches from "./ExampleSearches";
+import ExampleTopCharts from "./ExampleTopCharts";
+import { columns } from "../constants/columns";
 import {
   appStoreColumns,
   columns,
@@ -36,14 +38,18 @@ const SearchBar = ({ flipState, selectedScraper }) => {
   const [isLoading, setIsLoading] = useState(false);
   const [totalCount, setTotalCount] = useState(0);
   const [abortController, setAbortController] = useState(null);
-  const [checked, setChecked] = useState(false);
+  const [includePermissions, setIncludePermissions] = useState(false);
   const sampleSearch = [
     "medication reminders",
     "self-care",
     "smartphone addiction",
   ];
-  const [displayPermissions, setDisplayPermissions] = React.useState(false);
-  const [country, setCountry] = useState("US");
+  const sampleTopChart = [
+    {code: "TOP_FREE", name: "Top Free"},
+    {code: "TOP_PAID", name: "Top Paid"},
+    {code: "GROSSING", name: "Top Grossing"},
+  ];
+  const [displayPermissions, setDisplayPermissions] = useState(false);
 
   const rows = displayPermissions
     ? searchResults.map((application) => ({
@@ -114,22 +120,6 @@ const SearchBar = ({ flipState, selectedScraper }) => {
     const newAbortController = new AbortController();
     setAbortController(newAbortController);
     setIsLoading(true);
-    // query: 'COUNTRY:xx search term'
-    // let temp_countryCode = "US";
-    // if (term.startsWith("COUNTRY:")) {
-    //   temp_countryCode = (term.substring(term.indexOf(":") + 1, term.indexOf(" "))).toUpperCase();
-    //   if (countryCode_list.some((country) => country.Code === temp_countryCode))
-    //   {
-    //     console.log("Country Code -> Matched %s\n", temp_countryCode);
-    //   }
-    //   else
-    //   {
-    //     console.log("Country Code -> Not Matched: %s\n", temp_countryCode);
-    //     temp_countryCode = "US";
-    //   }
-    //   setCountryCode(temp_countryCode);
-    //   term = term.slice(term.indexOf(" ") + 1);
-    // }
     setFixedSearchQuery(term);
     axios
       .get(
@@ -141,12 +131,8 @@ const SearchBar = ({ flipState, selectedScraper }) => {
         }
       )
       .then((response) => {
-        flipState();
-        if (checked) {
-          setDisplayPermissions(true);
-        } else {
-          setDisplayPermissions(false);
-        }
+        flipState()
+        setDisplayPermissions(includePermissions)
         setSearchResults(response.data.results);
         // Only set results text after getting search results
         setResultsText(term);
@@ -175,7 +161,7 @@ const SearchBar = ({ flipState, selectedScraper }) => {
   };
 
   const handleChange = () => {
-    setChecked(!checked);
+    setIncludePermissions(!includePermissions);
   };
 
   const handleDownloadAllResults = async () => {
