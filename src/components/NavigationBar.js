@@ -1,8 +1,8 @@
-import React from 'react';
-import AppBar from '@mui/material/AppBar';
-import Toolbar from '@mui/material/Toolbar';
-import { Typography, Button } from '@mui/material';
-import { Link } from 'react-router-dom';
+import React from "react";
+import AppBar from "@mui/material/AppBar";
+import Toolbar from "@mui/material/Toolbar";
+import { Typography, Button } from "@mui/material";
+import { Link } from "react-router-dom";
 
 const NavigationBar = ({ refresh, refreshTopLists }) => {
   return (
@@ -24,4 +24,4 @@ const NavigationBar = ({ refresh, refreshTopLists }) => {
   );
 };
 
-export default NavigationBar
+export default NavigationBar;

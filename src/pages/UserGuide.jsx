@@ -243,22 +243,15 @@ const UserGuide = () => {
             <Typography variant="h4" className="section-header" id="SMAR_Tool_Usage">SMAR Tool Usage</Typography>
 
             <Typography variant="body1" className="main-text">
-                The SMAR Tool is designed around the central search bar that allows users to quickly retrieve a filtered 
-                list of applications from either the Google Play Store or Apple App Store in a certain country.
-                <br/><br/>
-                Applications can be filtered either by <em><b>I.</b> certain keywords such as "medication reminders" or a package name 
-                (eg. com.facebook.katana)</em>, or <em><b>II.</b> by certain collections such as 'Top Free' or 'Top Grossing' within a certain category of 
-                apps, such as 'Education' or 'Communication'.</em>
+                The SMAR Tool is designed around the central search bar that allows 
+                users to quickly retrieve a filtered list of applications from the Google Play Store in a certain country. 
             </Typography>
             <br/>
-
-            <Typography variant="h5" className="section-sub-header" id="Keyword_Search">I. Conducting a Keyword Search</Typography>
-            <br/>
             <Typography variant="body1" className="main-text">
-                <b>1.</b> To get started, select which app store you would like to search (1) and type in a search keyword (2). The 
-                country can be changed using the dropdown menu (a), which also supports type to search. <i>If scraping the Google Play Store,
-                the 'Include permissions in scrape' button (b) will be visible, and can be checked to retrieve individual app permissions (such as microphone or 
-                camera access) in addition to other app metadata.</i> Click on the 'Scrape Data' button (3) to begin the search process.
+                <b>1.</b> To get started, type in a search keyword (1). The Google Play Store country can be changed using the dropdown menu 
+                (a), which also supports type to search. Optionally, check the 'Include permissions in scrape' button b) to also 
+                retrieve individual app permissions (such as microphone or camera access). Click on the 'Scrape Data'  button (2) to 
+                begin the search process.
             </Typography>
                 <Box display="flex" justifyContent="center" alignItems="center">
                     <img src={require('../res/SMAR_Home_Screen.png')} className="inline-image" alt="SMAR steps" />
