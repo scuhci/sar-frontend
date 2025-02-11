@@ -1,5 +1,5 @@
 import './css/App.css';
-import { Routes, Route } from 'react-router-dom';
+import { Routes, Route, useNavigate } from 'react-router-dom';
 import Home from './pages/Home';
 import About from './pages/About'; 
 import NavigationBar from './components/NavigationBar';
@@ -7,6 +7,8 @@ import UserGuide from './pages/UserGuide';
 import TopCharts from './pages/TopCharts';
 
 function App() {
+  const navigate = useNavigate();
+
   let curHomeState = 'HOMEPAGE'
   let curTopListState = 'SEARCHPAGE'
   
@@ -15,12 +17,11 @@ function App() {
       window.location.reload()
     }
   }
-
+  
   const refreshTopLists = () => {
-    if (curTopListState === 'RESULTSPAGE') {
-      window.location.reload()
-    }
+    navigate("/toplists", { state: { selectedScraper: "Play Store" } });
   }
+
 
   const flipState = () => {
     if (curHomeState === 'HOMEPAGE') {
