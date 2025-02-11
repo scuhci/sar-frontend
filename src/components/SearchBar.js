@@ -6,14 +6,13 @@ import "../css/SearchBar.css";
 import Loading from "./Loading";
 import ExampleSearches from "./ExampleSearches";
 import ExampleTopCharts from "./ExampleTopCharts";
-import { columns } from "../constants/columns";
 import {
   appStoreColumns,
   columns,
   playStoreColumns,
 } from "../constants/columns";
 import { permissionColumns } from "../constants/permissionColumns";
-import { countryCode_list } from "../constants/countryCodes";
+import { gplayCountries } from "../constants/countryCodes";
 import Link from "@mui/material/Link";
 
 // For the checkbox
@@ -39,6 +38,7 @@ const SearchBar = ({ flipState, selectedScraper }) => {
   const [totalCount, setTotalCount] = useState(0);
   const [abortController, setAbortController] = useState(null);
   const [includePermissions, setIncludePermissions] = useState(false);
+  const [country, setCountry] = useState("US");
   const sampleSearch = [
     "medication reminders",
     "self-care",
@@ -124,7 +124,7 @@ const SearchBar = ({ flipState, selectedScraper }) => {
     axios
       .get(
         selectedScraper === "Play Store"
-          ? `/search?query=${term}&includePermissions=${checked}&countryCode=${country}`
+          ? `/search?query=${term}&includePermissions=${includePermissions}&countryCode=${country}`
           : `/ios/search?query=${term}&countryCode=${country}`, // Change to URL for app store scraper
         {
           signal: newAbortController.signal,
@@ -168,7 +168,7 @@ const SearchBar = ({ flipState, selectedScraper }) => {
     try {
       const response = await axios.get(
         selectedScraper === "Play Store"
-          ? `/download-csv?query=${fixedSearchQuery}&includePermissions=${checked}&countryCode=${country}`
+          ? `/download-csv?query=${fixedSearchQuery}&includePermissions=${includePermissions}&countryCode=${country}`
           : `/ios/download-csv?query=${fixedSearchQuery}&countryCode=${country}`, // Change to URL for app store scraper
         {
           responseType: "blob", //handling the binary data
@@ -180,7 +180,7 @@ const SearchBar = ({ flipState, selectedScraper }) => {
 
       const relog_response = await axios.get(
         selectedScraper === "Play Store"
-          ? `/download-relog?query=${fixedSearchQuery}&includePermissions=${checked}&totalCount=${totalCount}&countryCode=${country}&store=${'Google Play Store'}`
+          ? `/download-relog?query=${fixedSearchQuery}&includePermissions=${includePermissions}&totalCount=${totalCount}&countryCode=${country}&store=${'Google Play Store'}`
           : `/ios/download-relog?query=${fixedSearchQuery}&totalCount=${totalCount}&countryCode=${country}&store=${'iOS App Store'}`, // Change to URL for app store scraper
         {
           responseType: "blob", //handling the binary data
@@ -287,7 +287,7 @@ const SearchBar = ({ flipState, selectedScraper }) => {
                     control={
                       <Checkbox
                         size="small"
-                        checked={checked}
+                        includePermissions={includePermissions}
                         onChange={handleChange}
                       />
                     }

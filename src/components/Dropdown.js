@@ -2,7 +2,7 @@ import * as React from 'react';
 import PropTypes from 'prop-types';
 import { Autocomplete as BaseAutocomplete, TextField } from '@mui/material';
 import { styled } from '@mui/system';
-import { countryCode_list } from "../constants/countryCodes";
+import { gplayCountries, iosCountries } from "../constants/countryCodes";
 
 export default function Dropdown({ handler }) {
   const defaultOption = { Name: 'United States', Code: "US" };
@@ -53,7 +53,7 @@ export default function Dropdown({ handler }) {
   );
 }
 
-const options = countryCode_list.map((country) => {
+const options = gplayCountries.map((country) => {
   return { Name: country.Name, Code: country.Code };
 });
 
