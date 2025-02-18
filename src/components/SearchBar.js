@@ -5,13 +5,14 @@ import axios from "axios";
 import "../css/SearchBar.css";
 import Loading from "./Loading";
 import ExampleSearches from "./ExampleSearches";
+import ExampleTopCharts from "./ExampleTopCharts";
 import {
   appStoreColumns,
   columns,
   playStoreColumns,
 } from "../constants/columns";
 import { permissionColumns } from "../constants/permissionColumns";
-import { countryCode_list } from "../constants/countryCodes";
+import { gplayCountries } from "../constants/countryCodes";
 import Link from "@mui/material/Link";
 
 // For the checkbox
@@ -36,14 +37,19 @@ const SearchBar = ({ flipState, selectedScraper }) => {
   const [isLoading, setIsLoading] = useState(false);
   const [totalCount, setTotalCount] = useState(0);
   const [abortController, setAbortController] = useState(null);
-  const [checked, setChecked] = useState(false);
+  const [includePermissions, setIncludePermissions] = useState(false);
+  const [country, setCountry] = useState("US");
   const sampleSearch = [
     "medication reminders",
     "self-care",
     "smartphone addiction",
   ];
-  const [displayPermissions, setDisplayPermissions] = React.useState(false);
-  const [country, setCountry] = useState("US");
+  const sampleTopChart = [
+    {code: "TOP_FREE", name: "Top Free"},
+    {code: "TOP_PAID", name: "Top Paid"},
+    {code: "GROSSING", name: "Top Grossing"},
+  ];
+  const [displayPermissions, setDisplayPermissions] = useState(false);
 
   const rows = displayPermissions
     ? searchResults.map((application) => ({
@@ -114,39 +120,19 @@ const SearchBar = ({ flipState, selectedScraper }) => {
     const newAbortController = new AbortController();
     setAbortController(newAbortController);
     setIsLoading(true);
-    // query: 'COUNTRY:xx search term'
-    // let temp_countryCode = "US";
-    // if (term.startsWith("COUNTRY:")) {
-    //   temp_countryCode = (term.substring(term.indexOf(":") + 1, term.indexOf(" "))).toUpperCase();
-    //   if (countryCode_list.some((country) => country.Code === temp_countryCode))
-    //   {
-    //     console.log("Country Code -> Matched %s\n", temp_countryCode);
-    //   }
-    //   else
-    //   {
-    //     console.log("Country Code -> Not Matched: %s\n", temp_countryCode);
-    //     temp_countryCode = "US";
-    //   }
-    //   setCountryCode(temp_countryCode);
-    //   term = term.slice(term.indexOf(" ") + 1);
-    // }
     setFixedSearchQuery(term);
     axios
       .get(
         selectedScraper === "Play Store"
-          ? `/search?query=${term}&includePermissions=${checked}&countryCode=${country}`
+          ? `/search?query=${term}&includePermissions=${includePermissions}&countryCode=${country}`
           : `/ios/search?query=${term}&countryCode=${country}`, // Change to URL for app store scraper
         {
           signal: newAbortController.signal,
         }
       )
       .then((response) => {
-        flipState();
-        if (checked) {
-          setDisplayPermissions(true);
-        } else {
-          setDisplayPermissions(false);
-        }
+        flipState()
+        setDisplayPermissions(includePermissions)
         setSearchResults(response.data.results);
         // Only set results text after getting search results
         setResultsText(term);
@@ -175,14 +161,14 @@ const SearchBar = ({ flipState, selectedScraper }) => {
   };
 
   const handleChange = () => {
-    setChecked(!checked);
+    setIncludePermissions(!includePermissions);
   };
 
   const handleDownloadAllResults = async () => {
     try {
       const response = await axios.get(
         selectedScraper === "Play Store"
-          ? `/download-csv?query=${fixedSearchQuery}&includePermissions=${checked}&countryCode=${country}`
+          ? `/download-csv?query=${fixedSearchQuery}&includePermissions=${includePermissions}&countryCode=${country}`
           : `/ios/download-csv?query=${fixedSearchQuery}&countryCode=${country}`, // Change to URL for app store scraper
         {
           responseType: "blob", //handling the binary data
@@ -194,7 +180,7 @@ const SearchBar = ({ flipState, selectedScraper }) => {
 
       const relog_response = await axios.get(
         selectedScraper === "Play Store"
-          ? `/download-relog?query=${fixedSearchQuery}&includePermissions=${checked}&totalCount=${totalCount}&countryCode=${country}&store=${'Google Play Store'}`
+          ? `/download-relog?query=${fixedSearchQuery}&includePermissions=${includePermissions}&totalCount=${totalCount}&countryCode=${country}&store=${'Google Play Store'}`
           : `/ios/download-relog?query=${fixedSearchQuery}&totalCount=${totalCount}&countryCode=${country}&store=${'iOS App Store'}`, // Change to URL for app store scraper
         {
           responseType: "blob", //handling the binary data
@@ -301,7 +287,7 @@ const SearchBar = ({ flipState, selectedScraper }) => {
                     control={
                       <Checkbox
                         size="small"
-                        checked={checked}
+                        includePermissions={includePermissions}
                         onChange={handleChange}
                       />
                     }

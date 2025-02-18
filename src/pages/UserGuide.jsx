@@ -1,14 +1,20 @@
 import React from 'react';
 import { Typography, Container, Divider, Box, Link } from '@mui/material';
-import { Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Paper } from '@mui/material'
+import { Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Paper, ToggleButton, ToggleButtonGroup } from '@mui/material'
 import Footer from '../components/Footer';
 import "../css/UserGuide.css";
+import { Android, Apple } from '@mui/icons-material';
 
 const UserGuide = () => {
+    const [selectedStore, setSelectedStore] = React.useState('PS')
+    const handleChange = (event, newStore) => {
+        setSelectedStore(newStore);
+    };
+
     const createData = (name, desc) => {
         return { name, desc };
     }
-    const appRows = [
+    const appRows_PlayStore = [
         createData('appName', 'Name of the app'),
         createData('appID', 'App bundle identifier'),
         createData('url', 'App page URL (Play Store)'),
@@ -18,7 +24,7 @@ const UserGuide = () => {
         createData('currency', 'Currency to purchase app'),
         createData('price', 'Purchase cost of app'),
         createData('description', 'App description on Play Store'),
-        createData('avgRating', 'Average app rating'),
+        createData('avgRating', 'Average app rating (out of 5)'),
         createData('country', "Play Store country code"),
         createData('scrapedFrom', 'Two possible values: (1) Keyword search results - the results from searching for a keyword in Google Play. While Google Play previously returned hundreds of results it now returns a maximum of 30 results for a keyword search, as of September 2024. (2) Similar app links - Links (if any) to “Similar Apps/Games” shown on the app profile page for each of the keyword search results. This allows researchers to gather a larger number of apps that are related to a specific keyword. Regardless of how many times an app appears in “Similar Apps/Games” it is only shown once in the CSV (duplicates are removed).'),
         createData('approximateInstalls', 'Approximation of total app downloads/installs'),
@@ -42,16 +48,67 @@ const UserGuide = () => {
         createData('currentVersionChanges', 'Release notes from latest app update'),
         createData('dateScraped', 'Timestamp, date from when this app data was scraped')
       ]
-    const reviewRows = [
-        createData('reviewID', 'Review’s unique ID registered with the Play Store'),
+    const reviewRows_PlayStore = [
+        createData('reviewID', "Review's unique ID registered with the Play Store"),
         createData('dateReviewed', 'Date on which review was published'),
         createData('rating', 'App rating as given by review'),
-        createData('reviewURL', 'Review’s Play Store URL'),
+        createData('reviewURL', "Review's Play Store URL"),
         createData('reviewText', 'Actual review text'),
         createData('developerReplyDate', 'Date on which the developer replied to the review, if at all'),
         createData('developerReplyText', 'The actual developer reply to the posted review, if it exists'),
-        createData('versionWhenReviewed', 'App’s version number at the time when the current review was published'),
+        createData('versionWhenReviewed', "App's version number at the time when the current review was published"),
         createData('helpfulVotes', 'Number of people that found this review helpful and upvoted it'),
+        createData('dateScraped', 'Timestamp, date from when this review data was scraped')
+      ]
+
+    const appRows_AppStore = [
+        createData('appID', 'App bundle identifier'),
+        createData('appName', 'Name of the app'),
+        createData('url', 'App page URL (App Store)'),
+        createData('icon', 'App image icon URL'),
+        createData('genres', 'A comma separated list of genres this app falls within'),
+        createData('genreIDs', 'A comma separated list of genre IDs corresponding to the genres this app falls within'),
+        createData('primaryGenre', 'The primary genre this app is classified within'),
+        createData('primaryGenreId', 'The ID of the primary genre this app is classified within'),
+        createData('contentRating', "App's content rating as described on App Store"),
+        createData('supportedLanguages', 'The various languages officially supported by this app'),
+        createData('appSizeInBytes', 'Size of the app (in Bytes)'),
+        
+        createData('requiredOsVersion', 'Minimum iOS (and iPadOS, if supported) version necessary to run app'),
+        createData('originalReleaseDate', "App's initial release date"),
+        createData('lastUpdated', 'Timestamp of when the app was last updated by the developer'),
+        createData('releaseNotes', 'Release notes from latest app update'),
+        createData('currentAppVersion', 'Current app version'),
+        createData('price', 'Purchase cost of app'),
+        createData('currency', 'Currency to purchase app'),
+        createData('developerID', "App developer's ID as registered with App Store"),
+        createData('developer', 'App developer'),
+        createData('developerAppStorePageURL', "The URL of the developer's page on the App Store"),
+        createData('developerWebsite', "App developer's website"),
+        createData('avgRating', 'Average app rating (out of 5)'),
+        createData('totalReviews', 'Total number of user provided reviews'),
+        createData('currentVersionAvgRating', 'The average app rating for the most recent (currently released) version'),
+        createData('currentVersionReviews', 'Number of user provided reviews for the most recent (current) version of the app'),
+        createData('appScreenshots', 'Screenshot previews of the app from its App Store page'),
+        createData('appIpadScreenshots', 'Screenshot previews of the iPad app (if officially supported)'),
+        createData('appletvScreenshots', 'Screenshot previews of the Apple TV app (if officially supported)'),
+        createData('supportedDeviceList', 'A list of various devices that are supported by the app'),
+        createData('country', "App Store country code"),
+        createData('scrapedFrom', 'Two possible values: (1) Keyword search results - the results from searching for a keyword in Google Play. While Google Play previously returned hundreds of results it now returns a maximum of 30 results for a keyword search, as of September 2024. (2) Similar app links - Links (if any) to “Similar Apps/Games” shown on the app profile page for each of the keyword search results. This allows researchers to gather a larger number of apps that are related to a specific keyword. Regardless of how many times an app appears in “Similar Apps/Games” it is only shown once in the CSV (duplicates are removed).'),
+        createData('dateScraped', 'Timestamp, date from when this app data was scraped'),
+      ]
+
+    const reviewRows_AppStore = [
+        createData('reviewID', "Review's unique ID registered with the App Store"),
+        createData('userUrl', "Review's App Store URL"),
+        createData('versionWhenReviewed', "App's version number at the time when the current review was published"),
+        createData('rating', 'App rating as given by review'),
+        createData('reviewText', 'Actual review text'),
+        createData('reviewURL', "Review's App Store URL"),
+
+        createData('dateReviewed', 'Date and time when the review was published'),
+        
+        createData('country', 'App Store country code'),
         createData('dateScraped', 'Timestamp, date from when this review data was scraped')
       ]
 
@@ -103,7 +160,11 @@ const UserGuide = () => {
             </Link>
             
             <Link href="#Keyword_Search" variant="inherit" color="inherit" underline="hover">
-                <Typography variant="body1" className="toc-only-subitem">Conducting a Keyword Search</Typography>
+                <Typography variant="body1" className="toc-first-subitem">Conducting a Keyword Search</Typography>
+            </Link>
+            
+            <Link href="#TopLists_Search" variant="inherit" color="inherit" underline="hover">
+                <Typography variant="body1" className="toc-last-subitem">Conducting a Top Lists Search</Typography>
             </Link>
                 
             <Link href="#SMAR_Metadata_Breakdown" variant="inherit" color="inherit" underline="hover">
@@ -181,7 +242,6 @@ const UserGuide = () => {
 
             <Typography variant="h4" className="section-header" id="SMAR_Tool_Usage">SMAR Tool Usage</Typography>
 
-            <Typography variant="h5" className="section-sub-header" id="Keyword_Search">Conducting a Keyword Search</Typography>
             <Typography variant="body1" className="main-text">
                 The SMAR Tool is designed around the central search bar that allows 
                 users to quickly retrieve a filtered list of applications from the Google Play Store in a certain country. 
@@ -208,10 +268,13 @@ const UserGuide = () => {
 
             <Typography variant="body1" className="main-text">
                 <b>3.</b> Once the search has completed, a portion of the page will update with search results. A preview of the first 
-                few results will be visible (3) and are horizontally scrollable, while additional results can be viewed using the 
-                pagination controls (4). User reviews for each application can be scraped by clicking the corresponding 
-                row's 'scrape reviews' button (5). The full list of results, along with a reproducibility log containing SMAR search 
-                metadata can be downloaded by clicking the button at the bottom of the page (6). 
+                few results will be visible (4) and are horizontally scrollable, while additional results can be viewed using the 
+                pagination controls (5). User reviews for applications can be scraped by clicking the corresponding row's 'scrape 
+                reviews' button (6) which will be enabled if the application contains less than 100,000 reviews -- <i>note that for 
+                the App Store, there is a maximum of 500 reviews that can be scraped for a given application.</i> The full list of results, 
+                along with a reproducibility log containing SMAR search metadata can be downloaded by clicking the button at the bottom 
+                of the page (7). The descriptions regarding each individual metadata field, for both the Play Store and App Store, can be 
+                found in the section 'SMAR Metadata Breakdown'.
             </Typography>
                 <Box display="flex" justifyContent="center" alignItems="center">
                     <img src={require('../res/SMAR_Results_Screen.png')} className="inline-image" alt="SMAR steps" />
@@ -220,20 +283,105 @@ const UserGuide = () => {
             <Typography variant="body1" className="main-text">
                 <b>4.</b> To begin another search, repeat steps <b>1-3</b>.
             </Typography>
+            <br/><br/>
+
+            <Typography variant="h5" className="section-sub-header" id="TopLists_Search">II. Conducting a Top Lists Search</Typography>
+            <br/>
+            <Typography variant="body1" className="main-text">
+                <b>1.</b> To get started, navigate to the Top Lists page by either clicking on the example collections (1) or
+                the header navigation buttons (2). 
+            </Typography>
+                <Box display="flex" justifyContent="center" alignItems="center">
+                    <img src={require('../res/SMAR_Home_Screen_TL.png')} className="inline-image" alt="SMAR home screen" />
+                </Box>
+                <br/><br/>
+
+            <Typography variant="body1" className="main-text">
+                <b>2.</b> Now, select which app store you would like to search (3). The dropdown menus will adjust depending on the 
+                selected app store -- now select the desired filters (4). <i>If scraping the Google Play Store, the 'Include permissions
+                 in scrape' button (a) will be visible, and can be checked to retrieve individual app permissions (such as microphone or 
+                camera access) in addition to other app metadata.</i> Click on the 'Scrape Data' button (5) to begin the search process. 
+            </Typography>
+                <Box display="flex" justifyContent="center" alignItems="center">
+                    <img src={require('../res/SMAR_TL.png')} className="inline-image" alt="SMAR top lists" />
+                </Box>
+                <br/><br/>
+
+            <Typography variant="body1" className="main-text">
+                <b>3.</b> Now a dialog box will appear with the following message: “Scraping data for *Your collection* apps in *your selected
+                country* ”. This will take a few seconds to complete.
+            </Typography>
+                <Box display="flex" justifyContent="center" alignItems="center">
+                    <img src={require('../res/SMAR_Searching_Dialog_TL.png')} className="inline-image" alt="SMAR steps" />
+                </Box>
+                <br/><br/>
+
+            <Typography variant="body1" className="main-text">
+                <b>3.</b> Once the search has completed, a portion of the page will update with search results - this is the same as
+                the interface for displaying keyword search results. 
+                <br/><br/>
+                A preview of the first few results will be visible (6) and are horizontally scrollable, while additional results can be 
+                viewed using the pagination controls (7). User reviews for applications can be scraped by clicking the corresponding row's 
+                'scrape reviews' button (8) which will be enabled if the application contains less than 100,000 reviews -- <i>note that for 
+                the App Store, there is a maximum of 500 reviews that can be scraped for a given application.</i> The full list of results, 
+                along with a reproducibility log containing SMAR search metadata can be downloaded by clicking the button at the bottom 
+                of the page (9). The descriptions regarding each individual metadata field, for both the Play Store and App Store, can be 
+                found in the next section 'SMAR Metadata Breakdown'.
+            </Typography>
+                <Box display="flex" justifyContent="center" alignItems="center">
+                    <img src={require('../res/SMAR_Results_Screen_TL.png')} className="inline-image" alt="SMAR steps" />
+                </Box>
+                <br/><br/>
 
             <br/><br/>
             <Divider variant="li" />
             <br/><br/>
 
             <Typography variant="h4" className="section-header" id="SMAR_Metadata_Breakdown">SMAR Metadata Breakdown</Typography>
-            
-            <Typography variant="h5" className="section-sub-header" id="App_Metadata">App Metadata</Typography>
-            <br/>
-            <MetadataTable rows={appRows}/>
-            <br/><br/>
 
-            <Typography variant="h5" className="section-sub-header" id="Review_Metadata">Review Metadata</Typography>
-            <MetadataTable rows={reviewRows}/>
+            <ToggleButtonGroup
+                color="primary"
+                value={selectedStore}
+                exclusive
+                onChange={handleChange}
+                aria-label="Platform"
+                sx={{ marginBottom: 3, marginTop: 3 }}
+            >
+                <ToggleButton value="PS">
+                    <Android style={{ marginRight: 10 }}/>
+                    Play Store
+                </ToggleButton>
+                <ToggleButton value="AS">
+                    <Apple style={{ marginRight: 8 }}/>
+                    App Store
+                </ToggleButton>
+            </ToggleButtonGroup>
+
+            {selectedStore === "PS" && (
+                <div>
+                    <Typography variant="h5" className="section-sub-header" id="App_Metadata">App Metadata (Play Store)</Typography>
+                    <br/>
+
+                    <MetadataTable rows={appRows_PlayStore}/>
+                    <br/><br/>
+
+                    <Typography variant="h5" className="section-sub-header" id="Review_Metadata">Review Metadata (Play Store)</Typography>
+                    <MetadataTable rows={reviewRows_PlayStore}/>
+                </div>
+            )}
+
+            {selectedStore === "AS" && (
+                <div>
+                    <Typography variant="h5" className="section-sub-header" id="App_Metadata">App Metadata (App Store)</Typography>
+                    <br/>
+
+                    <MetadataTable rows={appRows_AppStore}/>
+                    <br/><br/>
+
+                    <Typography variant="h5" className="section-sub-header" id="Review_Metadata">Review Metadata (App Store)</Typography>
+                    <MetadataTable rows={reviewRows_AppStore}/>
+                </div>
+            )}
 
             <br/><br/><br/>
             <Divider variant="li" />
