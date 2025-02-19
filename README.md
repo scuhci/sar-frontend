@@ -19,6 +19,7 @@ This project was made with love at the [Santa Clara University HCI Lab](https://
 
 **Developer Team** 🖥️
 
+- Kyle Zhang | [LinkedIn](https://www.linkedin.com/in/kyle-zhang-3a6551194/) | [Email](kylemzhang@gmail.com)
 - Varun Mangla | [LinkedIn](https://www.linkedin.com/in/varunmangla/) | [Email](mailto:varunm57@outlook.com)
 - Gaurav Punjabi | [LinkedIn](https://www.linkedin.com/in/gaurav-punjabi-34067315a/)
 - Jeshwin Prince | [LinkedIn]( https://www.linkedin.com/in/jeshwinprince/) | [Email](mailto:jprince2@scu.edu)
