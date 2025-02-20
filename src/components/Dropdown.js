@@ -5,15 +5,15 @@ import { styled } from '@mui/system';
 import { gplayCountries, iosCountries } from "../constants/countryCodes";
 
 export default function Dropdown({ handler }) {
-  const defaultOption = { Name: 'United States', Code: "US" };
+  const defaultOption = { name: 'United States', code: "US" };
   const [value, setValue] = React.useState(defaultOption);
   const [isEditing, setIsEditing] = React.useState(false);
 
   React.useEffect(() => {
     if (!isEditing) {
-      handler(value?.Code || defaultOption.Code);
+      handler(value?.code || defaultOption.code);
     }
-  }, [value, handler, defaultOption.Code, isEditing]);
+  }, [value, handler, defaultOption.code, isEditing]);
 
   const handleChange = (event, newValue) => {
     if (!isEditing) {
@@ -35,11 +35,11 @@ export default function Dropdown({ handler }) {
   return (
     <Autocomplete
       options={options}
-      getOptionLabel={(option) => option.Name} // Specify label to display
+      getOptionLabel={(option) => option.name} // Specify label to display
       value={value}
       disableClearable
       onChange={handleChange}
-      isOptionEqualToValue={(option, value) => option.Code === value.Code} // Compare by 'Code'
+      isOptionEqualToValue={(option, value) => option.code === value.code} // Compare by 'Code'
       renderInput={(params) => (
         <TextField
           {...params}
@@ -54,7 +54,7 @@ export default function Dropdown({ handler }) {
 }
 
 const options = gplayCountries.map((country) => {
-  return { Name: country.Name, Code: country.Code };
+  return { name: country.name, code: country.code };
 });
 
 const Autocomplete = React.forwardRef(function CustomAutocomplete(props, ref) {
