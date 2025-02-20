@@ -20,6 +20,8 @@ export const ScraperProvider = ({ children }) => {
         const storedScraper = localStorage.getItem("selectedScraper");
         if (storedScraper) {
             setSelectedScraper(JSON.parse(storedScraper));
+        } else {
+            setSelectedScraper("Play Store"); // Default to "Play Store"
         }
     }, []);
 
