@@ -69,6 +69,7 @@ const Home = ({ flipState }) => {
                 </Typography>
             </div>
             <SearchBar flipState={flipState} />
+            <Citation />
         </>
     ) : (
         <MobileScreen />
