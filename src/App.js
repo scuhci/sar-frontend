@@ -1,4 +1,5 @@
 import "./css/App.css";
+import { useState } from "react";
 import { Routes, Route, useNavigate } from "react-router-dom";
 import Home from "./pages/Home";
 import About from "./pages/About";
@@ -10,33 +11,19 @@ import { ScraperProvider } from "./components/SelectedScraperProvider";
 function App() {
     const navigate = useNavigate();
 
-    let curHomeState = "HOMEPAGE";
-    let curTopListState = "SEARCHPAGE";
+    const [showSearchResults, setShowSearchResults] = useState(false);
+
+    const flipState = () => {
+        if (!showSearchResults) setShowSearchResults(true);
+    };
 
     const refresh = () => {
-        if (curHomeState === "SEARCH_RESULTS") {
-            window.location.reload();
-        }
+        if (showSearchResults) window.location.reload();
     };
 
     const refreshTopLists = () => {
         navigate("/toplists", { state: { selectedScraper: "Play Store" } });
-    };
-
-    const flipState = () => {
-        if (curHomeState === "HOMEPAGE") {
-            curHomeState = "SEARCH_RESULTS";
-        } else {
-            curHomeState = "HOMEPAGE";
-        }
-    };
-
-    const flipTopListState = () => {
-        if (curTopListState === "SEARCHPAGE") {
-            curTopListState = "RESULTSPAGE";
-        } else {
-            curTopListState = "SEARCHPAGE";
-        }
+        refresh();
     };
 
     return (
@@ -50,7 +37,7 @@ function App() {
                     <Route path="/" element={<Home flipState={flipState} />} />
                     <Route
                         path="/toplists"
-                        element={<TopCharts flipState={flipTopListState} />}
+                        element={<TopCharts flipState={flipState} />}
                     />
                     <Route path="/userguide" element={<UserGuide />} />
                     <Route path="/about" element={<About />} />
