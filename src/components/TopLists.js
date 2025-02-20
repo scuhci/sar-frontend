@@ -95,7 +95,11 @@ const TopLists = ({ flipState }) => {
         ? searchResults.map((application) => ({
               ...application,
               reviewsCount: application.reviews,
-              reviews: [application.reviews, application.appId],
+              reviews: [
+                application.reviews,
+                application.appId,
+                country,
+              ],
 
               // PERMISSIONS
               // All truncated to two(ish) most relevant words.'
@@ -148,7 +152,11 @@ const TopLists = ({ flipState }) => {
         : searchResults.map((application) => ({
               ...application,
               reviewsCount: application.reviews,
-              reviews: [application.reviews, application.appId],
+              reviews: [
+                application.reviews,
+                application.appId,
+                country,
+              ],
           }));
 
     const handleCategoryChange = (event) => {

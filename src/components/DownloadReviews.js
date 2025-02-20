@@ -3,12 +3,12 @@ import Button from '@mui/material/Button';
 import { Tooltip } from '@mui/material';
 import ReviewsLoading from './ReviewsLoading';
 import axios from 'axios';
+import { useScraper } from "../components/SelectedScraperProvider";
 
 const DownloadReviews = (appId, countryCode) => {
+    const { selectedScraper } = useScraper();
     const [isLoading, setIsLoading] = useState(false);
     const [abortController, setAbortController] = useState(null);
-
-    console.log("Country Code: %s\n", countryCode);
 
     const handleCancel = () => {
         abortController.abort();
@@ -25,7 +25,9 @@ const DownloadReviews = (appId, countryCode) => {
             setAbortController(newAbortController);
             console.log("Country Code is %s\n", countryCode);
             setIsLoading(true);
-            const response = await axios.get(`/reviews?appId=${appId}&countryCode=${countryCode}`, {
+            const response = await axios.get(selectedScraper === "Play Store" 
+                ? `/reviews?appId=${appId}&countryCode=${countryCode}`
+                : `/ios/reviews?appId=${appId}&countryCode=${countryCode}`, {
                 signal: newAbortController.signal,
                 responseType: 'blob', //handling the binary data
                 headers: {
