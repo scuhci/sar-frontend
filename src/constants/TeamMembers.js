@@ -14,6 +14,14 @@ export const teamMembers = [
         bio: 'Lona is a San Diego native completing her last year of her masters\' in Computer Science. She received her bachelors of Computer Science from the University of Wyoming. Currently, she\'s writing her thesis on bias in generative AI, and working as a full stack developer for SMAR. Lona loves cooking, going to concerts, and reading a good book with her cat.'
     },
     {
+        name: 'Kyle Zhang', 
+        role: 'Developer',
+        imageUrl: '',
+        linkedInUrl: 'https://www.linkedin.com/in/kyle-zhang-3a6551194/',
+        bio: 'Kyle is a second year Masters student studying Computer Science and Engineering. He received his Bachelors in Computer Engineering from UCI. Currently, he works as a full-stack and machine learning developer in the SCU Human-Computer Interaction Lab. He loves to gym, drink coffee, and have a good time with friends.'
+
+    },
+    {
         name: 'Varun Mangla', 
         role: 'Developer',
         imageUrl: 'https://smar-team.s3.us-west-1.amazonaws.com/profile-photo/VarunMangla.jpeg',
