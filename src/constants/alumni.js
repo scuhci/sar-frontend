@@ -27,4 +27,11 @@ export const alumni = [
         linkedInUrl: 'https://www.linkedin.com/in/zuilee/',
         bio: 'Juilee was previously a member of the technical consulting team for SMAR.'
     },
+    {
+        name: 'Soumya Mohan', 
+        role: 'Scrum Coach',
+        imageUrl: 'https://smar-team.s3.us-west-1.amazonaws.com/profile-photo/SoumyaMohan.jpeg',
+        linkedInUrl: 'https://www.linkedin.com/in/soumyaiim/',
+        bio: 'Results-driven Full Stack Product Manager with 7 years of experience leading 0-1 product development in AdTech, FinTech, and B2B SaaS.  Skilled in defining and executing product vision and strategic roadmaps, I excel in partnering with cross-functional teams to build and scale innovative products.  With deep expertise in AI/ML, data analytics, and software engineering, I leverage data-driven insights to optimize user experiences and accelerate product adoption, consistently driving business outcomes.'
+    },
 ];

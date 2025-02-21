@@ -20,7 +20,7 @@ const About = () => {
       <Typography variant="body1" fontSize="20px" className="about-text">
             Our <strong>Developer Team</strong>, which works on building out the technical components of our app (such as this site!) <br></br><br></br>
             Our <strong>Technical Consulting Team</strong>, who consult with researchers to assist them in conducting research with our tool. They also gather valuable feedback to improve our application! <br></br><br></br>
-            Our <strong>Literature Review Team</strong>, who consult with researchers to assist them in conducting research with our tool. They also gather valuable feedback to improve our application! <br></br><br></br>
+            Our <strong>Literature Review Team</strong>, who review existing SMAR research and inform the development of new features to assist researchers. <br></br><br></br>
             Learn more about our lovely team members below.
       </Typography>
 
