@@ -5,10 +5,10 @@ import Typography from "@mui/material/Typography";
 import { UserAgent } from "express-useragent";
 import "../css/Home.css";
 import Citation from "../components/Citation";
-import Chip from "@mui/joy/Chip";
 import Box from "@mui/material/Box";
 import Tabs from "@mui/material/Tabs";
 import Tab from "@mui/material/Tab";
+import Chip from "@mui/material/Chip";
 import { Android, Apple } from "@mui/icons-material";
 import { useScraper } from "../components/SelectedScraperProvider";
 
@@ -50,13 +50,13 @@ const Home = ({ flipState }) => {
                 <Typography variant="h3" className="home-header">
                     Systematic Mobile Application Reviews
                     <Chip
-                        color="success"
+                        color="primary"
                         onClick={function () {}}
-                        size="sm"
+                        size="small"
+                        sx={{ ml: 1 }}
                         variant="outlined"
-                    >
-                        BETA
-                    </Chip>
+                        label="BETA"
+                    />
                 </Typography>
 
                 <Typography variant="p" className="home-text">

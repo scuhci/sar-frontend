@@ -6,7 +6,7 @@ import "../css/Home.css";
 import Citation from "../components/Citation";
 
 import { Typography, Box, Tabs, Tab, Link } from "@mui/material";
-import { Chip } from "@mui/joy";
+import Chip from "@mui/material/Chip";
 import { Android, Apple } from "@mui/icons-material";
 
 // import { useLocation, useNavigate } from "react-router-dom";
@@ -57,13 +57,13 @@ const TopCharts = ({ flipState }) => {
                 <Typography variant="h3" className="home-header">
                     Systematic Mobile Application Reviews - Top Charts
                     <Chip
-                        color="success"
+                        color="primary"
                         onClick={function () {}}
-                        size="sm"
+                        size="small"
+                        sx={{ ml: 1 }}
                         variant="outlined"
-                    >
-                        BETA
-                    </Chip>
+                        label="BETA"
+                    />
                 </Typography>
 
                 <Typography variant="p" className="home-text">

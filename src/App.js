@@ -7,6 +7,8 @@ import NavigationBar from "./components/NavigationBar";
 import UserGuide from "./pages/UserGuide";
 import TopCharts from "./pages/TopCharts";
 import { ScraperProvider } from "./components/SelectedScraperProvider";
+import { ThemeProvider } from "@mui/material";
+import { theme } from "./constants/theme";
 
 function App() {
     const navigate = useNavigate();
@@ -27,23 +29,28 @@ function App() {
     };
 
     return (
-        <ScraperProvider>
-            <div>
-                <NavigationBar
-                    refresh={refresh}
-                    refreshTopLists={refreshTopLists}
-                />
-                <Routes className="App">
-                    <Route path="/" element={<Home flipState={flipState} />} />
-                    <Route
-                        path="/toplists"
-                        element={<TopCharts flipState={flipState} />}
+        <ThemeProvider theme={theme}>
+            <ScraperProvider>
+                <div>
+                    <NavigationBar
+                        refresh={refresh}
+                        refreshTopLists={refreshTopLists}
                     />
-                    <Route path="/userguide" element={<UserGuide />} />
-                    <Route path="/about" element={<About />} />
-                </Routes>
-            </div>
-        </ScraperProvider>
+                    <Routes className="App">
+                        <Route
+                            path="/"
+                            element={<Home flipState={flipState} />}
+                        />
+                        <Route
+                            path="/toplists"
+                            element={<TopCharts flipState={flipState} />}
+                        />
+                        <Route path="/userguide" element={<UserGuide />} />
+                        <Route path="/about" element={<About />} />
+                    </Routes>
+                </div>
+            </ScraperProvider>
+        </ThemeProvider>
     );
 }
 // can add between home and citation: <Route path="/about" element={<About />} />

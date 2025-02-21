@@ -2,16 +2,7 @@
     margin-right: 8px;
     margin-bottom: 8px;
     border-radius: 2px;
-    border: 1px solid #000000; 
+    border: 1px solid #000000;
     text-transform: none;
-    font-size: 1.1rem; 
-}
-
-.example-top-list-button {
-    background-color:#2196F30A;
-    border-color: #2196F33A;
-}
-
-.example-top-list-button:hover {
-    background-color: #2196F34A;
+    font-size: 1.1rem;
 }
