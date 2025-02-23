@@ -42,7 +42,7 @@ const DownloadReviews = (appId, countryCode) => {
       const relog_response = await axios.get(
         selectedScraper === "Play Store"
           ? `/download-reviews-relog?appId=${appId}&countryCode=${countryCode}&store=${"Google Play Store"}&sorting=${"RECENT"}`
-          : `/download-reviews-relog?appId=${appId}&countryCode=${countryCode}&store=${"Google Play Store"}&sorting=${"RECENT"}`,
+          : `/ios/download-reviews-relog?appId=${appId}&countryCode=${countryCode}&store=${"iOS App Store"}&sorting=${"RECENT"}`,
         {
           signal: newAbortController.signal,
           responseType: "blob", //handling the binary data
