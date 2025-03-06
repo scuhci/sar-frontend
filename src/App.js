@@ -35,7 +35,7 @@ function App() {
                     <Route path="/" element={<Home flipState={flipState} />} />
                     <Route path="/toplists" element={<TopCharts flipState={flipState} />} />
                     <Route path="/userguide" element={<UserGuide />} />
-                    <Route path="/bulkreviews" element={<BulkReviews />} />
+                    <Route path="/bulkreviews" element={<BulkReviews flipState={flipState} />} />
                     <Route path="/about" element={<About />} />
                 </Routes>
             </div>

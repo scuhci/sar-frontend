@@ -12,7 +12,7 @@ import { useScraper } from "../components/SelectedScraperProvider";
 import BulkReviewStepper from "../components/BulkReviewStepper";
 import BulkReviewSearchBar from "../components/BulkReviewSearchBar";
 
-const BulkReviews = () => {
+const BulkReviews = ({ flipState }) => {
     const { selectedScraper, setSelectedScraper } = useScraper();
     // State for step the user is on, the search step (0) or the download step (1)
     const [activeStep, setActiveStep] = useState(0);
@@ -50,7 +50,7 @@ const BulkReviews = () => {
                     Scrape reviews from multiple apps simultaneously from the{" "}
                     {selectedScraper === "Play Store" ? "Google Play" : "iOS App"} store with ease.
                 </Typography>
-                <BulkReviewSearchBar />
+                <BulkReviewSearchBar flipState={flipState} />
             </div>
             <Citation />
         </>
