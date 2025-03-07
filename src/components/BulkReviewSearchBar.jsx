@@ -1,5 +1,6 @@
 import { useState, useEffect } from "react";
 import {
+    Avatar,
     Button,
     Chip,
     Dialog,
@@ -13,8 +14,9 @@ import {
 import Dropdown from "./Dropdown";
 import { useScraper } from "./SelectedScraperProvider";
 import axios from "axios";
+import { DataGrid } from "@mui/x-data-grid";
 
-const BulkReviewSearchBar = ({ flipState }) => {
+const BulkReviewSearchBar = ({ flipState, activeStep, setActiveStep }) => {
     const { selectedScraper } = useScraper();
     const [abortController, setAbortController] = useState(null);
     const [searchQuery, setSearchQuery] = useState("");
@@ -24,6 +26,7 @@ const BulkReviewSearchBar = ({ flipState }) => {
     const [isLoading, setIsLoading] = useState(false);
     const [currentlySearching, setCurrentlySearching] = useState("");
     const [country, setCountry] = useState("US");
+    const [rows, setRows] = useState([]);
 
     const handleCountryChange = (newCountry) => {
         setCountry(newCountry);
@@ -100,11 +103,34 @@ const BulkReviewSearchBar = ({ flipState }) => {
             }
         }
         setIsLoading(false);
+        setActiveStep(1);
     };
 
     useEffect(() => {
         console.log(reviewSearchResults);
     }, [reviewSearchResults]);
+
+    useEffect(() => {
+        console.log(displaySearchResults);
+        console.log("SETTING ROWS");
+        setRows(
+            displaySearchResults.map((app) => ({
+                icon: app.results[0].icon,
+                title: app.results[0].title,
+                appId: app.results[0].appId,
+                reviewsCount: app.results[0].reviews,
+                developer: app.results[0].developer,
+                score: app.results[0].score,
+                url: app.results[0].url,
+                category: app.results[0].genreId,
+            }))
+        );
+    }, [displaySearchResults]);
+
+    useEffect(() => {
+        console.log("PRINTING ROWS");
+        console.dir(rows);
+    }, [rows]);
 
     const handleKeyDown = (event) => {
         if (event.key === "Enter") {
@@ -121,39 +147,142 @@ const BulkReviewSearchBar = ({ flipState }) => {
         setDisplaySearchResults([]);
     }, [selectedScraper]);
 
+    // Data grid columns from displaySearchResults
+    const columns = [
+        {
+            field: "icon",
+            renderHeader: () => <strong>Icon</strong>,
+            renderCell: (params) => <Avatar src={params.value} alt="Icon" />,
+            minWidth: 150,
+        },
+        {
+            field: "title",
+            renderHeader: () => <strong>App Name</strong>,
+            renderCell: (params) => params.value ?? "-",
+            minWidth: 250,
+        },
+        {
+            field: "appId",
+            renderHeader: () => <strong>App Id</strong>,
+            renderCell: (params) => params.value ?? "-",
+            minWidth: 250,
+        },
+        {
+            field: "reviewsCount",
+            renderHeader: () => <strong>Reviews</strong>,
+            renderCell: (params) => params.value ?? "-",
+            minWidth: 200,
+        },
+        {
+            field: "developer",
+            renderHeader: () => <strong>Developer</strong>,
+            renderCell: (params) => params.value ?? "-",
+            minWidth: 200,
+        },
+        {
+            field: "score",
+            renderHeader: () => <strong>Score</strong>,
+            renderCell: (params) => params.value ?? "-",
+            minWidth: 200,
+        },
+        {
+            field: "url",
+            renderHeader: () => <strong>URL</strong>,
+            renderCell: (params) => params.value ?? "-",
+            minWidth: 250,
+        },
+        {
+            field: "category",
+            renderHeader: () => <strong>Category</strong>,
+            renderCell: (params) => params.value ?? "-",
+            minWidth: 200,
+        },
+    ];
+
     return (
         <div className="search-bar-container">
-            <div
-                style={{
-                    alignItems: "start",
-                    display: "flex",
-                    justifyContent: "flex-start",
-                    width: "100%",
-                    marginBottom: 10,
-                    gap: 10,
-                }}
-            >
-                <Dropdown handler={handleCountryChange} />
-                <TextField
-                    label="Enter app IDs, separated by commas (e.g., com.example.app1, com.example.app2)"
-                    variant="outlined"
-                    value={searchQuery}
-                    onChange={handleSearchChange}
-                    onKeyDown={handleKeyDown}
-                    className="search-input"
-                    error={searchQueryErrorMessage.length > 0}
-                    helperText={searchQueryErrorMessage}
-                />
-                <Button
-                    className="search-button"
-                    onClick={handleSearchSubmit}
-                    variant="contained"
-                    color="primary"
-                    disabled={isLoading}
-                >
-                    {selectedScraper === "Play Store" ? "Scrape Play Store" : "Scrape App Store"}
-                </Button>
-            </div>
+            {activeStep === 0 && (
+                <>
+                    <div
+                        style={{
+                            alignItems: "start",
+                            display: "flex",
+                            justifyContent: "flex-start",
+                            width: "100%",
+                            marginBottom: 10,
+                            gap: 10,
+                        }}
+                    >
+                        <Dropdown handler={handleCountryChange} />
+                        <TextField
+                            label="Enter app IDs, separated by commas (e.g., com.example.app1, com.example.app2)"
+                            variant="outlined"
+                            value={searchQuery}
+                            onChange={handleSearchChange}
+                            onKeyDown={handleKeyDown}
+                            className="search-input"
+                            error={searchQueryErrorMessage.length > 0}
+                            helperText={searchQueryErrorMessage}
+                        />
+                        <Button
+                            className="search-button"
+                            onClick={handleSearchSubmit}
+                            variant="contained"
+                            color="primary"
+                            disabled={isLoading}
+                        >
+                            {selectedScraper === "Play Store" ? "Scrape Play Store" : "Scrape App Store"}
+                        </Button>
+                    </div>
+
+                    <div
+                        style={{
+                            width: "100%",
+                            display: "flex",
+                            alignItems: "start",
+                            justifyContent: "flex-start",
+                            marginTop: 16,
+                        }}
+                    >
+                        <Typography sx={{ mr: 1 }} variant="h6">
+                            Example Searches:
+                        </Typography>
+                        <Chip
+                            sx={{ mr: 1 }}
+                            variant="outlined"
+                            label="com.example.one"
+                            onClick={() => setSearchQuery("com.example.one")}
+                        />
+                        <Chip
+                            sx={{ mr: 1 }}
+                            variant="outlined"
+                            label="com.example.two"
+                            onClick={() => setSearchQuery("com.example.two")}
+                        />
+                        <Chip
+                            sx={{ mr: 1 }}
+                            variant="outlined"
+                            label="com.example.three, com.example.four"
+                            onClick={() => setSearchQuery("com.example.three, com.example.four")}
+                        />
+                    </div>
+                    <div
+                        style={{
+                            width: "100%",
+                            display: "flex",
+                            flexDirection: "column",
+                            alignItems: "start",
+                            marginTop: 16,
+                        }}
+                    >
+                        <div style={{ textAlign: "left" }}>
+                            <span style={{ fontWeight: "bold" }}>Please note:</span> You can scrape for up to 20 apps
+                            per query with a limit of 10,000 reviews per app. For scraping beyond these limits, please
+                            refer to our user guide.
+                        </div>
+                    </div>
+                </>
+            )}
 
             {/** Loading Dialog */}
             <Dialog
@@ -184,52 +313,30 @@ const BulkReviewSearchBar = ({ flipState }) => {
                 </DialogActions>
             </Dialog>
 
-            <div
-                style={{
-                    width: "100%",
-                    display: "flex",
-                    alignItems: "start",
-                    justifyContent: "flex-start",
-                    marginTop: 16,
-                }}
-            >
-                <Typography sx={{ mr: 1 }} variant="h6">
-                    Example Searches:
-                </Typography>
-                <Chip
-                    sx={{ mr: 1 }}
-                    variant="outlined"
-                    label="com.example.one"
-                    onClick={() => setSearchQuery("com.example.one")}
-                />
-                <Chip
-                    sx={{ mr: 1 }}
-                    variant="outlined"
-                    label="com.example.two"
-                    onClick={() => setSearchQuery("com.example.two")}
-                />
-                <Chip
-                    sx={{ mr: 1 }}
-                    variant="outlined"
-                    label="com.example.three, com.example.four"
-                    onClick={() => setSearchQuery("com.example.three, com.example.four")}
-                />
-            </div>
-            <div
-                style={{
-                    width: "100%",
-                    display: "flex",
-                    flexDirection: "column",
-                    alignItems: "start",
-                    marginTop: 16,
-                }}
-            >
-                <div style={{ textAlign: "left" }}>
-                    <span style={{ fontWeight: "bold" }}>Please note:</span> You can scrape for up to 20 apps per query
-                    with a limit of 10,000 reviews per app. For scraping beyond these limits, please refer to our user
-                    guide.
+            {activeStep === 1 && displaySearchResults.length > 0 && (
+                <div
+                    style={{
+                        width: "100%",
+                        maxWidth: 1000,
+                        flexDirection: "column" /* Flex height to fit selected number of rows */,
+                        margin: "auto",
+                    }}
+                >
+                    <DataGrid
+                        rows={rows}
+                        columns={columns}
+                        initialState={{
+                            pagination: {
+                                paginationModel: { pageSize: 5 },
+                            },
+                        }}
+                        pageSizeOptions={[5, 10, 20]}
+                        disableColumnSelector
+                        getRowId={(row) => row.appId}
+                        disableRowSelectionOnClick
+                    />
                 </div>
-            </div>
+            )}
         </div>
     );
 };

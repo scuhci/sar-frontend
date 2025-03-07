@@ -50,7 +50,7 @@ const BulkReviews = ({ flipState }) => {
                     Scrape reviews from multiple apps simultaneously from the{" "}
                     {selectedScraper === "Play Store" ? "Google Play" : "iOS App"} store with ease.
                 </Typography>
-                <BulkReviewSearchBar flipState={flipState} />
+                <BulkReviewSearchBar flipState={flipState} activeStep={activeStep} setActiveStep={setActiveStep} />
             </div>
             <Citation />
         </>
