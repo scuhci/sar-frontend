@@ -1,5 +1,6 @@
 import { useState, useEffect } from "react";
 import {
+    Autocomplete,
     Avatar,
     Button,
     Chip,
@@ -15,6 +16,62 @@ import Dropdown from "./Dropdown";
 import { useScraper } from "./SelectedScraperProvider";
 import axios from "axios";
 import { DataGrid } from "@mui/x-data-grid";
+import JSZip from "jszip";
+
+// Data grid columns from displaySearchResults
+const columns = [
+    {
+        field: "icon",
+        renderHeader: () => <strong>Icon</strong>,
+        renderCell: (params) => <Avatar src={params.value} alt="Icon" />,
+        minWidth: 50,
+    },
+    {
+        field: "title",
+        renderHeader: () => <strong>App Name</strong>,
+        renderCell: (params) => params.value ?? "-",
+        minWidth: 250,
+    },
+    {
+        field: "appId",
+        renderHeader: () => <strong>App Id</strong>,
+        renderCell: (params) => params.value ?? "-",
+        minWidth: 250,
+    },
+    {
+        field: "reviewsCount",
+        renderHeader: () => <strong>Reviews</strong>,
+        renderCell: (params) => params.value ?? "-",
+        minWidth: 100,
+    },
+    {
+        field: "developer",
+        renderHeader: () => <strong>Developer</strong>,
+        renderCell: (params) => params.value ?? "-",
+        minWidth: 200,
+    },
+    {
+        field: "score",
+        renderHeader: () => <strong>Score</strong>,
+        renderCell: (params) => params.value ?? "-",
+        minWidth: 100,
+    },
+    {
+        field: "url",
+        renderHeader: () => <strong>URL</strong>,
+        renderCell: (params) => params.value ?? "-",
+        minWidth: 250,
+    },
+    {
+        field: "category",
+        renderHeader: () => <strong>Category</strong>,
+        renderCell: (params) => params.value ?? "-",
+        minWidth: 200,
+    },
+];
+
+// Options for sorting reviews
+const sortOptions = ["Recency", "Rating", "Grossing"];
 
 const BulkReviewSearchBar = ({ flipState, activeStep, setActiveStep }) => {
     const { selectedScraper } = useScraper();
@@ -27,6 +84,8 @@ const BulkReviewSearchBar = ({ flipState, activeStep, setActiveStep }) => {
     const [currentlySearching, setCurrentlySearching] = useState("");
     const [country, setCountry] = useState("US");
     const [rows, setRows] = useState([]);
+    const [sortValue, setSortValue] = useState(sortOptions[0]);
+    const [sortInputValue, setSortInputValue] = useState("");
 
     const handleCountryChange = (newCountry) => {
         setCountry(newCountry);
@@ -70,6 +129,8 @@ const BulkReviewSearchBar = ({ flipState, activeStep, setActiveStep }) => {
 
         // Send API request for each app id
         setIsLoading(true);
+        const newReviewSearchResults = [];
+        const newDisplaySearchResults = [];
         for (let appId of appIds) {
             setCurrentlySearching(appId);
             try {
@@ -79,7 +140,7 @@ const BulkReviewSearchBar = ({ flipState, activeStep, setActiveStep }) => {
                         ? `/search?query=${appId}&countryCode=${country}`
                         : `/ios/search?query=${appId}&countryCode=${country}`
                 );
-                setDisplaySearchResults((prev) => [...prev, displayResponse.data]);
+                newDisplaySearchResults.push(displayResponse.data);
                 // Get reviews
                 const reviewResponse = await axios.get(
                     selectedScraper === "Play Store"
@@ -90,9 +151,10 @@ const BulkReviewSearchBar = ({ flipState, activeStep, setActiveStep }) => {
                         responseType: "blob", //handling the binary data
                     }
                 );
+                console.log("REVIEW RESPONSE");
                 console.dir(reviewResponse);
-                console.log(reviewResponse.data);
-                setReviewSearchResults((prev) => [...prev, reviewResponse.data]);
+                console.log(await reviewResponse.data.text());
+                newReviewSearchResults.push(reviewResponse.data);
             } catch (error) {
                 if (axios.isCancel(error)) {
                     console.log("Request canceled:", error.message);
@@ -102,6 +164,8 @@ const BulkReviewSearchBar = ({ flipState, activeStep, setActiveStep }) => {
                 setIsLoading(false);
             }
         }
+        setReviewSearchResults(newReviewSearchResults);
+        setDisplaySearchResults(newDisplaySearchResults);
         setIsLoading(false);
         setActiveStep(1);
     };
@@ -147,57 +211,33 @@ const BulkReviewSearchBar = ({ flipState, activeStep, setActiveStep }) => {
         setDisplaySearchResults([]);
     }, [selectedScraper]);
 
-    // Data grid columns from displaySearchResults
-    const columns = [
-        {
-            field: "icon",
-            renderHeader: () => <strong>Icon</strong>,
-            renderCell: (params) => <Avatar src={params.value} alt="Icon" />,
-            minWidth: 150,
-        },
-        {
-            field: "title",
-            renderHeader: () => <strong>App Name</strong>,
-            renderCell: (params) => params.value ?? "-",
-            minWidth: 250,
-        },
-        {
-            field: "appId",
-            renderHeader: () => <strong>App Id</strong>,
-            renderCell: (params) => params.value ?? "-",
-            minWidth: 250,
-        },
-        {
-            field: "reviewsCount",
-            renderHeader: () => <strong>Reviews</strong>,
-            renderCell: (params) => params.value ?? "-",
-            minWidth: 200,
-        },
-        {
-            field: "developer",
-            renderHeader: () => <strong>Developer</strong>,
-            renderCell: (params) => params.value ?? "-",
-            minWidth: 200,
-        },
-        {
-            field: "score",
-            renderHeader: () => <strong>Score</strong>,
-            renderCell: (params) => params.value ?? "-",
-            minWidth: 200,
-        },
-        {
-            field: "url",
-            renderHeader: () => <strong>URL</strong>,
-            renderCell: (params) => params.value ?? "-",
-            minWidth: 250,
-        },
-        {
-            field: "category",
-            renderHeader: () => <strong>Category</strong>,
-            renderCell: (params) => params.value ?? "-",
-            minWidth: 200,
-        },
-    ];
+    // Get total number of reviews to be scraped using limit of 10,000 reviews per app
+    const totalReviewCount = rows.reduce((sum, row) => (sum += Math.min(row.reviewsCount, 10000)), 0);
+
+    const handleDownloadReviews = () => {
+        const filename_zip = "reviews.zip";
+        const zip = new JSZip();
+        for (let i = 0; i < displaySearchResults.length; i++) {
+            const filename = `${displaySearchResults[i].results[0].appId}.csv`;
+            // Create a URL from the blob
+            const csv_file = new Blob(["\ufeff", reviewSearchResults[0]], {
+                type: "text/csv;charset=utf-8",
+            });
+            zip.file(filename, csv_file);
+        }
+        zip.generateAsync({ type: "blob" }).then(function (zipFile) {
+            // Create a link element, set the href to the blob URL, and trigger a download
+            const url = window.URL.createObjectURL(zipFile);
+            const link = document.createElement("a");
+            link.href = url;
+            link.setAttribute("download", filename_zip);
+            document.body.appendChild(link);
+            link.click();
+            // Clean up and revoke the URL
+            document.body.removeChild(link);
+            window.URL.revokeObjectURL(url);
+        });
+    };
 
     return (
         <div className="search-bar-container">
@@ -244,7 +284,7 @@ const BulkReviewSearchBar = ({ flipState, activeStep, setActiveStep }) => {
                             marginTop: 16,
                         }}
                     >
-                        <Typography sx={{ mr: 1 }} variant="h6">
+                        <Typography sx={{ mr: 1 }} variant="h5">
                             Example Searches:
                         </Typography>
                         <Chip
@@ -313,7 +353,7 @@ const BulkReviewSearchBar = ({ flipState, activeStep, setActiveStep }) => {
                 </DialogActions>
             </Dialog>
 
-            {activeStep === 1 && displaySearchResults.length > 0 && (
+            {activeStep === 1 && (
                 <div
                     style={{
                         width: "100%",
@@ -322,6 +362,37 @@ const BulkReviewSearchBar = ({ flipState, activeStep, setActiveStep }) => {
                         margin: "auto",
                     }}
                 >
+                    <div
+                        style={{
+                            display: "flex",
+                            justifyContent: "space-between",
+                            marginBottom: 24,
+                        }}
+                    >
+                        <div style={{ textAlign: "left" }}>
+                            <Typography variant="h5">{rows.length} apps selected</Typography>
+                            <Typography variant="body2">
+                                Select how you'd like the reviews sorted (by rating, newest, or grossing), then click
+                                below to download your CSV file.
+                            </Typography>
+                        </div>
+
+                        <div>
+                            <Autocomplete
+                                value={sortValue}
+                                onChange={(_event, newValue) => {
+                                    setSortValue(newValue);
+                                }}
+                                inputValue={sortInputValue}
+                                onInputChange={(_event, newInputValue) => {
+                                    setSortInputValue(newInputValue);
+                                }}
+                                options={sortOptions}
+                                sx={{ width: 200 }}
+                                renderInput={(params) => <TextField {...params} label="Sort Reviews By" />}
+                            />
+                        </div>
+                    </div>
                     <DataGrid
                         rows={rows}
                         columns={columns}
@@ -335,6 +406,25 @@ const BulkReviewSearchBar = ({ flipState, activeStep, setActiveStep }) => {
                         getRowId={(row) => row.appId}
                         disableRowSelectionOnClick
                     />
+                    <div
+                        style={{
+                            display: "flex",
+                            justifyContent: "space-between",
+                            marginTop: 24,
+                            marginBottom: 24,
+                        }}
+                    >
+                        <div>
+                            <span style={{ fontWeight: "bold" }}>Total {totalReviewCount} Reviews: </span>
+                            (Sort by {sortValue}; Scraping limited to 10,000 per app)
+                        </div>
+                        <div>
+                            <Button onClick={() => setActiveStep((prevActiveStep) => prevActiveStep - 1)}>Back</Button>
+                            <Button onClick={handleDownloadReviews} variant="contained">
+                                Scrape and Download Reviews
+                            </Button>
+                        </div>
+                    </div>
                 </div>
             )}
         </div>

@@ -4,7 +4,7 @@ import { UserAgent } from "express-useragent";
 import "../css/Home.css";
 import Citation from "../components/Citation";
 
-import { Typography, Box, Tabs, Tab, Link } from "@mui/material";
+import { Typography, Box, Tabs, Tab } from "@mui/material";
 import { Chip } from "@mui/material";
 import { Android, Apple } from "@mui/icons-material";
 
