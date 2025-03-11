@@ -70,6 +70,60 @@ const columns = [
     },
 ];
 
+// Helper function to add appId column to review CSV
+// Removes header row, since that is handled in combineCSVBlobs()
+async function addAppIdColumnToCSV(csvBlob, appId) {
+    // Step 1: Convert Blob to text
+    const csvText = await csvBlob.text();
+
+    // Step 2: Parse the CSV text into rows
+    const rows = csvText.split("\n");
+
+    // Step 4: Add the appId value to front of each data row
+    for (let i = 1; i < rows.length; i++) {
+        if (rows[i].trim() === "") continue; // Skip empty rows
+        let rowData = rows[i].split(",");
+        rowData.unshift(`"${appId}"`);
+        rows[i - 1] = rowData.join(",");
+    }
+    rows.pop(); // Remove last row
+
+    // Step 5: Join the rows back into a single string
+    const newCsvText = rows.join("\n");
+
+    console.log(newCsvText);
+
+    // Step 6: Create a new Blob with the updated CSV
+    const newCsvBlob = new Blob([newCsvText, "\n"], { type: "text/csv;charset=utf-8" });
+
+    return newCsvBlob;
+}
+
+// Helper function to combine array of CSVs into one CSV
+async function combineCSVBlobs(displaySearchResults, reviewSearchResults) {
+    let allRows = [];
+    let headers = null;
+    for (let i = 0; i < displaySearchResults.length; i++) {
+        const csvBlob = reviewSearchResults[i];
+        // Convert Blob to text
+        const csvText = await csvBlob.text();
+
+        // Parse the CSV text into rows
+        const rows = csvText.split("\n");
+
+        // Process the header row (only from the first Blob)
+        if (headers === null) {
+            // Add appId to the front of headers
+            let headerData = rows[0].split(",");
+            headerData.unshift(`"appId"`);
+            headers = headerData.join(",") + "\n";
+        }
+
+        allRows.push(await addAppIdColumnToCSV(csvBlob, displaySearchResults[i].results[0].appId));
+    }
+    return new Blob(["\ufeff", headers, ...allRows], { type: "text/csv;charset=utf-8" });
+}
+
 // Options for sorting reviews
 const sortOptions = ["Recency", "Rating", "Grossing"];
 
@@ -214,17 +268,11 @@ const BulkReviewSearchBar = ({ flipState, activeStep, setActiveStep }) => {
     // Get total number of reviews to be scraped using limit of 10,000 reviews per app
     const totalReviewCount = rows.reduce((sum, row) => (sum += Math.min(row.reviewsCount, 10000)), 0);
 
-    const handleDownloadReviews = () => {
+    const handleDownloadReviews = async () => {
         const filename_zip = "reviews.zip";
         const zip = new JSZip();
-        for (let i = 0; i < displaySearchResults.length; i++) {
-            const filename = `${displaySearchResults[i].results[0].appId}.csv`;
-            // Create a URL from the blob
-            const csv_file = new Blob(["\ufeff", reviewSearchResults[0]], {
-                type: "text/csv;charset=utf-8",
-            });
-            zip.file(filename, csv_file);
-        }
+        const filename = "reviews.csv";
+        zip.file(filename, await combineCSVBlobs(displaySearchResults, reviewSearchResults));
         zip.generateAsync({ type: "blob" }).then(function (zipFile) {
             // Create a link element, set the href to the blob URL, and trigger a download
             const url = window.URL.createObjectURL(zipFile);
