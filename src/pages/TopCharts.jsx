@@ -1,5 +1,6 @@
 import React, { useEffect } from "react";
 import TopLists from "../components/TopLists";
+import Footer from "../components/Footer";
 import MobileScreen from "../components/MobileScreen";
 import { UserAgent } from "express-useragent";
 import "../css/Home.css";
@@ -31,52 +32,58 @@ const TopCharts = ({ flipState }) => {
     // Switch to mobile device screen if user is on a mobile device
     return !isMobileDevice ? (
         <>
-            <Box sx={{ borderBottom: 1, borderColor: "divider" }}>
-                <Tabs
-                    value={selectedScraper ?? "Play Store"}
-                    onChange={(_event, newValue) =>
-                        setSelectedScraper(newValue)
-                    }
-                    aria-label="basic tabs example"
-                >
-                    <Tab
-                        icon={<Android />}
-                        iconPosition="start"
-                        label="PLAY STORE"
-                        value={"Play Store"}
-                    />
-                    <Tab
-                        icon={<Apple />}
-                        iconPosition="start"
-                        label="APP STORE"
-                        value={"App Store"}
-                    />
-                </Tabs>
-            </Box>
-            <div className="home-container">
-                <Typography variant="h3" className="home-header">
-                    Systematic Mobile Application Reviews - Top Charts
-                    <Chip
-                        color="success"
-                        onClick={function () {}}
-                        size="sm"
-                        variant="outlined"
-                    >
-                        BETA
-                    </Chip>
-                </Typography>
+            <div className="app-container">
+                <div className="content">
+                    <Box sx={{ borderBottom: 1, borderColor: "divider",marginTop : 7}}>
+                        <Tabs
+                            value={selectedScraper ?? "Play Store"}
+                            onChange={(_event, newValue) =>
+                                setSelectedScraper(newValue)
+                            }
+                            aria-label="basic tabs example"
+                        >
+                            <Tab
+                                icon={<Android />}
+                                iconPosition="start"
+                                label="PLAY STORE"
+                                value={"Play Store"}
+                            />
+                            <Tab
+                                icon={<Apple />}
+                                iconPosition="start"
+                                label="APP STORE"
+                                value={"App Store"}
+                            />
+                        </Tabs>
+                    </Box>
+                    <div className="home-container">
+                        <Typography variant="h3" className="home-header">
+                            Systematic Mobile Application Reviews - Top Charts
+                            <Chip
+                                color="success"
+                                onClick={function () {}}
+                                size="sm"
+                                variant="outlined"
+                            >
+                                BETA
+                            </Chip>
+                        </Typography>
 
-                <Typography variant="p" className="home-text">
-                    Fetch top charts for different countries, collections, and
-                    categories for the{" "}
-                    {selectedScraper === "Play Store"
-                        ? "Google Play"
-                        : "iOS App"}{" "}
-                    store.
-                </Typography>
+                        <Typography variant="p" className="home-text">
+                            Fetch top charts for different countries, collections, and
+                            categories for the{" "}
+                            {selectedScraper === "Play Store"
+                                ? "Google Play"
+                                : "iOS App"}{" "}
+                            store.
+                        </Typography>
+                    </div>
+                    <TopLists flipState={flipState} selectedScraper={selectedScraper} />
+                </div>
+                <Citation />
+                <Footer/>
+                <br/>
             </div>
-            <TopLists flipState={flipState} selectedScraper={selectedScraper} />
-            <Citation />
         </>
     ) : (
         <MobileScreen />
