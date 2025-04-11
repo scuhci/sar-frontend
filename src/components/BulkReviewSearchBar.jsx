@@ -1,14 +1,18 @@
 import { useState, useEffect } from "react";
 import {
-    Autocomplete,
     Avatar,
+    Box,
     Button,
     Chip,
     Dialog,
     DialogActions,
     DialogContent,
     DialogContentText,
+    FormControl,
+    InputLabel,
     LinearProgress,
+    MenuItem,
+    Select,
     TextField,
     Typography,
 } from "@mui/material";
@@ -139,7 +143,6 @@ const BulkReviewSearchBar = ({ flipState, activeStep, setActiveStep }) => {
     const [country, setCountry] = useState("US");
     const [rows, setRows] = useState([]);
     const [sortValue, setSortValue] = useState(sortOptions[0]);
-    const [sortInputValue, setSortInputValue] = useState("");
 
     const handleCountryChange = (newCountry) => {
         setCountry(newCountry);
@@ -269,10 +272,15 @@ const BulkReviewSearchBar = ({ flipState, activeStep, setActiveStep }) => {
     const totalReviewCount = rows.reduce((sum, row) => (sum += Math.min(row.reviewsCount, 10000)), 0);
 
     const handleDownloadReviews = async () => {
-        const filename_zip = "reviews.zip";
+        const date = new Date();
+        const month = (date.getMonth() + 1).toString().padStart(2, "0");
+        const day = date.getDate().toString().padStart(2, "0");
+        const year = date.getFullYear();
+        const filename = `reviews_${month}${day}${year}`;
+        const filename_zip = `${filename}.zip`;
         const zip = new JSZip();
-        const filename = "reviews.csv";
-        zip.file(filename, await combineCSVBlobs(displaySearchResults, reviewSearchResults));
+        const filename_csv = `${filename}.csv`;
+        zip.file(filename_csv, await combineCSVBlobs(displaySearchResults, reviewSearchResults));
         zip.generateAsync({ type: "blob" }).then(function (zipFile) {
             // Create a link element, set the href to the blob URL, and trigger a download
             const url = window.URL.createObjectURL(zipFile);
@@ -425,21 +433,26 @@ const BulkReviewSearchBar = ({ flipState, activeStep, setActiveStep }) => {
                             </Typography>
                         </div>
 
-                        <div>
-                            <Autocomplete
-                                value={sortValue}
-                                onChange={(_event, newValue) => {
-                                    setSortValue(newValue);
-                                }}
-                                inputValue={sortInputValue}
-                                onInputChange={(_event, newInputValue) => {
-                                    setSortInputValue(newInputValue);
-                                }}
-                                options={sortOptions}
-                                sx={{ width: 200 }}
-                                renderInput={(params) => <TextField {...params} label="Sort Reviews By" />}
-                            />
-                        </div>
+                        <Box sx={{ minWidth: 120 }}>
+                            <FormControl fullWidth>
+                                <InputLabel id="sort-reviews-label">Sort Reviews By</InputLabel>
+                                <Select
+                                    labelId="sort-reviews-label"
+                                    id="sort-reviews"
+                                    value={sortValue}
+                                    onChange={(event) => {
+                                        setSortValue(event.target.value);
+                                    }}
+                                    label="Sort Reviews By"
+                                >
+                                    {sortOptions.map((option, id) => (
+                                        <MenuItem key={id} value={option}>
+                                            {option}
+                                        </MenuItem>
+                                    ))}
+                                </Select>
+                            </FormControl>
+                        </Box>
                     </div>
                     <DataGrid
                         rows={rows}
