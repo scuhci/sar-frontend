@@ -129,7 +129,7 @@ async function combineCSVBlobs(displaySearchResults, reviewSearchResults) {
 }
 
 // Options for sorting reviews
-const sortOptions = ["Recency", "Rating", "Grossing"];
+const sortOptions = ["Recency", "Rating", "Helpfulness"];
 
 const BulkReviewSearchBar = ({ flipState, activeStep, setActiveStep }) => {
     const { selectedScraper } = useScraper();
@@ -137,7 +137,7 @@ const BulkReviewSearchBar = ({ flipState, activeStep, setActiveStep }) => {
     const [searchQuery, setSearchQuery] = useState("");
     const [searchQueryErrorMessage, setSearchQueryErrorMessage] = useState("");
     const [displaySearchResults, setDisplaySearchResults] = useState([]);
-    const [reviewSearchResults, setReviewSearchResults] = useState([]);
+    const [appIds, setAppIds] = useState([]);
     const [isLoading, setIsLoading] = useState(false);
     const [currentlySearching, setCurrentlySearching] = useState("");
     const [country, setCountry] = useState("US");
@@ -177,6 +177,7 @@ const BulkReviewSearchBar = ({ flipState, activeStep, setActiveStep }) => {
         }
         setSearchQueryErrorMessage("");
         console.dir(appIds);
+        setAppIds(appIds);
 
         if (abortController) {
             abortController.abort();
@@ -186,7 +187,6 @@ const BulkReviewSearchBar = ({ flipState, activeStep, setActiveStep }) => {
 
         // Send API request for each app id
         setIsLoading(true);
-        const newReviewSearchResults = [];
         const newDisplaySearchResults = [];
         for (let appId of appIds) {
             setCurrentlySearching(appId);
@@ -198,20 +198,6 @@ const BulkReviewSearchBar = ({ flipState, activeStep, setActiveStep }) => {
                         : `/ios/search?query=${appId}&countryCode=${country}`
                 );
                 newDisplaySearchResults.push(displayResponse.data);
-                // Get reviews
-                const reviewResponse = await axios.get(
-                    selectedScraper === "Play Store"
-                        ? `/reviews?appId=${appId}&countryCode=${country}`
-                        : `/ios/reviews?appId=${appId}&countryCode=${country}`, // Change to URL for app store scraper
-                    {
-                        signal: newAbortController.signal,
-                        responseType: "blob", //handling the binary data
-                    }
-                );
-                console.log("REVIEW RESPONSE");
-                console.dir(reviewResponse);
-                console.log(await reviewResponse.data.text());
-                newReviewSearchResults.push(reviewResponse.data);
             } catch (error) {
                 if (axios.isCancel(error)) {
                     console.log("Request canceled:", error.message);
@@ -221,15 +207,10 @@ const BulkReviewSearchBar = ({ flipState, activeStep, setActiveStep }) => {
                 setIsLoading(false);
             }
         }
-        setReviewSearchResults(newReviewSearchResults);
         setDisplaySearchResults(newDisplaySearchResults);
         setIsLoading(false);
         setActiveStep(1);
     };
-
-    useEffect(() => {
-        console.log(reviewSearchResults);
-    }, [reviewSearchResults]);
 
     useEffect(() => {
         console.log(displaySearchResults);
@@ -280,6 +261,43 @@ const BulkReviewSearchBar = ({ flipState, activeStep, setActiveStep }) => {
         const filename_zip = `${filename}.zip`;
         const zip = new JSZip();
         const filename_csv = `${filename}.csv`;
+
+        if (abortController) {
+            abortController.abort();
+        }
+        const newAbortController = new AbortController();
+        setAbortController(newAbortController);
+
+        // Send API request for each app id
+        setIsLoading(true);
+        const reviewSearchResults = [];
+
+        for (let appId of appIds) {
+            setCurrentlySearching(appId);
+            try {
+                // Get reviews
+                const reviewResponse = await axios.get(
+                    selectedScraper === "Play Store"
+                        ? `/reviews?appId=${appId}&countryCode=${country}&sortBy=${sortValue}`
+                        : `/ios/reviews?appId=${appId}&countryCode=${country}&sortBy=${sortValue}`, // Change to URL for app store scraper
+                    {
+                        signal: newAbortController.signal,
+                        responseType: "blob", //handling the binary data
+                    }
+                );
+                console.log("REVIEW RESPONSE");
+                console.dir(reviewResponse);
+                console.log(await reviewResponse.data.text());
+                reviewSearchResults.push(reviewResponse.data);
+            } catch (error) {
+                if (axios.isCancel(error)) {
+                    console.log("Request canceled:", error.message);
+                } else {
+                    console.error("Error fetching search results:", error);
+                }
+                setIsLoading(false);
+            }
+        }
         zip.file(filename_csv, await combineCSVBlobs(displaySearchResults, reviewSearchResults));
         zip.generateAsync({ type: "blob" }).then(function (zipFile) {
             // Create a link element, set the href to the blob URL, and trigger a download
@@ -293,6 +311,7 @@ const BulkReviewSearchBar = ({ flipState, activeStep, setActiveStep }) => {
             document.body.removeChild(link);
             window.URL.revokeObjectURL(url);
         });
+        setIsLoading(false);
     };
 
     return (
