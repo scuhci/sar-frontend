@@ -413,13 +413,19 @@ const BulkReviewSearchBar = ({ flipState, activeStep, setActiveStep }) => {
             >
                 <div className="loading-backdrop" open={isLoading}></div>
                 <DialogContent>
-                    <DialogContentText id="loading-dialog-title" className="loading-dialog-content">
-                        <strong>Scraping data {searchQuery ? ` for "${searchQuery}"` : ""}...</strong>
+                    <DialogContentText sx={{ fontWeight: "bold", pb: 2 }}>
+                        Scraping data {searchQuery ? ` for "${searchQuery}"` : ""}...
                     </DialogContentText>
-                    <DialogContentText className="loading-dialog-subtext">
-                        Currently scraping reviews for {currentlySearching}
+                    <DialogContentText sx={{ pb: 2 }}>
+                        Currently scraping data for {currentlySearching}
                     </DialogContentText>
-                    <LinearProgress className="loading-progress-bar" />
+                    {/** Determinate Version */}
+                    <LinearProgress
+                        variant="determinate"
+                        value={((appIds.indexOf(currentlySearching) + 1) / appIds.length) * 100}
+                    />
+                    {/** Indeterminate Version */}
+                    {/* <LinearProgress className="loading-progress-bar" /> */}
                 </DialogContent>
                 <DialogActions>
                     <Button onClick={handleCancel} color="primary" className="loading-dialog-actions">
