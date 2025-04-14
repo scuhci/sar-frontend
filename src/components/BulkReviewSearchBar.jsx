@@ -95,8 +95,6 @@ async function addAppIdColumnToCSV(csvBlob, appId) {
     // Step 5: Join the rows back into a single string
     const newCsvText = rows.join("\n");
 
-    console.log(newCsvText);
-
     // Step 6: Create a new Blob with the updated CSV
     const newCsvBlob = new Blob([newCsvText, "\n"], { type: "text/csv;charset=utf-8" });
 
@@ -154,7 +152,6 @@ const BulkReviewSearchBar = ({ flipState, activeStep, setActiveStep }) => {
 
     const handleSearchSubmit = async () => {
         // Validate search query
-        console.log(searchQuery);
         // Split the query into individual app IDs
         const appIds = searchQuery.split(",").map((id) => id.trim());
         // Check if there are any app IDs
@@ -176,7 +173,6 @@ const BulkReviewSearchBar = ({ flipState, activeStep, setActiveStep }) => {
             return;
         }
         setSearchQueryErrorMessage("");
-        console.dir(appIds);
         setAppIds(appIds);
 
         if (abortController) {
@@ -213,8 +209,6 @@ const BulkReviewSearchBar = ({ flipState, activeStep, setActiveStep }) => {
     };
 
     useEffect(() => {
-        console.log(displaySearchResults);
-        console.log("SETTING ROWS");
         setRows(
             displaySearchResults.map((app) => ({
                 icon: app.results[0].icon,
@@ -229,18 +223,14 @@ const BulkReviewSearchBar = ({ flipState, activeStep, setActiveStep }) => {
         );
     }, [displaySearchResults]);
 
-    useEffect(() => {
-        console.log("PRINTING ROWS");
-        console.dir(rows);
-    }, [rows]);
-
     const handleKeyDown = (event) => {
         if (event.key === "Enter") {
             handleSearchSubmit();
         }
     };
 
-    const handleCancel = () => {
+    const handleCancel = (_event, reason) => {
+        if (reason && reason === "backdropClick") return;
         abortController.abort();
         setIsLoading(false);
     };
@@ -285,9 +275,6 @@ const BulkReviewSearchBar = ({ flipState, activeStep, setActiveStep }) => {
                         responseType: "blob", //handling the binary data
                     }
                 );
-                console.log("REVIEW RESPONSE");
-                console.dir(reviewResponse);
-                console.log(await reviewResponse.data.text());
                 reviewSearchResults.push(reviewResponse.data);
             } catch (error) {
                 if (axios.isCancel(error)) {
