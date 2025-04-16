@@ -18,7 +18,7 @@ export const teamMembers = [
         role: 'Developer',
         imageUrl: '',
         linkedInUrl: 'https://www.linkedin.com/in/kyle-zhang-3a6551194/',
-        bio: 'Kyle is a second year Masters student studying Computer Science and Engineering. He received his Bachelors in Computer Engineering from UCI. Currently, he works as a full-stack and machine learning developer in the SCU Human-Computer Interaction Lab. He loves to gym, drink coffee, and have a good time with friends.'
+        bio: 'Kyle is a second year Masters student studying Computer Science and Engineering. He received his Bachelors in Computer Engineering from UCI. Currently, he works as a full-stack and machine learning developer in the SCU Human-Computer Interaction Lab. He loves to go to the gym, drink coffee, and have a good time with friends.'
 
     },
     {
@@ -69,12 +69,5 @@ export const teamMembers = [
         imageUrl: '',
         linkedInUrl: '#',
         bio: 'Maggie Lau is a member of the Literature Review team for the SMAR project.'
-    },
-    {
-        name: 'Soumya Mohan', 
-        role: 'Scrum Coach',
-        imageUrl: 'https://smar-team.s3.us-west-1.amazonaws.com/profile-photo/SoumyaMohan.jpeg',
-        linkedInUrl: 'https://www.linkedin.com/in/soumyaiim/',
-        bio: 'Results-driven Full Stack Product Manager with 7 years of experience leading 0-1 product development in AdTech, FinTech, and B2B SaaS.  Skilled in defining and executing product vision and strategic roadmaps, I excel in partnering with cross-functional teams to build and scale innovative products.  With deep expertise in AI/ML, data analytics, and software engineering, I leverage data-driven insights to optimize user experiences and accelerate product adoption, consistently driving business outcomes.'
     },
 ];
