@@ -215,7 +215,7 @@ const SearchBar = ({ flipState }) => {
             }
             console.log(`Filename from header: ${decodeURI(filename)}`);
             filename = decodeURI(filename);
-            const filename_relog = filename.slice(0, -4) + "_relog.txt";
+            const filename_relog = filename.slice(0, -4) + "_reproducibility_log.txt";
             const filename_zip = filename.slice(0, -4) + ".zip";
             console.log(`Relog filename from header: ${filename_relog}`);
             // Create a URL from the blob
