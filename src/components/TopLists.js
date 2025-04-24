@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
 import "../css/TopList.css";
 import "../css/SearchBar.css";
@@ -54,7 +54,8 @@ const TopLists = ({ flipState }) => {
     const [includePermissions, setIncludePermissions] = useState(false);
     const [downloadQuery, setDownloadQuery] = useState("TOP_FREEUS");
     const [fullQuery, setFullQuery] = useState(["Top Free"]);
-
+    const [jobId, setJobId] = useState(null);
+    const pollRef = useRef(null);
     const location = useLocation();
     //const navigate = useNavigate();
 
@@ -231,22 +232,13 @@ const TopLists = ({ flipState }) => {
                 }
             )
             .then((response) => {
-                flipState();
-                setDisplayPermissions(includePermissions);
-                setShowTable(true);
-                setSearchResults(response.data.results);
-                setTotalCount(response.data.totalCount);
-                setIsLoading(false);
+                console.log(response.data.jobId);
+                setJobId(response.data.jobId);
+                setIsLoading(true);
+                pollStatus(response.data.jobId);
             })
             .catch((error) => {
-                if (axios.isCancel(error)) {
-                    setShowTable(false);
-                    console.log("Request canceled:", error.message);
-                } else {
-                    flipState();
-                    setShowTable(true);
-                    console.error("Error fetching top lists:", error);
-                }
+                console.error("Job creation failed", error);
                 setSearchResults([]);
                 setTotalCount(0);
                 setIsLoading(false);
@@ -279,12 +271,60 @@ const TopLists = ({ flipState }) => {
         }
     };
 
+    const POLL_INTERVAL = 3000;
+    
+        const pollStatus = (id) => {
+        pollRef.current = setTimeout(async () => {
+            try {
+            const response = await axios.get(`toplists/job-status?jobId=${id}`);
+            console.log('TopLists');
+            console.log(response.data);
+            switch (response.data.status) {
+                case "completed":
+                    flipState();
+                    setDisplayPermissions(includePermissions);
+                    setShowTable(true);
+                    setSearchResults(response.data.data.results);
+                    setTotalCount(response.data.data.totalCount);
+                    setIsLoading(false);
+                    clearTimeout(pollRef.current);
+                    setJobId(null);
+                    break;
+                case "failed":
+                    console.error("Job failed on server");
+                    setIsLoading(false);
+                    clearTimeout(pollRef.current);
+                    setJobId(null);
+                    break;
+                default :
+                    pollStatus(id);
+                    break;
+            }
+            } catch (err) {
+                if (axios.isCancel(err)) {
+                    setShowTable(false);
+                    console.log("Request canceled:", err.message);
+                } else {
+                    flipState();
+                    setShowTable(true);
+                    console.error("Error fetching top lists:", err);
+                }
+                setSearchResults([]);
+                setTotalCount(0);
+                console.error("Error polling job status", err);
+                setIsLoading(false);
+                clearTimeout(pollRef.current);
+                setJobId(null);
+            }
+        }, POLL_INTERVAL);
+    }
+
     const handleDownloadAllResults = async () => {
         try {
             const response = await axios.get(
                 selectedScraper === "Play Store"
-                    ? `/download-top-csv?query=${downloadQuery}&includePermissions=${includePermissions}`
-                    : `/ios/download-top-csv?query=${downloadQuery}&includePermissions=${includePermissions}`,
+                    ? `toplists/download-csv?query=${downloadQuery}&includePermissions=${includePermissions}`
+                    : `ios/download-csv?query=${downloadQuery}&includePermissions=${includePermissions}`,
                 {
                     responseType: "blob", //handling the binary data
                     headers: {
@@ -295,7 +335,7 @@ const TopLists = ({ flipState }) => {
 
             const relog_response = await axios.get(
                 selectedScraper === "Play Store"
-                    ? `/download-top-relog?collection=${fullQuery[0]}&category=${fullQuery[1]}&country=${fullQuery[2]}&includePermissions=${includePermissions}&totalCount=${totalCount}`
+                    ? `toplists/download-relog?collection=${fullQuery[0]}&category=${fullQuery[1]}&country=${fullQuery[2]}&includePermissions=${includePermissions}&totalCount=${totalCount}`
                     : `/ios/download-top-relog?collection=${
                           fullQuery[0]
                       }&category=${fullQuery[1]}&country=${

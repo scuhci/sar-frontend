@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useRef } from "react";
 import { TextField, Button, Typography } from "@mui/material";
 import { DataGrid } from "@mui/x-data-grid";
 import axios from "axios";
@@ -40,12 +40,18 @@ const SearchBar = ({ flipState }) => {
     const [totalCount, setTotalCount] = useState(0);
     const [abortController, setAbortController] = useState(null);
     const [includePermissions, setIncludePermissions] = useState(false);
+    const [jobId, setJobId] = useState(null);
+    const pollRef = useRef(null);
     const [country, setCountry] = useState("US");
     const sampleSearch = [
         "medication reminders",
         "self-care",
         "smartphone addiction",
     ];
+
+    useEffect(() => {
+        return () => clearTimeout(pollRef.current);
+      }, []);
 
     const [displayPermissions, setDisplayPermissions] = useState(false);
 
@@ -144,28 +150,60 @@ const SearchBar = ({ flipState }) => {
                 }
             )
             .then((response) => {
-                flipState();
-                setDisplayPermissions(includePermissions);
-                setSearchResults(response.data.results);
-                // Only set results text after getting search results
-                setResultsText(term);
-                setTotalCount(response.data.totalCount);
-                setIsLoading(false);
+                    console.log(response.data.jobId);
+                    setJobId(response.data.jobId);
+                    setIsLoading(true);
+                    pollStatus(response.data.jobId);
             })
             .catch((error) => {
-                if (axios.isCancel(error)) {
-                    console.log("Request canceled:", error.message);
-                } else {
-                    console.error("Error fetching search results:", error);
-                }
+                console.error("Job creation failed", error);
                 setIsLoading(false);
             });
     };
 
+    const POLL_INTERVAL = 3000;
+
+    const pollStatus = (id) => {
+    pollRef.current = setTimeout(async () => {
+        try {
+        const response = await axios.get(`search/job-status?jobId=${id}`);
+        console.log(response.data);
+        switch (response.data.status) {
+            case "completed":
+                flipState();
+                setDisplayPermissions(includePermissions);
+                setSearchResults(response.data.data.results);
+                setResultsText(fixedSearchQuery);
+                setTotalCount(response.data.data.totalCount);
+                setIsLoading(false);
+                clearTimeout(pollRef.current);
+                setJobId(null);
+                break;
+            case "failed":
+                console.error("Job failed on server");
+                setIsLoading(false);
+                clearTimeout(pollRef.current);
+                setJobId(null);
+                break;
+            default :
+                pollStatus(id);
+                break;
+        }
+        } catch (err) {
+            console.error("Error polling job status", err);
+            setIsLoading(false);
+            clearTimeout(pollRef.current);
+            setJobId(null);
+        }
+    }, POLL_INTERVAL);
+    }
+
     const handleCancel = () => {
-        abortController.abort();
+        abortController?.abort();
+        clearTimeout(pollRef.current);
         setIsLoading(false);
-    };
+        setJobId(null);
+      };
 
     const handleKeyDown = (event) => {
         if (event.key === "Enter") {
@@ -273,7 +311,7 @@ const SearchBar = ({ flipState }) => {
                     }}
                     variant="contained"
                     color="primary"
-                    disabled={isLoading}
+                    disabled={isLoading || !!jobId}
                 >
                     {selectedScraper === "Play Store"
                         ? "Scrape Play Store"
