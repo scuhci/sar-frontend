@@ -34,7 +34,8 @@ const SearchBar = ({ flipState }) => {
     const [searchResults, setSearchResults] = useState([]);
     const [isLoading, setIsLoading] = useState(false);
     const [totalCount, setTotalCount] = useState(0);
-    const [abortController, setAbortController] = useState(null);
+    // const [abortController, setAbortController] = useState(null);
+    const abortController = useRef(null);
     const [includePermissions, setIncludePermissions] = useState(false);
     const [jobId, setJobId] = useState(null);
     const pollRef = useRef(null);
@@ -110,11 +111,13 @@ const SearchBar = ({ flipState }) => {
 
     const handleSearchSubmit = (term = searchQuery) => {
         // If there is an existing search, cancel it before starting a new one
-        if (abortController) {
-            abortController.abort();
+        if (abortController.current) {
+            abortController.current.abort();
         }
         const newAbortController = new AbortController();
-        setAbortController(newAbortController);
+        abortController.current = newAbortController;
+        // setAbortController(newAbortController);
+        // setAbortController(newAbortController);
         setIsLoading(true);
         setFixedSearchQuery(term);
         axios
@@ -139,8 +142,9 @@ const SearchBar = ({ flipState }) => {
     };
 
     const POLL_INTERVAL = 3000;
-
+    
     const pollStatus = (id) => {
+<<<<<<< Updated upstream
         pollRef.current = setTimeout(async () => {
             try {
                 const response = await axios.get(
@@ -172,6 +176,24 @@ const SearchBar = ({ flipState }) => {
                 }
             } catch (err) {
                 console.error("Error polling job status", err);
+=======
+    pollRef.current = setTimeout(async () => {
+        try {
+            const response = await axios
+            .get(
+                selectedScraper === "Play Store"
+                    ? `search/job-status?jobId=${id}`
+                    : `/ios/search/job-status?jobId=${id}`,
+            )
+        console.log(response.data);
+        switch (response.data.status) {
+            case "completed":
+                flipState();
+                setDisplayPermissions(includePermissions);
+                setSearchResults(response.data.data.results);
+                setResultsText(fixedSearchQuery);
+                setTotalCount(response.data.data.totalCount);
+>>>>>>> Stashed changes
                 setIsLoading(false);
                 clearTimeout(pollRef.current);
                 setJobId(null);
@@ -180,7 +202,7 @@ const SearchBar = ({ flipState }) => {
     };
 
     const handleCancel = () => {
-        abortController?.abort();
+        abortController.current?.abort();
         clearTimeout(pollRef.current);
         setIsLoading(false);
         setJobId(null);

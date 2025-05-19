@@ -59,12 +59,16 @@ const DownloadReviews = (appId, countryCode) => {
     const pollStatus = (id) => {
         pollRef.current = setTimeout(async () => {
             try {
-                const response = await axios.get(`reviews/job-status?jobId=${id}`,
-                    {responseType: 'blob',  
-                        headers: {
-                            //Include authorization tokens
-                        }} //handling the binary data
-                 );
+                
+                const response = await axios.get(
+                    selectedScraper === "Play Store"
+                        ? `reviews/job-status?jobId=${id}`
+                        : `/ios/reviews/job-status?jobId=${id}`,
+                        {responseType: 'blob',  
+                            headers: {
+                                //Include authorization tokens
+                            }} //handling the binary data
+                );
                 console.log('Reviews');
                 console.log(response);
 
