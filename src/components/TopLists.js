@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
 import "../css/TopList.css";
 import "../css/SearchBar.css";
@@ -18,7 +18,7 @@ import {
     iosCollections,
     iosDevices,
 } from "../constants/topListCategories";
-import { gplayCountries, iosCountries } from "../constants/countryCodes";
+import { gplayCountries } from "../constants/countryCodes";
 import axios from "axios";
 import { columns } from "../constants/columns";
 import { permissionColumns } from "../constants/permissionColumns";
@@ -54,7 +54,8 @@ const TopLists = ({ flipState }) => {
     const [includePermissions, setIncludePermissions] = useState(false);
     const [downloadQuery, setDownloadQuery] = useState("TOP_FREEUS");
     const [fullQuery, setFullQuery] = useState(["Top Free"]);
-
+    const [jobId, setJobId] = useState(null);
+    const pollRef = useRef(null);
     const location = useLocation();
     //const navigate = useNavigate();
 
@@ -93,71 +94,71 @@ const TopLists = ({ flipState }) => {
 
     const rows = displayPermissions
         ? searchResults.map((application) => ({
-              ...application,
-              reviewsCount: application.reviews,
-              reviews: [
+            ...application,
+            reviewsCount: application.reviews,
+            reviews: [
                 application.reviews,
                 application.appId,
                 country,
-              ],
+            ],
 
-              // PERMISSIONS
-              // All truncated to two(ish) most relevant words.'
-              approximateLocation:
-                  application.permissions[0].isPermissionRequired,
-              preciseLocation: application.permissions[1].isPermissionRequired,
-              retrieveRunning: application.permissions[2].isPermissionRequired,
-              findAccounts: application.permissions[3].isPermissionRequired,
-              addRemoveAccounts:
-                  application.permissions[4].isPermissionRequired,
-              readContact: application.permissions[5].isPermissionRequired,
-              readCalendar: application.permissions[6].isPermissionRequired,
-              addModCalendar: application.permissions[7].isPermissionRequired,
-              readContacts: application.permissions[8].isPermissionRequired,
-              modifyContacts: application.permissions[9].isPermissionRequired,
-              directCall: application.permissions[10].isPermissionRequired,
-              readCallLog: application.permissions[11].isPermissionRequired,
-              readPhoneStatus: application.permissions[12].isPermissionRequired,
-              readUSB: application.permissions[13].isPermissionRequired,
-              modUSB: application.permissions[14].isPermissionRequired,
-              takePics: application.permissions[15].isPermissionRequired,
-              recordAudio: application.permissions[16].isPermissionRequired,
-              viewWifi: application.permissions[17].isPermissionRequired,
-              viewNetwork: application.permissions[18].isPermissionRequired,
-              createAccounts: application.permissions[19].isPermissionRequired,
-              readBattery: application.permissions[20].isPermissionRequired,
-              pairBluetooth: application.permissions[21].isPermissionRequired,
-              accessBluetooth: application.permissions[22].isPermissionRequired,
-              sendStickyBroadcast:
-                  application.permissions[23].isPermissionRequired,
-              changeNetwork: application.permissions[24].isPermissionRequired,
-              connectWifi: application.permissions[25].isPermissionRequired,
-              fullNetworkAccess:
-                  application.permissions[26].isPermissionRequired,
-              changeAudio: application.permissions[27].isPermissionRequired,
-              controlNFC: application.permissions[28].isPermissionRequired,
-              readSync: application.permissions[29].isPermissionRequired,
-              runAtStart: application.permissions[30].isPermissionRequired,
-              reorderRunnning: application.permissions[31].isPermissionRequired,
-              drawOver: application.permissions[32].isPermissionRequired,
-              controlVibration:
-                  application.permissions[33].isPermissionRequired,
-              preventSleep: application.permissions[34].isPermissionRequired,
-              toggleSync: application.permissions[35].isPermissionRequired,
-              installShortcuts:
-                  application.permissions[36].isPermissionRequired,
-              readGoogleConfig:
-                  application.permissions[37].isPermissionRequired,
-          }))
+            // PERMISSIONS
+            // All truncated to two(ish) most relevant words.'
+            approximateLocation:
+                application.permissions[0].isPermissionRequired,
+            preciseLocation: application.permissions[1].isPermissionRequired,
+            retrieveRunning: application.permissions[2].isPermissionRequired,
+            findAccounts: application.permissions[3].isPermissionRequired,
+            addRemoveAccounts:
+                application.permissions[4].isPermissionRequired,
+            readContact: application.permissions[5].isPermissionRequired,
+            readCalendar: application.permissions[6].isPermissionRequired,
+            addModCalendar: application.permissions[7].isPermissionRequired,
+            readContacts: application.permissions[8].isPermissionRequired,
+            modifyContacts: application.permissions[9].isPermissionRequired,
+            directCall: application.permissions[10].isPermissionRequired,
+            readCallLog: application.permissions[11].isPermissionRequired,
+            readPhoneStatus: application.permissions[12].isPermissionRequired,
+            readUSB: application.permissions[13].isPermissionRequired,
+            modUSB: application.permissions[14].isPermissionRequired,
+            takePics: application.permissions[15].isPermissionRequired,
+            recordAudio: application.permissions[16].isPermissionRequired,
+            viewWifi: application.permissions[17].isPermissionRequired,
+            viewNetwork: application.permissions[18].isPermissionRequired,
+            createAccounts: application.permissions[19].isPermissionRequired,
+            readBattery: application.permissions[20].isPermissionRequired,
+            pairBluetooth: application.permissions[21].isPermissionRequired,
+            accessBluetooth: application.permissions[22].isPermissionRequired,
+            sendStickyBroadcast:
+                application.permissions[23].isPermissionRequired,
+            changeNetwork: application.permissions[24].isPermissionRequired,
+            connectWifi: application.permissions[25].isPermissionRequired,
+            fullNetworkAccess:
+                application.permissions[26].isPermissionRequired,
+            changeAudio: application.permissions[27].isPermissionRequired,
+            controlNFC: application.permissions[28].isPermissionRequired,
+            readSync: application.permissions[29].isPermissionRequired,
+            runAtStart: application.permissions[30].isPermissionRequired,
+            reorderRunnning: application.permissions[31].isPermissionRequired,
+            drawOver: application.permissions[32].isPermissionRequired,
+            controlVibration:
+                application.permissions[33].isPermissionRequired,
+            preventSleep: application.permissions[34].isPermissionRequired,
+            toggleSync: application.permissions[35].isPermissionRequired,
+            installShortcuts:
+                application.permissions[36].isPermissionRequired,
+            readGoogleConfig:
+                application.permissions[37].isPermissionRequired,
+        }))
         : searchResults.map((application) => ({
-              ...application,
-              reviewsCount: application.reviews,
-              reviews: [
+            ...application,
+            reviewsCount: application.reviews,
+            reviews: [
                 application.reviews,
                 application.appId,
                 country,
-              ],
-          }));
+            ],
+        }));
 
     const handleCategoryChange = (event) => {
         if (event.target) {
@@ -222,36 +223,28 @@ const TopLists = ({ flipState }) => {
             .get(
                 selectedScraper === "Play Store"
                     ? `/toplists?collection=${collection}&category=${category}&country=${country}&includePermissions=${includePermissions}`
-                    : `/ios/toplists?collection=${collection}&category=${category}&categoryName=${getIosCategoryByCode(
-                          iosCategories,
-                          category
-                      )}&country=${country}&includePermissions=${includePermissions}`,
+                    : `/ios/toplist?collection=${collection}&category=${category}&categoryName=${getIosCategoryByCode(
+                        iosCategories,
+                        category
+                    )}&country=${country}&includePermissions=${includePermissions}`,
                 {
                     signal: newAbortController.signal,
                 }
             )
             .then((response) => {
-                flipState();
-                setDisplayPermissions(includePermissions);
-                setShowTable(true);
-                setSearchResults(response.data.results);
-                setTotalCount(response.data.totalCount);
-                setIsLoading(false);
+                console.log(response.data.jobId);
+                setJobId(response.data.jobId);
+                setIsLoading(true);
+                pollStatus(response.data.jobId);
             })
             .catch((error) => {
-                if (axios.isCancel(error)) {
-                    setShowTable(false);
-                    console.log("Request canceled:", error.message);
-                } else {
-                    flipState();
-                    setShowTable(true);
-                    console.error("Error fetching top lists:", error);
-                }
+                console.error("Job creation failed", error);
                 setSearchResults([]);
                 setTotalCount(0);
                 setIsLoading(false);
                 console.log(downloadQuery);
             });
+
         if (selectedScraper === "Play Store") {
             setFullQuery([
                 getNameByCode(gplayCollections, collection),
@@ -279,12 +272,64 @@ const TopLists = ({ flipState }) => {
         }
     };
 
+    const POLL_INTERVAL = 3000;
+
+    const pollStatus = (id) => {
+        pollRef.current = setTimeout(async () => {
+            try {
+                const response = await axios.get(
+                    selectedScraper === "Play Store"
+                        ? `toplists/job-status?jobId=${id}`
+                        : `/ios/toplist/job-status?jobId=${id}`,
+                );
+                console.log('TopLists');
+                console.log(response.data);
+                switch (response.data.status) {
+                    case "completed":
+                        flipState();
+                        setDisplayPermissions(includePermissions);
+                        setShowTable(true);
+                        setSearchResults(response.data.data.results);
+                        setTotalCount(response.data.data.totalCount);
+                        setIsLoading(false);
+                        clearTimeout(pollRef.current);
+                        setJobId(null);
+                        break;
+                    case "failed":
+                        console.error("Job failed on server");
+                        setIsLoading(false);
+                        clearTimeout(pollRef.current);
+                        setJobId(null);
+                        break;
+                    default:
+                        pollStatus(id);
+                        break;
+                }
+            } catch (err) {
+                if (axios.isCancel(err)) {
+                    setShowTable(false);
+                    console.log("Request canceled:", err.message);
+                } else {
+                    flipState();
+                    setShowTable(true);
+                    console.error("Error fetching top lists:", err);
+                }
+                setSearchResults([]);
+                setTotalCount(0);
+                console.error("Error polling job status", err);
+                setIsLoading(false);
+                clearTimeout(pollRef.current);
+                setJobId(null);
+            }
+        }, POLL_INTERVAL);
+    }
+
     const handleDownloadAllResults = async () => {
         try {
             const response = await axios.get(
                 selectedScraper === "Play Store"
-                    ? `/download-top-csv?query=${downloadQuery}&includePermissions=${includePermissions}`
-                    : `/ios/download-top-csv?query=${downloadQuery}&includePermissions=${includePermissions}`,
+                    ? `toplists/download-csv?query=${downloadQuery}&includePermissions=${includePermissions}`
+                    : `ios/toplist/download-csv?query=${downloadQuery}&includePermissions=${includePermissions}`,
                 {
                     responseType: "blob", //handling the binary data
                     headers: {
@@ -295,15 +340,13 @@ const TopLists = ({ flipState }) => {
 
             const relog_response = await axios.get(
                 selectedScraper === "Play Store"
-                    ? `/download-top-relog?collection=${fullQuery[0]}&category=${fullQuery[1]}&country=${fullQuery[2]}&includePermissions=${includePermissions}&totalCount=${totalCount}`
-                    : `/ios/download-top-relog?collection=${
-                          fullQuery[0]
-                      }&category=${fullQuery[1]}&country=${
-                          fullQuery[2]
-                      }&device=${getNameByCode(
-                          iosDevices,
-                          device
-                      )}&includePermissions=${includePermissions}&totalCount=${totalCount}`,
+                    ? `toplists/download-relog?collection=${fullQuery[0]}&category=${fullQuery[1]}&country=${fullQuery[2]}&includePermissions=${includePermissions}&totalCount=${totalCount}`
+                    : `/ios/toplist/download-relog?collection=${fullQuery[0]
+                    }&category=${fullQuery[1]}&country=${fullQuery[2]
+                    }&device=${getNameByCode(
+                        iosDevices,
+                        device
+                    )}&includePermissions=${includePermissions}&totalCount=${totalCount}`,
                 {
                     responseType: "blob", //handling the binary data
                     headers: {
@@ -408,8 +451,8 @@ const TopLists = ({ flipState }) => {
                         {(selectedScraper === "Play Store"
                             ? gplayCollections
                             : iosCollections
-                                  .filter((item) => item.device === device)
-                                  .flatMap((item) => item.collections)
+                                .filter((item) => item.device === device)
+                                .flatMap((item) => item.collections)
                         ).map(({ code, name }, index) => (
                             <MenuItem key={index} value={code}>
                                 {name}
@@ -511,9 +554,9 @@ const TopLists = ({ flipState }) => {
                                 columns={
                                     displayPermissions
                                         ? Array.prototype.concat(
-                                              columns,
-                                              permissionColumns
-                                          )
+                                            columns,
+                                            permissionColumns
+                                        )
                                         : columns
                                 }
                                 initialState={{
