@@ -2,7 +2,7 @@ import React, { useEffect } from "react";
 import TopLists from "../components/TopLists";
 import Footer from "../components/Footer";
 import MobileScreen from "../components/MobileScreen";
-import { UserAgent } from "express-useragent";
+import { UAParser } from 'ua-parser-js';
 import "../css/Home.css";
 import Citation from "../components/Citation";
 
@@ -17,8 +17,10 @@ const TopCharts = ({ flipState }) => {
     // const [selectedScraper, setSelectedScraper] = React.useState("Play Store");
     const { selectedScraper, setSelectedScraper } = useScraper();
 
-    const userAgent = new UserAgent().parse(navigator.userAgent);
-    const isMobileDevice = userAgent.isMobile;
+    // Should be an undefined object if it's on a laptop
+    const userAgent = new UAParser().getDevice();
+    const isMobileDevice = userAgent.type === 'mobile';
+
     // const location = useLocation();
     // const navigate = useNavigate();
 
