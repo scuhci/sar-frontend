@@ -8,3 +8,22 @@
 .home-text {
     margin: 10px;
 }
+
+/* Ensure the root elements fill the viewport */
+html, body, #root {
+    height: 100%;
+    margin: 0;
+    padding: 0;
+}
+
+/* Flex container for overall layout */
+.app-container {
+    display: flex;
+    flex-direction: column;
+    min-height: 100vh;
+}
+
+/* Main content area grows to fill space */
+.content {
+    flex: 1;
+}
