@@ -2,14 +2,7 @@ import React, { useState, useEffect } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
 import "../css/TopList.css";
 import "../css/SearchBar.css";
-import {
-    Select,
-    FormControl,
-    MenuItem,
-    InputLabel,
-    Typography,
-    Button,
-} from "@mui/material";
+import { Select, FormControl, MenuItem, InputLabel, Typography, Button } from "@mui/material";
 import { DataGrid } from "@mui/x-data-grid";
 import {
     gplayCategories,
@@ -95,21 +88,15 @@ const TopLists = ({ flipState }) => {
         ? searchResults.map((application) => ({
               ...application,
               reviewsCount: application.reviews,
-              reviews: [
-                application.reviews,
-                application.appId,
-                country,
-              ],
+              reviews: [application.reviews, application.appId, country],
 
               // PERMISSIONS
               // All truncated to two(ish) most relevant words.'
-              approximateLocation:
-                  application.permissions[0].isPermissionRequired,
+              approximateLocation: application.permissions[0].isPermissionRequired,
               preciseLocation: application.permissions[1].isPermissionRequired,
               retrieveRunning: application.permissions[2].isPermissionRequired,
               findAccounts: application.permissions[3].isPermissionRequired,
-              addRemoveAccounts:
-                  application.permissions[4].isPermissionRequired,
+              addRemoveAccounts: application.permissions[4].isPermissionRequired,
               readContact: application.permissions[5].isPermissionRequired,
               readCalendar: application.permissions[6].isPermissionRequired,
               addModCalendar: application.permissions[7].isPermissionRequired,
@@ -128,35 +115,26 @@ const TopLists = ({ flipState }) => {
               readBattery: application.permissions[20].isPermissionRequired,
               pairBluetooth: application.permissions[21].isPermissionRequired,
               accessBluetooth: application.permissions[22].isPermissionRequired,
-              sendStickyBroadcast:
-                  application.permissions[23].isPermissionRequired,
+              sendStickyBroadcast: application.permissions[23].isPermissionRequired,
               changeNetwork: application.permissions[24].isPermissionRequired,
               connectWifi: application.permissions[25].isPermissionRequired,
-              fullNetworkAccess:
-                  application.permissions[26].isPermissionRequired,
+              fullNetworkAccess: application.permissions[26].isPermissionRequired,
               changeAudio: application.permissions[27].isPermissionRequired,
               controlNFC: application.permissions[28].isPermissionRequired,
               readSync: application.permissions[29].isPermissionRequired,
               runAtStart: application.permissions[30].isPermissionRequired,
               reorderRunnning: application.permissions[31].isPermissionRequired,
               drawOver: application.permissions[32].isPermissionRequired,
-              controlVibration:
-                  application.permissions[33].isPermissionRequired,
+              controlVibration: application.permissions[33].isPermissionRequired,
               preventSleep: application.permissions[34].isPermissionRequired,
               toggleSync: application.permissions[35].isPermissionRequired,
-              installShortcuts:
-                  application.permissions[36].isPermissionRequired,
-              readGoogleConfig:
-                  application.permissions[37].isPermissionRequired,
+              installShortcuts: application.permissions[36].isPermissionRequired,
+              readGoogleConfig: application.permissions[37].isPermissionRequired,
           }))
         : searchResults.map((application) => ({
               ...application,
               reviewsCount: application.reviews,
-              reviews: [
-                application.reviews,
-                application.appId,
-                country,
-              ],
+              reviews: [application.reviews, application.appId, country],
           }));
 
     const handleCategoryChange = (event) => {
@@ -183,7 +161,8 @@ const TopLists = ({ flipState }) => {
         }
     };
 
-    const handleCancel = () => {
+    const handleCancel = (_event, reason) => {
+        if (reason && reason === "backdropClick") return;
         abortController.abort();
         setShowTable(false);
         setIsLoading(false);
@@ -262,20 +241,13 @@ const TopLists = ({ flipState }) => {
         } else {
             setFullQuery([
                 getNameByCode(
-                    iosCollections
-                        .filter((item) => item.device === device)
-                        .flatMap((item) => item.collections),
+                    iosCollections.filter((item) => item.device === device).flatMap((item) => item.collections),
                     collection
                 ),
                 getNameByCode(iosCategories, category),
                 getNameByCode(gplayCountries, country),
             ]);
-            setDownloadQuery(
-                collection.concat(
-                    getIosCategoryByCode(iosCategories, category),
-                    country
-                )
-            );
+            setDownloadQuery(collection.concat(getIosCategoryByCode(iosCategories, category), country));
         }
     };
 
@@ -296,9 +268,7 @@ const TopLists = ({ flipState }) => {
             const relog_response = await axios.get(
                 selectedScraper === "Play Store"
                     ? `/download-top-relog?collection=${fullQuery[0]}&category=${fullQuery[1]}&country=${fullQuery[2]}&includePermissions=${includePermissions}&totalCount=${totalCount}`
-                    : `/ios/download-top-relog?collection=${
-                          fullQuery[0]
-                      }&category=${fullQuery[1]}&country=${
+                    : `/ios/download-top-relog?collection=${fullQuery[0]}&category=${fullQuery[1]}&country=${
                           fullQuery[2]
                       }&device=${getNameByCode(
                           iosDevices,
@@ -361,14 +331,13 @@ const TopLists = ({ flipState }) => {
                         label="country"
                         onChange={handleCountryChange}
                     >
-                        {(selectedScraper === "Play Store"
-                            ? gplayCountries
-                            : gplayCountries
-                        ).map(({ code, name }, index) => (
-                            <MenuItem key={index} value={code}>
-                                {name}
-                            </MenuItem>
-                        ))}
+                        {(selectedScraper === "Play Store" ? gplayCountries : gplayCountries).map(
+                            ({ code, name }, index) => (
+                                <MenuItem key={index} value={code}>
+                                    {name}
+                                </MenuItem>
+                            )
+                        )}
                     </Select>
                 </FormControl>
                 {selectedScraper === "App Store" && (
@@ -426,14 +395,13 @@ const TopLists = ({ flipState }) => {
                         label="category"
                         onChange={handleCategoryChange}
                     >
-                        {(selectedScraper === "Play Store"
-                            ? gplayCategories
-                            : iosCategories
-                        ).map(({ code, name }, index) => (
-                            <MenuItem key={index} value={code}>
-                                {name}
-                            </MenuItem>
-                        ))}
+                        {(selectedScraper === "Play Store" ? gplayCategories : iosCategories).map(
+                            ({ code, name }, index) => (
+                                <MenuItem key={index} value={code}>
+                                    {name}
+                                </MenuItem>
+                            )
+                        )}
                     </Select>
                 </FormControl>
                 <Button
@@ -448,12 +416,7 @@ const TopLists = ({ flipState }) => {
             </div>
             {selectedScraper === "Play Store" && (
                 <div className="permissions-checkbox">
-                    <Stack
-                        direction="row"
-                        justifyContent="flex-start"
-                        alignItems="center"
-                        spacing={0.1}
-                    >
+                    <Stack direction="row" justifyContent="flex-start" alignItems="center" spacing={0.1}>
                         <FormGroup>
                             <FormControlLabel
                                 control={
@@ -465,11 +428,7 @@ const TopLists = ({ flipState }) => {
                                 }
                                 label={
                                     <React.Fragment>
-                                        <Stack
-                                            alignItems="center"
-                                            direction="row"
-                                            gap={0.3}
-                                        >
+                                        <Stack alignItems="center" direction="row" gap={0.3}>
                                             Include permissions in scrape
                                             <Tooltip title="It takes an additional 1-5 minutes to scrape the permissions that apps access (e.g, “read your contacts” and “take pictures and videos”)">
                                                 <InfoIcon fontSize="small" />
@@ -495,13 +454,11 @@ const TopLists = ({ flipState }) => {
                         <div className="search-result-text">
                             {totalCount === 1 ? (
                                 <Typography variant="h5">
-                                    {totalCount} Result for {fullQuery[0]}{" "}
-                                    {fullQuery[1]} Apps in {fullQuery[2]}
+                                    {totalCount} Result for {fullQuery[0]} {fullQuery[1]} Apps in {fullQuery[2]}
                                 </Typography>
                             ) : (
                                 <Typography variant="h5">
-                                    {totalCount} Results for {fullQuery[0]}{" "}
-                                    {fullQuery[1]} Apps in {fullQuery[2]}
+                                    {totalCount} Results for {fullQuery[0]} {fullQuery[1]} Apps in {fullQuery[2]}
                                 </Typography>
                             )}
                         </div>
@@ -509,12 +466,7 @@ const TopLists = ({ flipState }) => {
                             <DataGrid
                                 rows={rows}
                                 columns={
-                                    displayPermissions
-                                        ? Array.prototype.concat(
-                                              columns,
-                                              permissionColumns
-                                          )
-                                        : columns
+                                    displayPermissions ? Array.prototype.concat(columns, permissionColumns) : columns
                                 }
                                 initialState={{
                                     pagination: {
@@ -533,8 +485,7 @@ const TopLists = ({ flipState }) => {
                                     onClick={handleDownloadAllResults}
                                     className="download-button"
                                 >
-                                    Download ({totalCount} Results +
-                                    Reproducibility Log as ZIP)
+                                    Download ({totalCount} Results + Reproducibility Log as ZIP)
                                 </Button>
                             </div>
                         </div>

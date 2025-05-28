@@ -38,7 +38,6 @@ const NavButton = ({ to, label, onClick }) => (
 );
 
 const NavigationBar = ({ refresh, refreshTopLists }) => {
-
   return (
         <AppBar position="fixed">
             <Toolbar>  
@@ -47,6 +46,7 @@ const NavigationBar = ({ refresh, refreshTopLists }) => {
                     SMAR
                   </Link>
                 </Typography>
+
                 <div>
                   <NavButton to="/" label="Home" onClick={refresh} />
                   <NavButton to="/toplists" label="Top Charts" onClick={refreshTopLists} />
@@ -60,7 +60,7 @@ const NavigationBar = ({ refresh, refreshTopLists }) => {
                 </div>
             </Toolbar>
         </AppBar>
-  );
+    );
 };
 
 export default NavigationBar;
