@@ -40,6 +40,7 @@ const SearchBar = ({ flipState }) => {
     const [totalCount, setTotalCount] = useState(0);
     const [abortController, setAbortController] = useState(null);
     const [includePermissions, setIncludePermissions] = useState(false);
+    const [queryTime, setQueryTime] = useState("");
     const [country, setCountry] = useState("US");
     const sampleSearch = [
         "medication reminders",
@@ -131,14 +132,17 @@ const SearchBar = ({ flipState }) => {
             abortController.abort();
         }
         const newAbortController = new AbortController();
+        const newTime = new Date();
+        const timeISOString = newTime.toISOString();
         setAbortController(newAbortController);
         setIsLoading(true);
         setFixedSearchQuery(term);
+        setQueryTime(timeISOString);
         axios
             .get(
                 selectedScraper === "Play Store"
-                    ? `/search?query=${term}&includePermissions=${includePermissions}&countryCode=${country}`
-                    : `/ios/search?query=${term}&countryCode=${country}`, // Change to URL for app store scraper
+                    ? `/search?query=${term}&includePermissions=${includePermissions}&countryCode=${country}&time=${timeISOString}`
+                    : `/ios/search?query=${term}&countryCode=${country}&time=${timeISOString}`, // Change to URL for app store scraper
                 {
                     signal: newAbortController.signal,
                 }
@@ -333,6 +337,8 @@ const SearchBar = ({ flipState }) => {
                 open={isLoading}
                 onCancel={handleCancel}
                 searchQuery={searchQuery}
+                country={country}
+                time={queryTime} // this + other combos will be used as a unique identifier for queries
                 selectedScraper={selectedScraper}
             />
             {searchResults.length > 0 ? (
