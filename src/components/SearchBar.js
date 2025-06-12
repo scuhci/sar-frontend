@@ -338,6 +338,7 @@ const SearchBar = ({ flipState }) => {
                 onCancel={handleCancel}
                 searchQuery={searchQuery}
                 country={country}
+                permissions={includePermissions}
                 time={queryTime} // this + other combos will be used as a unique identifier for queries
                 selectedScraper={selectedScraper}
             />

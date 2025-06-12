@@ -11,7 +11,15 @@ import NotifyMe from "./NotifyMe";
 import "../css/Loading.css";
 import { OpenInNew } from "@mui/icons-material";
 
-function Loading({ open, onCancel, searchQuery, time, selectedScraper }) {
+function Loading({
+  open,
+  onCancel,
+  country,
+  permissions,
+  searchQuery,
+  time,
+  selectedScraper,
+}) {
   return (
     <Dialog
       open={open}
@@ -57,7 +65,12 @@ function Loading({ open, onCancel, searchQuery, time, selectedScraper }) {
           .<br></br>
           <br></br>
           <u>Busy? Drop an email and we'll ping you when it's done.</u>
-          <NotifyMe />
+          <NotifyMe
+            country={country}
+            query={searchQuery}
+            permissions={permissions}
+            queryTime={time}
+          />
         </DialogContentText>
         <LinearProgress className="loading-progress-bar" />
       </DialogContent>
