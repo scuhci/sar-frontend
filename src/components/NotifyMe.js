@@ -12,7 +12,8 @@ const NotifyMe = ({ country, query, permissions, queryTime }) => {
   const [email, setEmail] = useState("");
   const [invalidEmail, setInvalidEmail] = useState(false);
 
-  const currentPermissions = permissions !== undefined || permissions === true;
+  // in case perms is undefined
+  const currentPermissions = permissions === true;
   const pushQuery =
     "c:" +
     country +
