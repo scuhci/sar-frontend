@@ -144,7 +144,6 @@ const SearchBar = ({ flipState }) => {
     const POLL_INTERVAL = 3000;
     
     const pollStatus = (id) => {
-<<<<<<< Updated upstream
         pollRef.current = setTimeout(async () => {
             try {
                 const response = await axios.get(
@@ -176,24 +175,6 @@ const SearchBar = ({ flipState }) => {
                 }
             } catch (err) {
                 console.error("Error polling job status", err);
-=======
-    pollRef.current = setTimeout(async () => {
-        try {
-            const response = await axios
-            .get(
-                selectedScraper === "Play Store"
-                    ? `search/job-status?jobId=${id}`
-                    : `/ios/search/job-status?jobId=${id}`,
-            )
-        console.log(response.data);
-        switch (response.data.status) {
-            case "completed":
-                flipState();
-                setDisplayPermissions(includePermissions);
-                setSearchResults(response.data.data.results);
-                setResultsText(fixedSearchQuery);
-                setTotalCount(response.data.data.totalCount);
->>>>>>> Stashed changes
                 setIsLoading(false);
                 clearTimeout(pollRef.current);
                 setJobId(null);
