@@ -57,3 +57,12 @@
   height: 42px;
   align-items: end;
 }
+
+.notificationSuccess {
+  color: #2E7D32;
+}
+
+.notificationSuccessEmail {
+  color: #2E7D32;
+  font-weight: bold;
+}
