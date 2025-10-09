@@ -50,6 +50,7 @@ const NavigationBar = ({ refresh, refreshTopLists }) => {
                 <div>
                   <NavButton to="/" label="Home" onClick={refresh} />
                   <NavButton to="/toplists" label="Top Charts" onClick={refreshTopLists} />
+                  <NavButton to="/bulkreviews" label="Bulk Reviews" />
                   <NavButton to="/userguide" label="User Guide" />
                   <NavButton to="/about" label="About" />
               
