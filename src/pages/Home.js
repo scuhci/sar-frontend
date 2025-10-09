@@ -2,7 +2,7 @@ import React from "react";
 import SearchBar from "../components/SearchBar";
 import MobileScreen from "../components/MobileScreen";
 import Typography from "@mui/material/Typography";
-import { UserAgent } from "express-useragent";
+import { UAParser } from 'ua-parser-js';
 import "../css/Home.css";
 import Citation from "../components/Citation";
 import Chip from "@mui/joy/Chip";
@@ -17,9 +17,10 @@ const Home = ({ flipState }) => {
     // State for choosing Play Store / iOS App Store
     // const [selectedScraper, setSelectedScraper] = React.useState("Play Store");
     const { selectedScraper, setSelectedScraper } = useScraper();
-
-    const userAgent = new UserAgent().parse(navigator.userAgent);
-    const isMobileDevice = userAgent.isMobile;
+    
+    // Should be an undefined object if it's on a laptop
+    const userAgent = new UAParser().getDevice();
+    const isMobileDevice = userAgent.type === 'mobile';
 
     // Switch to mobile device screen if user is on a mobile device
     return !isMobileDevice ? (
@@ -78,7 +79,6 @@ const Home = ({ flipState }) => {
                 <br />
             </div>
         </>
-
     ) : (
         <MobileScreen />
     );
