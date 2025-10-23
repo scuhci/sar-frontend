@@ -352,20 +352,20 @@ const BulkReviewSearchBar = ({ flipState, activeStep, setActiveStep }) => {
                         <Chip
                             sx={{ mr: 1 }}
                             variant="outlined"
-                            label="com.example.one"
-                            onClick={() => setSearchQuery("com.example.one")}
+                            label="com.facebook.katana"
+                            onClick={() => setSearchQuery("com.facebook.katana")}
                         />
                         <Chip
                             sx={{ mr: 1 }}
                             variant="outlined"
-                            label="com.example.two"
-                            onClick={() => setSearchQuery("com.example.two")}
+                            label="cc.forestapp"
+                            onClick={() => setSearchQuery("cc.forestapp")}
                         />
                         <Chip
                             sx={{ mr: 1 }}
                             variant="outlined"
-                            label="com.example.three, com.example.four"
-                            onClick={() => setSearchQuery("com.example.three, com.example.four")}
+                            label="zank.flash, com.moonshine.sleeplights"
+                            onClick={() => setSearchQuery("zank.flash, com.moonshine.sleeplights")}
                         />
                     </div>
                     <div
