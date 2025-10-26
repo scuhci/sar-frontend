@@ -2,8 +2,8 @@
   "name": "sar-frontend",
   "version": "1.1.0",
   "private": true,
-  "proxy": "http://localhost:5001",
-  "dependencies": {
+  "proxy": "https://54.215.190.5",
+    "dependencies": {
     "@emotion/react": "^11.11.4",
     "@emotion/styled": "^11.11.5",
     "@mui/icons-material": "^5.14.1",
