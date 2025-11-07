@@ -349,24 +349,50 @@ const BulkReviewSearchBar = ({ flipState, activeStep, setActiveStep }) => {
                         <Typography sx={{ mr: 1 }} variant="h5">
                             Example Searches:
                         </Typography>
-                        <Chip
-                            sx={{ mr: 1 }}
-                            variant="outlined"
-                            label="com.example.one"
-                            onClick={() => setSearchQuery("com.example.one")}
-                        />
-                        <Chip
-                            sx={{ mr: 1 }}
-                            variant="outlined"
-                            label="com.example.two"
-                            onClick={() => setSearchQuery("com.example.two")}
-                        />
-                        <Chip
-                            sx={{ mr: 1 }}
-                            variant="outlined"
-                            label="com.example.three, com.example.four"
-                            onClick={() => setSearchQuery("com.example.three, com.example.four")}
-                        />
+                        {/* Change example searches based on selectedScraper */}
+                        {selectedScraper === "Play Store" ? (
+                            <>
+                                <Chip
+                                    sx={{ mr: 1 }}
+                                    variant="outlined"
+                                    label="com.facebook.katana"
+                                    onClick={() => setSearchQuery("com.facebook.katana")}
+                                />
+                                <Chip
+                                    sx={{ mr: 1 }}
+                                    variant="outlined"
+                                    label="cc.forestapp"
+                                    onClick={() => setSearchQuery("cc.forestapp")}
+                                />
+                                <Chip
+                                    sx={{ mr: 1 }}
+                                    variant="outlined"
+                                    label="zank.flash, com.moonshine.sleeplights"
+                                    onClick={() => setSearchQuery("zank.flash, com.moonshine.sleeplights")}
+                                />
+                            </>
+                        ) : (
+                            <>
+                                <Chip
+                                    sx={{ mr: 1 }}
+                                    variant="outlined"
+                                    label="com.facebook.Messenger"
+                                    onClick={() => setSearchQuery("com.facebook.Messenger")}
+                                />
+                                <Chip
+                                    sx={{ mr: 1 }}
+                                    variant="outlined"
+                                    label="com.openai.chat"
+                                    onClick={() => setSearchQuery("com.openai.chat")}
+                                />
+                                <Chip
+                                    sx={{ mr: 1 }}
+                                    variant="outlined"
+                                    label="com.google.ios.youtube, com.google.OPA"
+                                    onClick={() => setSearchQuery("com.google.ios.youtube, com.google.OPA")}
+                                />
+                            </>
+                        )}
                     </div>
                     <div
                         style={{
