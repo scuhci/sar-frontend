@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState } from "react";
 import {
   Dialog,
   DialogContent,
@@ -7,10 +7,19 @@ import {
   Button,
   DialogActions,
 } from "@mui/material";
+import NotifyMe from "./NotifyMe";
 import "../css/Loading.css";
 import { OpenInNew } from "@mui/icons-material";
 
-function Loading({ open, onCancel, searchQuery, selectedScraper }) {
+function Loading({
+  open,
+  onCancel,
+  country,
+  permissions,
+  searchQuery,
+  time,
+  selectedScraper,
+}) {
   return (
     <Dialog
       open={open}
@@ -46,13 +55,22 @@ function Loading({ open, onCancel, searchQuery, selectedScraper }) {
           “Similar Apps/Games” shown on the app profile page for each of the
           keyword search results
           <br></br>
+          <br></br>
           For more info, see the{" "}
           <a href="/userguide" target="_blank" rel="noopener noreferrer">
             {" "}
             user guide
             <OpenInNew fontSize="inherit" />
           </a>
-          .
+          .<br></br>
+          <br></br>
+          <u>Busy? Drop an email and we'll ping you when it's done.</u>
+          <NotifyMe
+            country={country}
+            query={searchQuery}
+            permissions={permissions}
+            queryTime={time}
+          />
         </DialogContentText>
         <LinearProgress className="loading-progress-bar" />
       </DialogContent>
