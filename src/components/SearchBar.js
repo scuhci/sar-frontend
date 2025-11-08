@@ -118,7 +118,7 @@ const SearchBar = ({ flipState }) => {
         axios
             .get(
                 selectedScraper === "Play Store"
-                    ? `/search?query=${term}&includePermissions=${includePermissions}&countryCode=${country}&time=${timeISOString}`
+                    ? `/api/search?query=${term}&includePermissions=${includePermissions}&countryCode=${country}&time=${timeISOString}`
                     : `/ios/search?query=${term}&countryCode=${country}&time=${timeISOString}`, // Change to URL for app store scraper
                 {
                     signal: newAbortController.signal,
@@ -163,7 +163,7 @@ const SearchBar = ({ flipState }) => {
         try {
             const response = await axios.get(
                 selectedScraper === "Play Store"
-                    ? `/download-csv?query=${fixedSearchQuery}&includePermissions=${includePermissions}&countryCode=${country}`
+                    ? `/api/download-csv?query=${fixedSearchQuery}&includePermissions=${includePermissions}&countryCode=${country}`
                     : `/ios/download-csv?query=${fixedSearchQuery}&countryCode=${country}`, // Change to URL for app store scraper
                 {
                     responseType: "blob", //handling the binary data
@@ -175,7 +175,7 @@ const SearchBar = ({ flipState }) => {
 
             const relog_response = await axios.get(
                 selectedScraper === "Play Store"
-                    ? `/download-relog?query=${fixedSearchQuery}&includePermissions=${includePermissions}&totalCount=${totalCount}&countryCode=${country}&store=${"Google Play Store"}`
+                    ? `/api/download-relog?query=${fixedSearchQuery}&includePermissions=${includePermissions}&totalCount=${totalCount}&countryCode=${country}&store=${"Google Play Store"}`
                     : `/ios/download-relog?query=${fixedSearchQuery}&totalCount=${totalCount}&countryCode=${country}&store=${"iOS App Store"}`, // Change to URL for app store scraper
                 {
                     responseType: "blob", //handling the binary data

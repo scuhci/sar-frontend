@@ -40,7 +40,7 @@ const NotifyMe = ({ country, query, permissions, queryTime }) => {
         setInvalidEmail(false);
 
         const response = await axios.post(
-          `/email-notify?email=${email}&queryId=${pushQuery}`,
+          `/api/email-notify?email=${email}&queryId=${pushQuery}`,
           {
             email: email,
             queryId: pushQuery, // unique ID for the specific query
