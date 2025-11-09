@@ -270,7 +270,7 @@ const SearchBar = ({ flipState }) => {
                                         control={
                                             <Checkbox
                                                 size="small"
-                                                includePermissions={includePermissions}
+                                                // includePermissions={includePermissions}
                                                 onChange={handleChange}
                                             />
                                         }
