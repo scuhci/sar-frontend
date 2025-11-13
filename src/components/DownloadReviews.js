@@ -28,7 +28,7 @@ const DownloadReviews = (appId, countryCode) => {
       setIsLoading(true);
       const response = await axios.get(
         selectedScraper === "Play Store"
-          ? `/reviews?appId=${appId}&countryCode=${countryCode}`
+          ? `/api/reviews?appId=${appId}&countryCode=${countryCode}`
           : `/ios/reviews?appId=${appId}&countryCode=${countryCode}`,
         {
           signal: newAbortController.signal,
@@ -41,7 +41,7 @@ const DownloadReviews = (appId, countryCode) => {
 
       const relog_response = await axios.get(
         selectedScraper === "Play Store"
-          ? `/download-reviews-relog?appId=${appId}&countryCode=${countryCode}&store=${"Google Play Store"}&sorting=${"RECENT"}`
+          ? `/api/download-reviews-relog?appId=${appId}&countryCode=${countryCode}&store=${"Google Play Store"}&sorting=${"RECENT"}`
           : `/ios/download-reviews-relog?appId=${appId}&countryCode=${countryCode}&store=${"iOS App Store"}&sorting=${"RECENT"}`,
         {
           signal: newAbortController.signal,
