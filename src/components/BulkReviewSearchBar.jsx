@@ -190,7 +190,7 @@ const BulkReviewSearchBar = ({ flipState, activeStep, setActiveStep }) => {
                 // Get data to display on Step 2
                 const displayResponse = await axios.get(
                     selectedScraper === "Play Store"
-                        ? `/search?query=${appId}&countryCode=${country}`
+                        ? `/api/search?query=${appId}&countryCode=${country}`
                         : `/ios/search?query=${appId}&countryCode=${country}`
                 );
                 newDisplaySearchResults.push(displayResponse.data);
@@ -268,7 +268,7 @@ const BulkReviewSearchBar = ({ flipState, activeStep, setActiveStep }) => {
                 // Get reviews
                 const reviewResponse = await axios.get(
                     selectedScraper === "Play Store"
-                        ? `/reviews?appId=${appId}&countryCode=${country}&sortBy=${sortValue}`
+                        ? `/api/reviews?appId=${appId}&countryCode=${country}&sortBy=${sortValue}`
                         : `/ios/reviews?appId=${appId}&countryCode=${country}&sortBy=${sortValue}`, // Change to URL for app store scraper
                     {
                         signal: newAbortController.signal,
