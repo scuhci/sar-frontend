@@ -255,7 +255,7 @@ const TopLists = ({ flipState }) => {
         try {
             const response = await axios.get(
                 selectedScraper === "Play Store"
-                    ? `/download-top-csv?query=${downloadQuery}&includePermissions=${includePermissions}`
+                    ? `/api/download-top-csv?query=${downloadQuery}&includePermissions=${includePermissions}`
                     : `/ios/download-top-csv?query=${downloadQuery}&includePermissions=${includePermissions}`,
                 {
                     responseType: "blob", //handling the binary data
@@ -267,7 +267,7 @@ const TopLists = ({ flipState }) => {
 
             const relog_response = await axios.get(
                 selectedScraper === "Play Store"
-                    ? `/download-top-relog?collection=${fullQuery[0]}&category=${fullQuery[1]}&country=${fullQuery[2]}&includePermissions=${includePermissions}&totalCount=${totalCount}`
+                    ? `/api/download-top-relog?collection=${fullQuery[0]}&category=${fullQuery[1]}&country=${fullQuery[2]}&includePermissions=${includePermissions}&totalCount=${totalCount}`
                     : `/ios/download-top-relog?collection=${fullQuery[0]}&category=${fullQuery[1]}&country=${
                           fullQuery[2]
                       }&device=${getNameByCode(
