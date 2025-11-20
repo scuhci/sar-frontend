@@ -405,8 +405,8 @@ const BulkReviewSearchBar = ({ flipState, activeStep, setActiveStep }) => {
                     >
                         <div style={{ textAlign: "left" }}>
                             <span style={{ fontWeight: "bold" }}>Please note:</span> You can scrape for up to 20 apps
-                            per query with a limit of 10,000 reviews per app. For scraping beyond these limits, please
-                            refer to our user guide.
+                            per query with a limit of {selectedScraper === "Play Store" ? "10,000" : "500"} reviews per
+                            app. For scraping beyond these limits, please refer to our user guide.
                         </div>
                     </div>
                 </>
