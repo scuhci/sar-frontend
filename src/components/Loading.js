@@ -64,13 +64,13 @@ function Loading({
           </a>
           .<br></br>
           <br></br>
-          <u>Busy? Drop an email and we'll ping you when it's done.</u>
+          {/* <u>Busy? Drop an email and we'll ping you when it's done.</u>
           <NotifyMe
             country={country}
             query={searchQuery}
             permissions={permissions}
             queryTime={time}
-          />
+          /> */}
         </DialogContentText>
         <LinearProgress className="loading-progress-bar" />
       </DialogContent>
