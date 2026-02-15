@@ -5,7 +5,7 @@ export const gplayCollections = [
 ];
 
 export const gplayCategories = [
-    { code: "", name: "Category (Optional)" },
+    { code: "", name: "No Category" },
     { code: "APPLICATION", name: "Application" },
     { code: "ANDROID_WEAR", name: "Android Wear" },
     { code: "ART_AND_DESIGN", name: "Art and Design" },
@@ -94,7 +94,7 @@ export const iosCollections = [
 ];
 
 export const iosCategories = [
-    { code: "", name: "Category (Optional)", csvName: "" },
+    { code: "", name: "No Category", csvName: "" },
     { name: "Books", code: 6018, csvName: "BOOKS" },
     { name: "Business", code: 6000, csvName: "BUSINESS" },
     { name: "Education", code: 6017, csvName: "EDUCATION" },
@@ -176,9 +176,12 @@ export const iosCategories_topmacapps = [...iosCategories].filter(
             "SHOPPING",
             "UTILITIES",
             "WEATHER",
+            "MAGAZINES_AND_NEWSPAPERS",
         ].includes(csvName),
 );
-export const iosCategories_topfreemacapps = [...iosCategories].filter(({ csvName }) => ![""].includes(csvName));
+export const iosCategories_topfreemacapps = [...iosCategories].filter(
+    ({ csvName }) => !["GAMES_EDUCATIONAL", "GAMES_DICE"].includes(csvName),
+);
 export const iosCategories_topgrossingmacapps = [...iosCategories].filter(
     ({ csvName }) => !["", "GAMES_EDUCATIONAL", "GAMES_DICE"].includes(csvName),
 );
@@ -187,22 +190,26 @@ export const iosCategories_toppaidmacapps = [...iosCategories].filter(
 );
 
 // Per-collection category lists (IOS)
-export const iosCategories_newapplications = [...iosCategories].filter(({ csvName }) => ![""].includes(csvName));
-export const iosCategories_newfreeapplications = [...iosCategories].filter(({ csvName }) => ![""].includes(csvName));
-export const iosCategories_newpaidapplications = [...iosCategories].filter(({ csvName }) => ![""].includes(csvName));
-export const iosCategories_topfreeapplications = [...iosCategories].filter(({ csvName }) => ![""].includes(csvName));
-export const iosCategories_toppaidapplications = [...iosCategories].filter(({ csvName }) => ![""].includes(csvName));
+export const iosCategories_newapplications = [{ code: "", name: "No Category", csvName: "" }];
+export const iosCategories_newfreeapplications = [{ code: "", name: "No Category", csvName: "" }];
+export const iosCategories_newpaidapplications = [{ code: "", name: "No Category", csvName: "" }];
+export const iosCategories_topfreeapplications = [...iosCategories].filter(
+    ({ csvName }) => !["GAMES_EDUCATIONAL", "GAMES_DICE"].includes(csvName),
+);
+export const iosCategories_toppaidapplications = [...iosCategories].filter(
+    ({ csvName }) => !["GAMES_EDUCATIONAL", "GAMES_DICE"].includes(csvName),
+);
 export const iosCategories_topgrossingapplications = [...iosCategories].filter(
-    ({ csvName }) => ![""].includes(csvName),
+    ({ csvName }) => !["GAMES_EDUCATIONAL", "GAMES_DICE"].includes(csvName),
 );
 
 // Per-collection category lists (IPAD)
 export const iosCategories_topfreeipadapplications = [...iosCategories].filter(
-    ({ csvName }) => ![""].includes(csvName),
+    ({ csvName }) => !["GAMES_EDUCATIONAL", "GAMES_DICE"].includes(csvName),
 );
 export const iosCategories_toppaidipadapplications = [...iosCategories].filter(
-    ({ csvName }) => ![""].includes(csvName),
+    ({ csvName }) => !["GAMES_EDUCATIONAL", "GAMES_DICE"].includes(csvName),
 );
 export const iosCategories_topgrossingipadapplications = [...iosCategories].filter(
-    ({ csvName }) => ![""].includes(csvName),
+    ({ csvName }) => !["GAMES_EDUCATIONAL", "GAMES_DICE"].includes(csvName),
 );
