@@ -42,58 +42,59 @@ const SearchBar = ({ flipState }) => {
 
     const [displayPermissions, setDisplayPermissions] = useState(false);
 
-    const rows = displayPermissions
-        ? searchResults.map((application) => ({
-              ...application,
-              reviewsCount: application.reviews,
-              reviews: [application.reviews, application.appId, application.country],
+    const rows =
+        displayPermissions && selectedScraper === "Play Store"
+            ? searchResults.map((application) => ({
+                  ...application,
+                  reviewsCount: application.reviews,
+                  reviews: [application.reviews, application.appId, application.country],
 
-              // PERMISSIONS
-              // All truncated to two(ish) most relevant words.'
-              approximateLocation: application.permissions[0].isPermissionRequired,
-              preciseLocation: application.permissions[1].isPermissionRequired,
-              retrieveRunning: application.permissions[2].isPermissionRequired,
-              findAccounts: application.permissions[3].isPermissionRequired,
-              addRemoveAccounts: application.permissions[4].isPermissionRequired,
-              readContact: application.permissions[5].isPermissionRequired,
-              readCalendar: application.permissions[6].isPermissionRequired,
-              addModCalendar: application.permissions[7].isPermissionRequired,
-              readContacts: application.permissions[8].isPermissionRequired,
-              modifyContacts: application.permissions[9].isPermissionRequired,
-              directCall: application.permissions[10].isPermissionRequired,
-              readCallLog: application.permissions[11].isPermissionRequired,
-              readPhoneStatus: application.permissions[12].isPermissionRequired,
-              readUSB: application.permissions[13].isPermissionRequired,
-              modUSB: application.permissions[14].isPermissionRequired,
-              takePics: application.permissions[15].isPermissionRequired,
-              recordAudio: application.permissions[16].isPermissionRequired,
-              viewWifi: application.permissions[17].isPermissionRequired,
-              viewNetwork: application.permissions[18].isPermissionRequired,
-              createAccounts: application.permissions[19].isPermissionRequired,
-              readBattery: application.permissions[20].isPermissionRequired,
-              pairBluetooth: application.permissions[21].isPermissionRequired,
-              accessBluetooth: application.permissions[22].isPermissionRequired,
-              sendStickyBroadcast: application.permissions[23].isPermissionRequired,
-              changeNetwork: application.permissions[24].isPermissionRequired,
-              connectWifi: application.permissions[25].isPermissionRequired,
-              fullNetworkAccess: application.permissions[26].isPermissionRequired,
-              changeAudio: application.permissions[27].isPermissionRequired,
-              controlNFC: application.permissions[28].isPermissionRequired,
-              readSync: application.permissions[29].isPermissionRequired,
-              runAtStart: application.permissions[30].isPermissionRequired,
-              reorderRunnning: application.permissions[31].isPermissionRequired,
-              drawOver: application.permissions[32].isPermissionRequired,
-              controlVibration: application.permissions[33].isPermissionRequired,
-              preventSleep: application.permissions[34].isPermissionRequired,
-              toggleSync: application.permissions[35].isPermissionRequired,
-              installShortcuts: application.permissions[36].isPermissionRequired,
-              readGoogleConfig: application.permissions[37].isPermissionRequired,
-          }))
-        : searchResults.map((application) => ({
-              ...application,
-              reviewsCount: application.reviews,
-              reviews: [application.reviews, application.appId, application.country],
-          }));
+                  // PERMISSIONS
+                  // All truncated to two(ish) most relevant words.'
+                  approximateLocation: application.permissions[0].isPermissionRequired,
+                  preciseLocation: application.permissions[1].isPermissionRequired,
+                  retrieveRunning: application.permissions[2].isPermissionRequired,
+                  findAccounts: application.permissions[3].isPermissionRequired,
+                  addRemoveAccounts: application.permissions[4].isPermissionRequired,
+                  readContact: application.permissions[5].isPermissionRequired,
+                  readCalendar: application.permissions[6].isPermissionRequired,
+                  addModCalendar: application.permissions[7].isPermissionRequired,
+                  readContacts: application.permissions[8].isPermissionRequired,
+                  modifyContacts: application.permissions[9].isPermissionRequired,
+                  directCall: application.permissions[10].isPermissionRequired,
+                  readCallLog: application.permissions[11].isPermissionRequired,
+                  readPhoneStatus: application.permissions[12].isPermissionRequired,
+                  readUSB: application.permissions[13].isPermissionRequired,
+                  modUSB: application.permissions[14].isPermissionRequired,
+                  takePics: application.permissions[15].isPermissionRequired,
+                  recordAudio: application.permissions[16].isPermissionRequired,
+                  viewWifi: application.permissions[17].isPermissionRequired,
+                  viewNetwork: application.permissions[18].isPermissionRequired,
+                  createAccounts: application.permissions[19].isPermissionRequired,
+                  readBattery: application.permissions[20].isPermissionRequired,
+                  pairBluetooth: application.permissions[21].isPermissionRequired,
+                  accessBluetooth: application.permissions[22].isPermissionRequired,
+                  sendStickyBroadcast: application.permissions[23].isPermissionRequired,
+                  changeNetwork: application.permissions[24].isPermissionRequired,
+                  connectWifi: application.permissions[25].isPermissionRequired,
+                  fullNetworkAccess: application.permissions[26].isPermissionRequired,
+                  changeAudio: application.permissions[27].isPermissionRequired,
+                  controlNFC: application.permissions[28].isPermissionRequired,
+                  readSync: application.permissions[29].isPermissionRequired,
+                  runAtStart: application.permissions[30].isPermissionRequired,
+                  reorderRunnning: application.permissions[31].isPermissionRequired,
+                  drawOver: application.permissions[32].isPermissionRequired,
+                  controlVibration: application.permissions[33].isPermissionRequired,
+                  preventSleep: application.permissions[34].isPermissionRequired,
+                  toggleSync: application.permissions[35].isPermissionRequired,
+                  installShortcuts: application.permissions[36].isPermissionRequired,
+                  readGoogleConfig: application.permissions[37].isPermissionRequired,
+              }))
+            : searchResults.map((application) => ({
+                  ...application,
+                  reviewsCount: application.reviews,
+                  reviews: [application.reviews, application.appId, application.country],
+              }));
 
     const handleCountryChange = (newCountry) => {
         setCountry(newCountry);
@@ -122,7 +123,7 @@ const SearchBar = ({ flipState }) => {
                     : `/ios/search?query=${term}&countryCode=${country}&time=${timeISOString}`, // Change to URL for app store scraper
                 {
                     signal: newAbortController.signal,
-                }
+                },
             )
             .then((response) => {
                 flipState();
@@ -170,7 +171,7 @@ const SearchBar = ({ flipState }) => {
                     headers: {
                         // Include authorization tokens
                     },
-                }
+                },
             );
 
             const relog_response = await axios.get(
@@ -182,7 +183,7 @@ const SearchBar = ({ flipState }) => {
                     headers: {
                         // Include authorization tokens
                     },
-                }
+                },
             );
 
             // Extract the filename from the Content-Disposition header
@@ -310,10 +311,10 @@ const SearchBar = ({ flipState }) => {
                         <DataGrid
                             rows={rows}
                             columns={
-                                displayPermissions
-                                    ? Array.prototype.concat(columns, permissionColumns)
-                                    : selectedScraper === "Play Store"
-                                    ? playStoreColumns
+                                selectedScraper === "Play Store"
+                                    ? displayPermissions
+                                        ? Array.prototype.concat(columns, permissionColumns)
+                                        : playStoreColumns
                                     : appStoreColumns
                             }
                             initialState={{
