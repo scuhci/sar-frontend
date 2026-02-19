@@ -189,6 +189,16 @@ export const iosCategories_toppaidmacapps = [...iosCategories].filter(
     ({ csvName }) => !["", "GAMES_EDUCATIONAL", "GAMES_DICE"].includes(csvName),
 );
 
+export const gplayCategories_topfree = [...gplayCategories].filter(
+    ({ code }) => ["", "GAME_BOARD", "GAME_CARD", "GAME_PUZZLE"].includes(code),
+)
+export const gplayCategories_toppaid = [...gplayCategories].filter(
+    ({ code }) => ["", "BEAUTY", "COMICS", "EVENTS", "HOUSE_AND_HOME", "PARENTING"].includes(code),
+)
+
+export const gplayCategories_topgrossing = [...gplayCategories].filter(
+    ({ code }) => ["", "APPLICATION", "GAME_CARD", "GAME_CASINO"].includes(code),
+)
 // Per-collection category lists (IOS)
 export const iosCategories_newapplications = [{ code: "", name: "No Category", csvName: "" }];
 export const iosCategories_newfreeapplications = [{ code: "", name: "No Category", csvName: "" }];
