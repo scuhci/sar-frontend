@@ -7,6 +7,9 @@ import { DataGrid } from "@mui/x-data-grid";
 import {
     gplayCategories,
     gplayCollections,
+    gplayCategories_topfree,
+    gplayCategories_toppaid,
+    gplayCategories_topgrossing,
     iosCategories,
     iosCollections,
     iosDevices,
@@ -57,6 +60,12 @@ const iosCategoriesByCollection = {
     toppaidipadapplications: iosCategories_toppaidipadapplications,
     topgrossingipadapplications: iosCategories_topgrossingipadapplications,
 };
+
+const gplayCategoriesByCollection = {
+    TOP_FREE: gplayCategories_topfree,
+    TOP_PAID: gplayCategories_toppaid,
+    GROSSING: gplayCategories_topgrossing,
+}
 
 // zip
 let JSZip = require("jszip");
@@ -263,11 +272,11 @@ const TopLists = ({ flipState }) => {
                 console.log(downloadQuery);
             });
         if (selectedScraper === "Play Store") {
-            setFullQuery([
-                getNameByCode(gplayCollections, collection),
-                getNameByCode(gplayCategories, category),
-                getNameByCode(gplayCountries, country),
-            ]);
+                setFullQuery([
+                    getNameByCode(gplayCollections, collection),
+                    getNameByCode(gplayCategoriesByCollection[collection] ?? gplayCategories, category),  // ✅ Use filtered
+                    getNameByCode(gplayCountries, country),
+                ]);
             setDownloadQuery(collection.concat(category, country));
         } else {
             setFullQuery([
@@ -432,7 +441,7 @@ const TopLists = ({ flipState }) => {
                         onChange={handleCategoryChange}
                     >
                         {(selectedScraper === "Play Store"
-                            ? gplayCategories
+                            ? (gplayCategoriesByCollection[collection] ?? gplayCategories)
                             : (iosCategoriesByCollection[collection] ?? iosCategories)
                         ).map(({ code, name }, index) => (
                             <MenuItem key={index} value={code}>
@@ -483,7 +492,7 @@ const TopLists = ({ flipState }) => {
                 onCancel={handleCancel}
                 country={getNameByCode(gplayCountries, country)}
                 collection={getNameByCode(gplayCollections, collection)}
-                category={getNameByCode(gplayCategories, category)}
+                category={getNameByCode(gplayCategoriesByCollection[collection] ?? gplayCategories, category)}
             />
             {showTable &&
                 (totalCount > 0 ? (
