@@ -73,7 +73,7 @@ let JSZip = require("jszip");
 const TopLists = ({ flipState }) => {
     const { selectedScraper } = useScraper();
     const [collection, setCollection] = useState("TOP_FREE");
-    const [device, setDevice] = useState("MAC");
+    const [device, setDevice] = useState("IOS");
     const [category, setCategory] = useState("");
     const [country, setCountry] = useState("US");
     const [searchResults, setSearchResults] = useState([]);
@@ -96,10 +96,10 @@ const TopLists = ({ flipState }) => {
             setCategory("");
             setCountry("US");
         } else if (selectedScraper === "App Store") {
-            setCollection("topmacapps");
+            setCollection("topfreeapplications");
             setCategory("");
             setCountry("US");
-            setDevice("MAC");
+            setDevice("IOS");
         }
         setShowTable(false);
     }, [selectedScraper]);
@@ -109,7 +109,7 @@ const TopLists = ({ flipState }) => {
             if (device === "MAC") {
                 setCollection("topmacapps");
             } else if (device === "IOS") {
-                setCollection("newapplications");
+                setCollection("topfreeapplications");
             } else if (device === "IPAD") {
                 setCollection("topfreeipadapplications");
             }
