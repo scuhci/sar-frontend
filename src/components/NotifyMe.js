@@ -23,9 +23,7 @@ const NotifyMe = ({ country, query, permissions, queryTime }) => {
     "_t:" +
     query +
     "_p:" +
-    currentPermissions +
-    "_t:" +
-    queryTime;
+    currentPermissions
 
   const handleEmailInput = (event) => {
     setEmail(event.target.value);
