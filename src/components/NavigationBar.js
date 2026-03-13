@@ -43,12 +43,12 @@ const NavigationBar = ({ refresh, refreshTopLists }) => {
             <Toolbar>  
                 <Typography variant="h6" style={{ flexGrow: 1 }}>
                   <Link to="/" style={{ textDecoration: 'none', color: 'inherit' }}>
-                    SMAR
+                    Systematic Mobile Application Reviews
                   </Link>
                 </Typography>
 
                 <div>
-                  <NavButton to="/" label="Home" onClick={refresh} />
+                  <NavButton to="/" label="Keyword & App ID Search" onClick={refresh} />
                   <NavButton to="/toplists" label="Top Charts" onClick={refreshTopLists} />
                   <NavButton to="/bulkreviews" label="Bulk Reviews" />
                   <NavButton to="/userguide" label="User Guide" />
