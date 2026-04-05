@@ -12,6 +12,7 @@ import { Android, Apple } from "@mui/icons-material";
 
 // import { useLocation, useNavigate } from "react-router-dom";
 import { useScraper } from "../components/SelectedScraperProvider";
+import ReviewsError from "../components/ErrorStates/ReviewsError";
 
 const TopCharts = ({ flipState }) => {
     // const [selectedScraper, setSelectedScraper] = React.useState("Play Store");
@@ -70,7 +71,6 @@ const TopCharts = ({ flipState }) => {
                                 BETA
                             </Chip>
                         </Typography>
-
                         <Typography variant="p" className="home-text">
                             Fetch top charts for different countries, collections, and
                             categories for the{" "}
@@ -80,6 +80,9 @@ const TopCharts = ({ flipState }) => {
                             store.
                         </Typography>
                     </div>
+                    <Box sx={{ maxWidth: 1000, margin: 'auto', px: '40px' }}>
+                        <ReviewsError/>
+                    </Box>
                     <TopLists flipState={flipState} selectedScraper={selectedScraper} />
                 </div>
                 <Citation />
