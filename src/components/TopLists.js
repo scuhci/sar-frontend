@@ -44,6 +44,7 @@ import Stack from "@mui/material/Stack";
 //Tooltip
 import InfoIcon from "@mui/icons-material/Info";
 import { Tooltip } from "@mui/material";
+import ReloadButton from "./ErrorStates/ReloadButton";
 
 const iosCategoriesByCollection = {
     topmacapps: iosCategories_topmacapps,
