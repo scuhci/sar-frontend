@@ -80,9 +80,9 @@ const TopCharts = ({ flipState }) => {
                             store.
                         </Typography>
                     </div>
-                    <Box sx={{ maxWidth: 1000, margin: 'auto', px: '40px' }}>
+                    {/* <Box sx={{ maxWidth: 1000, margin: 'auto', px: '40px' }}>
                         <ReviewsError/>
-                    </Box>
+                    </Box> */}
                     <TopLists flipState={flipState} selectedScraper={selectedScraper} />
                 </div>
                 <Citation />
