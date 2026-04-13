@@ -17,6 +17,7 @@ const ReloadButton = () => {
         '&:hover': {
           backgroundColor: '#1565C0',
         },
+        marginBottom: '10px'
       }}
     >
       RELOAD
