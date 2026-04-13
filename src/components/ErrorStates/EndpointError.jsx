@@ -8,70 +8,71 @@ const EndpointError = ({ endpointType, selectedScraper }) => {
   return (
     <Box className="endpoint-error-container">
       <img src={ServiceError} alt="Service Error" />
-      {endpointType === "GooglePlay" && (
+      {endpointType === "Scrape" && (
         <Box>
-          <Typography sx={{ fontSize: 40 }}>Unable to reach Google Play Store</Typography>
-          <Typography sx={{ fontSize: 14, marginTop: 3, marginBottom: 3}}>
-            We are unable to connect to the Google Play Store to fetch app data.<br/>
+          <Typography sx={{ fontSize: 40 }}>
+            Unable to reach {selectedScraper}
+          </Typography>
+          <Typography sx={{ fontSize: 14, marginTop: 3, marginBottom: 3 }}>
+            We are unable to connect to the {selectedScraper} to fetch app data.
+            <br />
             Please try your scrape again later.
           </Typography>
 
-          <Box sx={{ display: "flex", flexDirection: "row" }}>
+          <Box sx={{ display: "flex", flexDirection: "row", justifyContent: 'center'}}>
             <Button
-              className="search-button"
-              // onClick={}
+              sx={{
+                backgroundColor: "#FFFFFF",
+                fontSize: "16px",
+                border: "#BDBDBD solid 1px",
+                width: "226px",
+                height: "49px",
+                textAlign: "center",
+                textTransform: "none",
+                "&:hover": {
+                  backgroundColor: "#fdfdfd",
+                },
+                marginBottom: "10px",
+                marginRight: "16px"
+              }}
               variant="contained"
               color="primary"
             >
-              {selectedScraper !== "Play Store"
-                ? "Scrape Play Store"
-                : "Scrape App Store"}
+              <Typography sx={{ fontSize: 16, color:'#000000', fontWeight: 500}}>
+                {selectedScraper !== "Play Store"
+                  ? "SCRAPE PLAY STORE"
+                  : "SCRAPE APP STORE"}
+              </Typography>
             </Button>
-            <ReloadButton />
-          </Box>
-        </Box>
-      )}
-      {endpointType === "AppStore" && (
-        <Box>
-          <Typography sx={{ fontSize: 40 }}>Unable to reach App Store</Typography>
-          <Typography sx={{ fontSize: 14, marginTop: 3, marginBottom: 3}}>
-            We are unable to connect to the App Store to fetch app data. <br/>
-            Please try your scrape again later.
-          </Typography>
 
-          <Box sx={{ display: "flex", flexDirection: "row" }}>
-            <Button
-              className="search-button"
-              // onClick={}
-              variant="contained"
-              color="primary"
-            >
-              {selectedScraper !== "Play Store"
-                ? "Scrape Play Store"
-                : "Scrape App Store"}
-            </Button>
             <ReloadButton />
           </Box>
         </Box>
       )}
       {endpointType === "TopCharts" && (
         <Box>
-          <Typography sx={{ fontSize: 40 }}>Unable to reach Top Charts</Typography>
-          <Typography sx={{ fontSize: 14, marginTop: 3, marginBottom: 3}}>
-            We are unable to connect to the {selectedScraper} to fetch app data. <br/>
+          <Typography sx={{ fontSize: 40 }}>
+            Unable to reach Top Charts
+          </Typography>
+          <Typography sx={{ fontSize: 14, marginTop: 3, marginBottom: 3 }}>
+            We are unable to connect to the {selectedScraper} to fetch app data.{" "}
+            <br />
             Please try your scrape again later.
           </Typography>
-          <ReloadButton/>
+          <ReloadButton />
         </Box>
       )}
       {endpointType === "BulkReviews" && (
         <Box>
-          <Typography sx={{ fontSize: 40 }}>Unable to reach Bulk Review Scraper</Typography>
-          <Typography sx={{ fontSize: 14, marginTop: 3, marginBottom: 3}}>
-            We are unable to connect to the {selectedScraper} to fetch app data. <br/>
+          <Typography sx={{ fontSize: 40 }}>
+            Unable to reach Bulk Review Scraper
+          </Typography>
+          <Typography sx={{ fontSize: 14, marginTop: 3, marginBottom: 3 }}>
+            We are unable to connect to the {selectedScraper} to fetch app data.{" "}
+            <br />
             Please try your scrape again later.
           </Typography>
-          <ReloadButton/>
+          <ReloadButton />
         </Box>
       )}
     </Box>

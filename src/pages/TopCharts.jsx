@@ -80,11 +80,8 @@ const TopCharts = ({ flipState }) => {
                                 : "iOS App"}{" "}
                             store.
                         </Typography>
-                        <EndpointError endpointType={"TopCharts"} selectedScraper={selectedScraper}/>
+                        {/* <EndpointError endpointType={"TopCharts"} selectedScraper={selectedScraper}/> */}
                     </div>
-                    {/* <Box sx={{ maxWidth: 1000, margin: 'auto', px: '40px' }}>
-                        <ReviewsError/>
-                    </Box> */}
                     <TopLists flipState={flipState} selectedScraper={selectedScraper} />
                 </div>
                 <Citation />

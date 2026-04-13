@@ -12,6 +12,7 @@ import Tab from "@mui/material/Tab";
 import { Android, Apple } from "@mui/icons-material";
 import { useScraper } from "../components/SelectedScraperProvider";
 import Footer from "../components/Footer";
+import EndpointError from "../components/ErrorStates/EndpointError";
 
 const Home = ({ flipState }) => {
     // State for choosing Play Store / iOS App Store
@@ -72,6 +73,7 @@ const Home = ({ flipState }) => {
                             store.
                         </Typography>
                     </div>
+                    {/* <EndpointError endpointType={"Scrape"} selectedScraper={selectedScraper}/> */}
                     <SearchBar flipState={flipState} />
                 </div>
                 <Citation />
