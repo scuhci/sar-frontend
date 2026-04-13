@@ -13,6 +13,7 @@ import { Android, Apple } from "@mui/icons-material";
 // import { useLocation, useNavigate } from "react-router-dom";
 import { useScraper } from "../components/SelectedScraperProvider";
 import ReviewsError from "../components/ErrorStates/ReviewsError";
+import EndpointError from "../components/ErrorStates/EndpointError";
 
 const TopCharts = ({ flipState }) => {
     // const [selectedScraper, setSelectedScraper] = React.useState("Play Store");
@@ -79,6 +80,7 @@ const TopCharts = ({ flipState }) => {
                                 : "iOS App"}{" "}
                             store.
                         </Typography>
+                        <EndpointError endpointType={"TopCharts"} selectedScraper={selectedScraper}/>
                     </div>
                     {/* <Box sx={{ maxWidth: 1000, margin: 'auto', px: '40px' }}>
                         <ReviewsError/>
