@@ -12,6 +12,7 @@ import { Android, Apple } from "@mui/icons-material";
 import { useScraper } from "../components/SelectedScraperProvider";
 import BulkReviewStepper from "../components/BulkReviewStepper";
 import BulkReviewSearchBar from "../components/BulkReviewSearchBar";
+import EndpointError from "../components/ErrorStates/EndpointError";
 
 const BulkReviews = ({ flipState }) => {
     const { selectedScraper, setSelectedScraper } = useScraper();
@@ -55,6 +56,7 @@ const BulkReviews = ({ flipState }) => {
                             Scrape reviews from multiple apps simultaneously from the{" "}
                             {selectedScraper === "Play Store" ? "Google Play" : "iOS App"} store with ease.
                         </Typography>
+                        {/* <EndpointError endpointType={"BulkReviews"} selectedScraper={selectedScraper}/> */}
                         <BulkReviewSearchBar
                             flipState={flipState}
                             activeStep={activeStep}
