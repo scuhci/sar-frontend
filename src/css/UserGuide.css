@@ -79,3 +79,90 @@ html, body, #root {
 .content {
     flex: 1;
 }
+
+/* sticky sidebar */
+.user-guide-layout {
+    display: flex;
+    align-items: flex-start;
+    gap: 2rem;
+    width: 100%;
+}
+
+.user-guide-sidebar {
+    flex: 0 0 260px;
+    max-width: 100%;
+    position: sticky;
+    top: 80px;
+    align-self: flex-start;
+    max-height: calc(100vh - 96px);
+    overflow-y: auto;
+    padding-right: 0.5rem;
+    box-sizing: border-box;
+}
+
+.toc-sidebar-title {
+    margin: 0 0 1rem;
+    font-weight: 700;
+}
+
+.toc-tree {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+}
+
+.toc-section {
+    margin-bottom: 1.25rem;
+}
+
+.toc-section:last-child {
+    margin-bottom: 0;
+}
+
+.toc-section-link {
+    line-height: 1.35;
+}
+
+.toc-sublist {
+    list-style: none;
+    margin: 0.5rem 0 0;
+    padding: 0 0 0 1rem;
+    border-left: 1px solid rgba(0, 0, 0, 0.12);
+}
+
+.toc-sublist li {
+    margin-bottom: 0.45rem;
+}
+
+.toc-sublist li:last-child {
+    margin-bottom: 0;
+}
+
+.user-guide-main {
+    flex: 1;
+    min-width: 0;
+}
+
+.user-guide-main [id],
+.user-guide-main .section-header,
+.user-guide-main .section-sub-header {
+    scroll-margin-top: 88px;
+}
+
+@media (max-width: 899px) {
+    .user-guide-layout {
+        flex-direction: column;
+        gap: 1.5rem;
+    }
+
+    .user-guide-sidebar {
+        position: relative;
+        top: auto;
+        flex: none;
+        width: 100%;
+        max-height: none;
+        overflow-y: visible;
+        padding-bottom: 0.5rem;
+        border-bottom: 1px solid rgba(0, 0, 0, 0.12);
+    }
+}
