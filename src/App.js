@@ -16,10 +16,8 @@ function App() {
 
     const [showSearchResults, setShowSearchResults] = useState(false);
 
-    // Hide the full navigation bar on mobile devices (mobile users should see MobileScreen only).
     const userAgent = new UAParser().getDevice();
-    const isMobileDevice = userAgent.type === "mobile";
-
+    const isMobileDevice = userAgent.type === 'mobile';
     const flipState = () => {
         if (!showSearchResults) setShowSearchResults(true);
     };
