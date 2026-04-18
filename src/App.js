@@ -1,7 +1,7 @@
 import "./css/App.css";
 import { useState } from "react";
 import { Routes, Route, useNavigate } from "react-router-dom";
-import {UAParser} from 'ua-parser-js';
+import { UAParser } from "ua-parser-js";
 import Home from "./pages/Home";
 import About from "./pages/About";
 import NavigationBar from "./components/NavigationBar";
@@ -9,6 +9,7 @@ import UserGuide from "./pages/UserGuide";
 import TopCharts from "./pages/TopCharts";
 import { ScraperProvider } from "./components/SelectedScraperProvider";
 import BulkReviews from "./pages/BulkReviews";
+// testing commit
 
 function App() {
     const navigate = useNavigate();
@@ -33,9 +34,9 @@ function App() {
     return (
         <ScraperProvider>
             <div>
-            {!isMobileDevice && (
-                <NavigationBar refresh={refresh} refreshTopLists={refreshTopLists} />
-            )}
+                {!isMobileDevice && (
+                    <NavigationBar refresh={refresh} refreshTopLists={refreshTopLists} />
+                )}
                 <Routes className="App">
                     <Route path="/" element={<Home flipState={flipState} />} />
                     <Route path="/toplists" element={<TopCharts flipState={flipState} />} />
