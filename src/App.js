@@ -1,6 +1,7 @@
 import "./css/App.css";
 import { useState } from "react";
 import { Routes, Route, useNavigate } from "react-router-dom";
+import {UAParser} from 'ua-parser-js';
 import Home from "./pages/Home";
 import About from "./pages/About";
 import NavigationBar from "./components/NavigationBar";
@@ -14,6 +15,8 @@ function App() {
 
     const [showSearchResults, setShowSearchResults] = useState(false);
 
+    const userAgent = new UAParser().getDevice();
+    const isMobileDevice = userAgent.type === 'mobile';
     const flipState = () => {
         if (!showSearchResults) setShowSearchResults(true);
     };
@@ -30,7 +33,9 @@ function App() {
     return (
         <ScraperProvider>
             <div>
+            {!isMobileDevice && (
                 <NavigationBar refresh={refresh} refreshTopLists={refreshTopLists} />
+            )}
                 <Routes className="App">
                     <Route path="/" element={<Home flipState={flipState} />} />
                     <Route path="/toplists" element={<TopCharts flipState={flipState} />} />
