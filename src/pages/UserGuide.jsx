@@ -151,17 +151,9 @@ const UserGuide = () => {
                 <div className="content">
                     <Typography variant="h4" className="main-header">User Guide</Typography>
 
-                    <div className={`user-guide-layout${sidebarOpen ? '' : ' user-guide-layout--sidebar-collapsed'}`}>
-                        <nav
-                            className={`user-guide-sidebar${sidebarOpen ? '' : ' user-guide-sidebar--collapsed'}`}
-                            aria-label="Table of contents"
-                        >
-                            <div className="user-guide-sidebar-header">
-                                {sidebarOpen && (
-                                    <Typography variant="h5" component="h2" className="toc-sidebar-title">
-                                        Contents
-                                    </Typography>
-                                )}
+                    <div className="user-guide-layout">
+                        <div className="user-guide-toc-cluster">
+                            <div className="user-guide-sidebar-rail">
                                 <IconButton
                                     size="small"
                                     onClick={() => setSidebarOpen((o) => !o)}
@@ -173,6 +165,13 @@ const UserGuide = () => {
                                     {sidebarOpen ? <ChevronLeft fontSize="small" /> : <ChevronRight fontSize="small" />}
                                 </IconButton>
                             </div>
+                            <nav
+                                className={`user-guide-sidebar${sidebarOpen ? '' : ' user-guide-sidebar--collapsed'}`}
+                                aria-label="Table of contents"
+                            >
+                                <Typography variant="h5" component="h2" className="toc-sidebar-title">
+                                    Contents
+                                </Typography>
                             {sidebarOpen && (
                             <ul id="user-guide-toc-list" className="toc-tree">
                                 <li className="toc-section">
@@ -221,7 +220,8 @@ const UserGuide = () => {
                                 </li>
                             </ul>
                             )}
-                        </nav>
+                            </nav>
+                        </div>
 
                         <div className="user-guide-main">
                     <br />
