@@ -88,16 +88,51 @@ html, body, #root {
     width: 100%;
 }
 
-.user-guide-sidebar {
-    flex: 0 0 260px;
-    max-width: 100%;
+/* Toggle stays on the left*/
+.user-guide-toc-cluster {
+    display: flex;
+    align-items: flex-start;
+    gap: 0.25rem;
+    flex: 0 0 auto;
     position: sticky;
     top: 80px;
     align-self: flex-start;
     max-height: calc(100vh - 96px);
+}
+
+.user-guide-sidebar-rail {
+    flex: 0 0 40px;
+    width: 40px;
+    display: flex;
+    justify-content: center;
+    padding-top: 2px;
+    box-sizing: border-box;
+}
+
+.user-guide-sidebar-toggle {
+    flex-shrink: 0;
+}
+
+.user-guide-sidebar {
+    flex: 0 0 260px;
+    max-width: 100%;
+    min-width: 0;
+    max-height: calc(100vh - 96px);
+    overflow-x: hidden;
     overflow-y: auto;
     padding-right: 0.5rem;
     box-sizing: border-box;
+}
+
+.user-guide-sidebar--collapsed {
+    flex: 0 0 0;
+    width: 0;
+    max-width: 0;
+    padding: 0;
+    margin: 0;
+    overflow: hidden;
+    visibility: hidden;
+    pointer-events: none;
 }
 
 .toc-sidebar-title {
@@ -155,14 +190,31 @@ html, body, #root {
         gap: 1.5rem;
     }
 
-    .user-guide-sidebar {
+    .user-guide-toc-cluster {
         position: relative;
         top: auto;
-        flex: none;
-        width: 100%;
         max-height: none;
-        overflow-y: visible;
+        width: 100%;
         padding-bottom: 0.5rem;
         border-bottom: 1px solid rgba(0, 0, 0, 0.12);
+    }
+
+    .user-guide-sidebar {
+        flex: 1;
+        min-width: 0;
+        max-width: none;
+        width: auto;
+        max-height: none;
+        overflow-y: visible;
+    }
+
+    .user-guide-sidebar--collapsed {
+        flex: 0 0 0;
+        width: 0;
+        max-width: 0;
+        padding: 0;
+        overflow: hidden;
+        visibility: hidden;
+        pointer-events: none;
     }
 }
