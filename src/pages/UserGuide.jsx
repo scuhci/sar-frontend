@@ -1,11 +1,11 @@
 import React from 'react';
-import { Typography, Container, Divider, Box, Link } from '@mui/material';
+import { Typography, Container, Divider, Box, Link, IconButton } from '@mui/material';
 import { Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Paper, ToggleButton, ToggleButtonGroup } from '@mui/material'
 import Footer from '../components/Footer';
 import "../css/UserGuide.css";
-import { Android, Apple } from '@mui/icons-material';
-
+import { Android, Apple, ChevronLeft, ChevronRight } from '@mui/icons-material';
 const UserGuide = () => {
+    const [sidebarOpen, setSidebarOpen] = React.useState(true);
     const [selectedStore, setSelectedStore] = React.useState('PS')
     const handleChange = (event, newStore) => {
         setSelectedStore(newStore);
@@ -151,10 +151,30 @@ const UserGuide = () => {
                 <div className="content">
                     <Typography variant="h4" className="main-header">User Guide</Typography>
 
-                    <div className="user-guide-layout">
-                        <nav className="user-guide-sidebar" aria-label="Table of contents">
-                            <Typography variant="h5" component="h2" className="toc-sidebar-title">Contents</Typography>
-                            <ul className="toc-tree">
+                    <div className={`user-guide-layout${sidebarOpen ? '' : ' user-guide-layout--sidebar-collapsed'}`}>
+                        <nav
+                            className={`user-guide-sidebar${sidebarOpen ? '' : ' user-guide-sidebar--collapsed'}`}
+                            aria-label="Table of contents"
+                        >
+                            <div className="user-guide-sidebar-header">
+                                {sidebarOpen && (
+                                    <Typography variant="h5" component="h2" className="toc-sidebar-title">
+                                        Contents
+                                    </Typography>
+                                )}
+                                <IconButton
+                                    size="small"
+                                    onClick={() => setSidebarOpen((o) => !o)}
+                                    aria-expanded={sidebarOpen}
+                                    aria-controls={sidebarOpen ? 'user-guide-toc-list' : undefined}
+                                    aria-label={sidebarOpen ? 'Hide table of contents' : 'Show table of contents'}
+                                    className="user-guide-sidebar-toggle"
+                                >
+                                    {sidebarOpen ? <ChevronLeft fontSize="small" /> : <ChevronRight fontSize="small" />}
+                                </IconButton>
+                            </div>
+                            {sidebarOpen && (
+                            <ul id="user-guide-toc-list" className="toc-tree">
                                 <li className="toc-section">
                                     <Link href="#SMAR_Background" sx={tocLinkSx} variant="subtitle1" className="toc-section-link" fontWeight={600}>
                                         SMAR Background
@@ -200,6 +220,7 @@ const UserGuide = () => {
                                     </Link>
                                 </li>
                             </ul>
+                            )}
                         </nav>
 
                         <div className="user-guide-main">

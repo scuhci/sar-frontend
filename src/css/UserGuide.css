@@ -100,9 +100,52 @@ html, body, #root {
     box-sizing: border-box;
 }
 
+.user-guide-sidebar--collapsed {
+    flex: 0 0 44px;
+    max-width: 44px;
+    padding-right: 0;
+    overflow: visible;
+    max-height: none;
+}
+
+.user-guide-layout--sidebar-collapsed {
+    gap: 0.75rem;
+}
+
+.user-guide-sidebar-header {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: 0.35rem;
+    margin-bottom: 0;
+}
+
+.user-guide-sidebar--collapsed .user-guide-sidebar-header {
+    flex-direction: column;
+    align-items: center;
+    justify-content: flex-start;
+    margin-bottom: 0;
+}
+
+.user-guide-sidebar-toggle {
+    flex-shrink: 0;
+    margin-top: -4px;
+    margin-right: -4px;
+}
+
+.user-guide-sidebar--collapsed .user-guide-sidebar-toggle {
+    margin: 0;
+}
+
 .toc-sidebar-title {
     margin: 0 0 1rem;
     font-weight: 700;
+    flex: 1;
+    min-width: 0;
+}
+
+.user-guide-sidebar--collapsed .toc-sidebar-title {
+    display: none;
 }
 
 .toc-tree {
@@ -160,9 +203,21 @@ html, body, #root {
         top: auto;
         flex: none;
         width: 100%;
+        max-width: 100%;
         max-height: none;
         overflow-y: visible;
         padding-bottom: 0.5rem;
         border-bottom: 1px solid rgba(0, 0, 0, 0.12);
+    }
+
+    .user-guide-sidebar--collapsed {
+        flex: none;
+        width: 100%;
+        max-width: 100%;
+    }
+
+    .user-guide-sidebar--collapsed .user-guide-sidebar-header {
+        flex-direction: row;
+        justify-content: flex-end;
     }
 }
