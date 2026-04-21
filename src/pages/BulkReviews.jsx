@@ -13,11 +13,17 @@ import { useScraper } from "../components/SelectedScraperProvider";
 import BulkReviewStepper from "../components/BulkReviewStepper";
 import BulkReviewSearchBar from "../components/BulkReviewSearchBar";
 import EndpointError from "../components/ErrorStates/EndpointError";
+import { useServiceHealthContext } from "../components/ServiceHealthProvider";
 
 const BulkReviews = ({ flipState }) => {
     const { selectedScraper, setSelectedScraper } = useScraper();
     // State for step the user is on, the search step (0) or the download step (1)
     const [activeStep, setActiveStep] = useState(0);
+
+    // Service health — show full error state if reviews service is down
+    const { isReviewsDown, isUnhealthy, loading: healthLoading } =
+        useServiceHealthContext();
+    const showFullError = !healthLoading && (isReviewsDown || isUnhealthy);
 
     // Should be an undefined object if it's on a laptop
     const userAgent = new UAParser().getDevice();
@@ -56,12 +62,18 @@ const BulkReviews = ({ flipState }) => {
                             Scrape reviews from multiple apps simultaneously from the{" "}
                             {selectedScraper === "Play Store" ? "Google Play" : "iOS App"} store with ease.
                         </Typography>
-                        {/* <EndpointError endpointType={"BulkReviews"} selectedScraper={selectedScraper}/> */}
-                        <BulkReviewSearchBar
-                            flipState={flipState}
-                            activeStep={activeStep}
-                            setActiveStep={setActiveStep}
-                        />
+                        {showFullError ? (
+                            <EndpointError
+                                endpointType={"BulkReviews"}
+                                selectedScraper={selectedScraper}
+                            />
+                        ) : (
+                            <BulkReviewSearchBar
+                                flipState={flipState}
+                                activeStep={activeStep}
+                                setActiveStep={setActiveStep}
+                            />
+                        )}
                     </div>
                 </div>
                 <Citation />

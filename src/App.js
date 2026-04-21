@@ -7,6 +7,7 @@ import NavigationBar from "./components/NavigationBar";
 import UserGuide from "./pages/UserGuide";
 import TopCharts from "./pages/TopCharts";
 import { ScraperProvider } from "./components/SelectedScraperProvider";
+import { ServiceHealthProvider } from "./components/ServiceHealthProvider";
 import BulkReviews from "./pages/BulkReviews";
 
 function App() {
@@ -29,16 +30,18 @@ function App() {
 
     return (
         <ScraperProvider>
-            <div>
-                <NavigationBar refresh={refresh} refreshTopLists={refreshTopLists} />
-                <Routes className="App">
-                    <Route path="/" element={<Home flipState={flipState} />} />
-                    <Route path="/toplists" element={<TopCharts flipState={flipState} />} />
-                    <Route path="/userguide" element={<UserGuide />} />
-                    <Route path="/bulkreviews" element={<BulkReviews flipState={flipState} />} />
-                    <Route path="/about" element={<About />} />
-                </Routes>
-            </div>
+            <ServiceHealthProvider>
+                <div>
+                    <NavigationBar refresh={refresh} refreshTopLists={refreshTopLists} />
+                    <Routes className="App">
+                        <Route path="/" element={<Home flipState={flipState} />} />
+                        <Route path="/toplists" element={<TopCharts flipState={flipState} />} />
+                        <Route path="/userguide" element={<UserGuide />} />
+                        <Route path="/bulkreviews" element={<BulkReviews flipState={flipState} />} />
+                        <Route path="/about" element={<About />} />
+                    </Routes>
+                </div>
+            </ServiceHealthProvider>
         </ScraperProvider>
     );
 }

@@ -4,11 +4,13 @@ import { Tooltip } from "@mui/material";
 import ReviewsLoading from "./ReviewsLoading";
 import axios from "axios";
 import { useScraper } from "../components/SelectedScraperProvider";
+import { useServiceHealthContext } from "../components/ServiceHealthProvider";
 
 let JSZip = require("jszip");
 
 const DownloadReviews = (appId, countryCode) => {
   const { selectedScraper } = useScraper();
+  const { isReviewsDown } = useServiceHealthContext();
   const [isLoading, setIsLoading] = useState(false);
   const [abortController, setAbortController] = useState(null);
 
@@ -87,6 +89,23 @@ const DownloadReviews = (appId, countryCode) => {
     }
     setIsLoading(false);
   };
+
+  // If the reviews service is reported as down, gray out the button
+  // with a tooltip explaining why. Wrap in span so the Tooltip still fires
+  // when the underlying button is disabled.
+  if (isReviewsDown) {
+    return (
+      <div className="Reviews count & button">
+        <Tooltip title="Review scraping is temporarily unavailable.">
+          <span>
+            <Button disabled variant="outlined" size="small">
+              <strong>Scrape Reviews</strong>
+            </Button>
+          </span>
+        </Tooltip>
+      </div>
+    );
+  }
 
   return (
     <div className="Reviews count & button">
