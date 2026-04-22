@@ -12,12 +12,27 @@ import Tab from "@mui/material/Tab";
 import { Android, Apple } from "@mui/icons-material";
 import { useScraper } from "../components/SelectedScraperProvider";
 import Footer from "../components/Footer";
+import EndpointError from "../components/ErrorStates/EndpointError";
+import { useServiceHealthContext } from "../components/ServiceHealthProvider";
 
 const Home = ({ flipState }) => {
     // State for choosing Play Store / iOS App Store
     // const [selectedScraper, setSelectedScraper] = React.useState("Play Store");
     const { selectedScraper, setSelectedScraper } = useScraper();
-    
+
+    // Service health — decides whether to show the full error state
+    // instead of the normal search UI.
+    const { isSearchDown, isAppDown, isUnhealthy, isReviewsDown, loading: healthLoading } =
+        useServiceHealthContext();
+
+    // Whole service unreachable — show the full error screen
+    const showFullError =
+        !healthLoading && (isSearchDown || isAppDown || isUnhealthy);
+
+    // Pass review health state down to SearchBar so it can show the
+    // reviews banner + disable Scrape Reviews buttons
+    const reviewsDown = !healthLoading && isReviewsDown && !showFullError;
+
     // Should be an undefined object if it's on a laptop
     const userAgent = new UAParser().getDevice();
     const isMobileDevice = userAgent.type === 'mobile';
@@ -72,7 +87,14 @@ const Home = ({ flipState }) => {
                             store.
                         </Typography>
                     </div>
-                    <SearchBar flipState={flipState} />
+                    {showFullError ? (
+                        <EndpointError
+                            endpointType={"Scrape"}
+                            selectedScraper={selectedScraper}
+                        />
+                    ) : (
+                        <SearchBar flipState={flipState} reviewsDown={reviewsDown} />
+                    )}
                 </div>
                 <Citation />
                 <Footer />

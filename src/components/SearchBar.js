@@ -22,11 +22,12 @@ import Stack from "@mui/material/Stack";
 import InfoIcon from "@mui/icons-material/Info";
 import { Tooltip } from "@mui/material";
 import Dropdown from "./Dropdown";
+import ReviewsError from "./ErrorStates/ReviewsError";
 
 // zip
 let JSZip = require("jszip");
 
-const SearchBar = ({ flipState }) => {
+const SearchBar = ({ flipState, reviewsDown = false }) => {
     const { selectedScraper } = useScraper();
     const [searchQuery, setSearchQuery] = useState("");
     const [resultsText, setResultsText] = useState("");
@@ -302,6 +303,7 @@ const SearchBar = ({ flipState }) => {
                 time={queryTime} // this + other combos will be used as a unique identifier for queries
                 selectedScraper={selectedScraper}
             />
+            {reviewsDown && <ReviewsError />}
             {searchResults.length > 0 ? (
                 <>
                     <div className="search-result-text">
