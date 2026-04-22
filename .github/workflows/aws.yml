@@ -1,0 +1,97 @@
+name: Deploy React App to EC2
+
+on:
+  push:
+    branches: [cicd-test]
+  workflow_dispatch: # Allows manual triggering
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    environment: production
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Create deployment package
+        run: |
+          tar -czf ../deploy.tar.gz \
+            --exclude=node_modules \
+            --exclude=build \
+            --exclude=.git \
+            --exclude=.github \
+            --exclude=.env* \
+            --exclude=*.log \
+            .
+          mv ../deploy.tar.gz ./deploy.tar.gz
+
+      - name: Upload source code to EC2
+        uses: appleboy/scp-action@v0.1.7
+        with:
+          host: ${{ secrets.TEST_HOST }}
+          username: ${{ secrets.TEST_USERNAME }}
+          key: ${{ secrets.TEST_SSH_KEY }}
+          port: ${{ secrets.TEST_SSH_PORT || 22 }}
+          command_timeout: 200m
+          source: "deploy.tar.gz"
+          target: "/tmp/"
+
+      - name: Deploy and build on EC2
+        uses: appleboy/ssh-action@v1.0.3
+        with:
+          host: ${{ secrets.TEST_HOST }}
+          username: ${{ secrets.TEST_USERNAME }}
+          key: ${{ secrets.TEST_SSH_KEY }}
+          port: ${{ secrets.TEST_SSH_PORT || 22 }}
+          command_timeout: 200m
+          script: |
+            # Load Node.js environment (common paths)
+            export PATH="$PATH:/usr/local/bin:/opt/nvm/versions/node/v22.*/bin"
+
+            # Try to source common Node.js environment files
+            [ -f ~/.bashrc ] && source ~/.bashrc
+            [ -f ~/.nvm/nvm.sh ] && source ~/.nvm/nvm.sh
+            [ -f ~/.profile ] && source ~/.profile
+
+            APP_DIR="/home/ubuntu/smar/sar-frontend"
+
+            # Check Node.js and npm are available
+            if ! command -v node &> /dev/null; then
+              echo "❌ Node.js is not installed or not in PATH"
+              echo "Current PATH: $PATH"
+              exit 1
+            fi
+
+            if ! command -v npm &> /dev/null; then
+              echo "❌ npm is not available"
+              exit 1
+            fi
+
+            echo "✅ Node.js version: $(node --version)"
+            echo "✅ npm version: $(npm --version)"
+
+            # Create and own the app directory
+            sudo mkdir -p $APP_DIR
+            sudo chown $USER:$USER $APP_DIR
+
+            # Clear existing source files
+            rm -rf $APP_DIR/*
+
+            # Extract source code
+            cd $APP_DIR
+            tar -xzf /tmp/deploy.tar.gz
+            rm /tmp/deploy.tar.gz
+
+            # Install dependencies
+            echo "Installing dependencies..."
+            npm ci
+
+            # Build the React app
+            echo "Building React app..."
+            npm run build
+
+            # Set proper permissions
+            sudo chown -R $USER:$USER $APP_DIR
+
+            echo "✅ Frontend deployed. Build output at $APP_DIR/build"

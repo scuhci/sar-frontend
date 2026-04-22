@@ -111,6 +111,8 @@ const renderCell = (fieldName) => {
   return (params) => params.value ?? "-";
 };
 
+const narrowWidthFields = ["icon"];
+
 // List of fields that need a larger width
 // Used to set minWidth to 200
 const largeWidthFields = [
@@ -134,15 +136,18 @@ const largeWidthFields = [
 const extraWidthFields = ["title", "appId", "recentChanges"];
 
 // Helper function to generate minWidth attribute based on field name
+// For fields in narrow_width_fields, return 72
 // For fields in large_width_fields, return 200
 // For fields in extra_width_fields, return 250
-// For all other fields, return 100
+// For all other fields, return 150
 const minWidth = (fieldName) => {
-  // Case 1: field is in large_width_fields
+  // Case 1: field is in narrow_width_fields
+  if (narrowWidthFields.includes(fieldName)) return 72;
+  // Case 2: field is in large_width_fields
   if (largeWidthFields.includes(fieldName)) return 200;
-  // Case 2: field is in extra_width_fields
+  // Case 3: field is in extra_width_fields
   if (extraWidthFields.includes(fieldName)) return 250;
-  // Case 3: any other field
+  // Case 4: any other field
   return 150;
 };
 

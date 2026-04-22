@@ -1,6 +1,7 @@
 import "./css/App.css";
 import { useState } from "react";
 import { Routes, Route, useNavigate } from "react-router-dom";
+import { UAParser } from "ua-parser-js";
 import Home from "./pages/Home";
 import About from "./pages/About";
 import NavigationBar from "./components/NavigationBar";
@@ -9,12 +10,15 @@ import TopCharts from "./pages/TopCharts";
 import { ScraperProvider } from "./components/SelectedScraperProvider";
 import { ServiceHealthProvider } from "./components/ServiceHealthProvider";
 import BulkReviews from "./pages/BulkReviews";
+// testing commit
 
 function App() {
     const navigate = useNavigate();
 
     const [showSearchResults, setShowSearchResults] = useState(false);
 
+    const userAgent = new UAParser().getDevice();
+    const isMobileDevice = userAgent.type === 'mobile';
     const flipState = () => {
         if (!showSearchResults) setShowSearchResults(true);
     };
@@ -31,16 +35,18 @@ function App() {
     return (
         <ScraperProvider>
             <ServiceHealthProvider>
-                <div>
-                    <NavigationBar refresh={refresh} refreshTopLists={refreshTopLists} />
-                    <Routes className="App">
-                        <Route path="/" element={<Home flipState={flipState} />} />
-                        <Route path="/toplists" element={<TopCharts flipState={flipState} />} />
-                        <Route path="/userguide" element={<UserGuide />} />
-                        <Route path="/bulkreviews" element={<BulkReviews flipState={flipState} />} />
-                        <Route path="/about" element={<About />} />
-                    </Routes>
-                </div>
+              <div>
+                  {!isMobileDevice && (
+                      <NavigationBar refresh={refresh} refreshTopLists={refreshTopLists} />
+                  )}
+                  <Routes className="App">
+                      <Route path="/" element={<Home flipState={flipState} />} />
+                      <Route path="/toplists" element={<TopCharts flipState={flipState} />} />
+                      <Route path="/userguide" element={<UserGuide />} />
+                      <Route path="/bulkreviews" element={<BulkReviews flipState={flipState} />} />
+                      <Route path="/about" element={<About />} />
+                  </Routes>
+              </div>
             </ServiceHealthProvider>
         </ScraperProvider>
     );

@@ -1,11 +1,11 @@
 import React from 'react';
-import { Typography, Container, Divider, Box, Link } from '@mui/material';
+import { Typography, Container, Divider, Box, Link, IconButton } from '@mui/material';
 import { Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Paper, ToggleButton, ToggleButtonGroup } from '@mui/material'
 import Footer from '../components/Footer';
 import "../css/UserGuide.css";
-import { Android, Apple } from '@mui/icons-material';
-
+import { Android, Apple, ChevronLeft, ChevronRight } from '@mui/icons-material';
 const UserGuide = () => {
+    const [sidebarOpen, setSidebarOpen] = React.useState(true);
     const [selectedStore, setSelectedStore] = React.useState('PS')
     const handleChange = (event, newStore) => {
         setSelectedStore(newStore);
@@ -137,56 +137,93 @@ const UserGuide = () => {
         )
     }
 
+    const tocLinkSx = {
+        color: 'inherit',
+        textDecoration: 'none',
+        display: 'block',
+        '&:hover': { textDecoration: 'underline' },
+    };
+
     return (
 
-        <Container sx={{ marginTop: 7 }}>
+        <Container sx={{ marginTop: 7 }} maxWidth="lg">
             <div className="app-container">
                 <div className="content">
                     <Typography variant="h4" className="main-header">User Guide</Typography>
 
-                    <Typography variant="h4" className="section-header">Contents</Typography>
+                    <div className="user-guide-layout">
+                        <div className="user-guide-toc-cluster">
+                            <div className="user-guide-sidebar-rail">
+                                <IconButton
+                                    size="small"
+                                    onClick={() => setSidebarOpen((o) => !o)}
+                                    aria-expanded={sidebarOpen}
+                                    aria-controls={sidebarOpen ? 'user-guide-toc-list' : undefined}
+                                    aria-label={sidebarOpen ? 'Hide table of contents' : 'Show table of contents'}
+                                    className="user-guide-sidebar-toggle"
+                                >
+                                    {sidebarOpen ? <ChevronLeft fontSize="small" /> : <ChevronRight fontSize="small" />}
+                                </IconButton>
+                            </div>
+                            <nav
+                                className={`user-guide-sidebar${sidebarOpen ? '' : ' user-guide-sidebar--collapsed'}`}
+                                aria-label="Table of contents"
+                            >
+                                <Typography variant="h5" component="h2" className="toc-sidebar-title">
+                                    Contents
+                                </Typography>
+                            {sidebarOpen && (
+                            <ul id="user-guide-toc-list" className="toc-tree">
+                                <li className="toc-section">
+                                    <Link href="#SMAR_Background" sx={tocLinkSx} variant="subtitle1" className="toc-section-link" fontWeight={600}>
+                                        SMAR Background
+                                    </Link>
+                                    <ul className="toc-sublist">
+                                        <li>
+                                            <Link href="#SMAR_Study" sx={tocLinkSx} variant="body2">What is a SMAR Study?</Link>
+                                        </li>
+                                        <li>
+                                            <Link href="#Why_SMAR" sx={tocLinkSx} variant="body2">Why would I want to conduct an SMAR?</Link>
+                                        </li>
+                                    </ul>
+                                </li>
+                                <li className="toc-section">
+                                    <Link href="#SMAR_Tool_Usage" sx={tocLinkSx} variant="subtitle1" className="toc-section-link" fontWeight={600}>
+                                        SMAR Tool Usage
+                                    </Link>
+                                    <ul className="toc-sublist">
+                                        <li>
+                                            <Link href="#Keyword_Search" sx={tocLinkSx} variant="body2">Conducting a Keyword Search</Link>
+                                        </li>
+                                        <li>
+                                            <Link href="#TopLists_Search" sx={tocLinkSx} variant="body2">Conducting a Top Lists Search</Link>
+                                        </li>
+                                    </ul>
+                                </li>
+                                <li className="toc-section">
+                                    <Link href="#SMAR_Metadata_Breakdown" sx={tocLinkSx} variant="subtitle1" className="toc-section-link" fontWeight={600}>
+                                        SMAR Metadata Breakdown
+                                    </Link>
+                                    <ul className="toc-sublist">
+                                        <li>
+                                            <Link href="#App_Metadata" sx={tocLinkSx} variant="body2">App Metadata</Link>
+                                        </li>
+                                        <li>
+                                            <Link href="#Review_Metadata" sx={tocLinkSx} variant="body2">Review Metadata</Link>
+                                        </li>
+                                    </ul>
+                                </li>
+                                <li className="toc-section toc-section--leaf">
+                                    <Link href="#References" sx={tocLinkSx} variant="subtitle1" className="toc-section-link" fontWeight={600}>
+                                        References
+                                    </Link>
+                                </li>
+                            </ul>
+                            )}
+                            </nav>
+                        </div>
 
-                    <Link href="#SMAR_Background" variant="inherit" color="inherit" underline="hover">
-                        <Typography variant="h6">SMAR Background</Typography>
-                    </Link>
-
-                    <Link href="#SMAR_Study" variant="inherit" color="inherit" underline="hover">
-                        <Typography variant="body1" className="toc-first-subitem">What is a SMAR Study?</Typography>
-                    </Link>
-
-                    <Link href="#Why_SMAR" variant="inherit" color="inherit" underline="hover">
-                        <Typography variant="body1" className="toc-last-subitem">Why would I want to conduct an SMAR?</Typography>
-                    </Link>
-
-                    <Link href="#SMAR_Tool_Usage" variant="inherit" color="inherit" underline="hover">
-                        <Typography variant="h6">SMAR Tool Usage</Typography>
-                    </Link>
-
-                    <Link href="#Keyword_Search" variant="inherit" color="inherit" underline="hover">
-                        <Typography variant="body1" className="toc-first-subitem">Conducting a Keyword Search</Typography>
-                    </Link>
-
-                    <Link href="#TopLists_Search" variant="inherit" color="inherit" underline="hover">
-                        <Typography variant="body1" className="toc-last-subitem">Conducting a Top Lists Search</Typography>
-                    </Link>
-
-                    <Link href="#SMAR_Metadata_Breakdown" variant="inherit" color="inherit" underline="hover">
-                        <Typography variant="h6">SMAR Metadata Breakdown</Typography>
-                    </Link>
-
-                    <Link href="#App_Metadata" variant="inherit" color="inherit" underline="hover">
-                        <Typography variant="body1" className="toc-first-subitem">App Metadata</Typography>
-                    </Link>
-
-                    <Link href="#Review_Metadata" variant="inherit" color="inherit" underline="hover">
-                        <Typography variant="body1" className="toc-last-subitem">Review Metadata</Typography>
-                    </Link>
-
-                    <Link href="#References" variant="inherit" color="inherit" underline="hover">
-                        <Typography variant="h6">References</Typography>
-                    </Link>
-
-
+                        <div className="user-guide-main">
                     <br />
                     <Divider variant="li" />
                     <br />
@@ -245,7 +282,7 @@ const UserGuide = () => {
 
                     <Typography variant="h4" className="section-header" id="SMAR_Tool_Usage">SMAR Tool Usage</Typography>
 
-                    <Typography variant="body1" className="main-text">
+                    <Typography variant="body1" className="main-text" id="Keyword_Search">
                         The SMAR Tool is designed around the central search bar that allows
                         users to quickly retrieve a filtered list of applications from the Google Play Store in a certain country.
                     </Typography>
@@ -427,6 +464,8 @@ const UserGuide = () => {
                     <Typography variant="body1" className="refs">
                         [9] Rhonda Zwingerman, Michael Chaikof, and Claire Jones. 2020. A Critical Appraisal of Fertility and Menstrual Tracking Apps for the iPhone. Journal of obstetrics and gynaecology Canada: JOGC = Journal d’obstetrique et gynecologie du Canada: JOGC 42, 5: 583–590. hps://doi.org/10.1016/j.jogc.2019.09.023
                     </Typography>
+                        </div>
+                    </div>
                 </div>
                 <Footer />
             </div>
