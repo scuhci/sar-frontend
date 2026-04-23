@@ -5,7 +5,7 @@ import "../css/MobileScreen.css";
 const MobileScreen = () => {
   return (
     <div className="mobile-container">
-      <div className="mobile-header">SMAR is Unavailable on Mobile Devices</div>
+      <div className="mobile-header">SMAR is Unavailable on Mobile Devices.</div>
       <div className="mobile-text">
         It looks like you're on a mobile device. Please use a PC or laptop for
         the best experience. Our app is optimized for larger screens.
