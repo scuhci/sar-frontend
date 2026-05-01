@@ -84,7 +84,7 @@ const Home = ({ flipState }) => {
                             {selectedScraper === "Play Store"
                                 ? "Google Play"
                                 : "iOS App"}{" "}
-                            store.
+                            store
                         </Typography>
                     </div>
                     {showFullError ? (
