@@ -3,8 +3,12 @@ import "../../css/EndpointError.css";
 import { Typography, Box, Button } from "@mui/material";
 import ServiceError from "../../res/SMAR_Service_Error.png";
 import ReloadButton from "./ReloadButton";
+import { useScraper } from "../SelectedScraperProvider";
 
 const EndpointError = ({ endpointType, selectedScraper }) => {
+  const { setSelectedScraper } = useScraper();
+  const otherScraper = selectedScraper === "Play Store" ? "App Store" : "Play Store";
+
   return (
     <Box className="endpoint-error-container">
       <img src={ServiceError} alt="Service Error" />
@@ -37,11 +41,12 @@ const EndpointError = ({ endpointType, selectedScraper }) => {
               }}
               variant="contained"
               color="primary"
+              onClick={() => setSelectedScraper(otherScraper)}
             >
               <Typography sx={{ fontSize: 16, color:'#000000', fontWeight: 500}}>
-                {selectedScraper !== "Play Store"
-                  ? "SCRAPE PLAY STORE"
-                  : "SCRAPE APP STORE"}
+                {selectedScraper === "Play Store"
+                  ? "SCRAPE APP STORE"
+                  : "SCRAPE PLAY STORE"}
               </Typography>
             </Button>
 

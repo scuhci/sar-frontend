@@ -6,13 +6,12 @@
   background-color: #fdfdfd;
   border: 1px solid #e0e0e0;
   border-radius: 8px;
-  width: 706px;
-  height: 497;
+  width: 100%;
+  max-width: 706px;
   padding: 24px;
   margin: 32px auto;
   text-align: center;
-  padding: 10px
-
+  box-sizing: border-box;
 }
 
 .endpoint-error-container img {

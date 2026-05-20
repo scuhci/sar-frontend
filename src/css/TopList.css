@@ -22,6 +22,7 @@
 }
 
 .toplist-search-button{
-    width: 35%;
+    min-width: 120px;
     height: 55px;
+    white-space: nowrap;
 }
