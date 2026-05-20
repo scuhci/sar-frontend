@@ -4,13 +4,14 @@
   border: 1px solid #ED1010;
   border-radius: 6px;
   align-items: center;
-  width: 650px;
+  width: 100%;
+  max-width: 650px;
   height: 56px;
-  margin-top: 50px;
+  margin: 24px auto 0;
   justify-content: center;
 }
 
 .error-text {
   color: #ED1010;
-  font-size: 14;
+  font-size: 14px;
 }
