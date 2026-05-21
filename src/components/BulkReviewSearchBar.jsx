@@ -205,6 +205,17 @@ const BulkReviewSearchBar = ({ flipState, activeStep, setActiveStep }) => {
         }
         setDisplaySearchResults(newDisplaySearchResults);
         setIsLoading(false);
+        sessionStorage.setItem(
+            `bulk_review_cache_${selectedScraper}`,
+            JSON.stringify({
+                searchQuery,
+                displaySearchResults: newDisplaySearchResults,
+                appIds,
+                country,
+                sortValue,
+                activeStep: 1,
+            }),
+        );
         setActiveStep(1);
     };
 
@@ -236,8 +247,29 @@ const BulkReviewSearchBar = ({ flipState, activeStep, setActiveStep }) => {
     };
 
     useEffect(() => {
-        setDisplaySearchResults([]);
-    }, [selectedScraper]);
+        const cached = sessionStorage.getItem(`bulk_review_cache_${selectedScraper}`);
+        if (cached) {
+            try {
+                const data = JSON.parse(cached);
+                setSearchQuery(data.searchQuery ?? "");
+                setDisplaySearchResults(data.displaySearchResults ?? []);
+                setAppIds(data.appIds ?? []);
+                setCountry(data.country ?? "US");
+                setSortValue(data.sortValue ?? sortOptions[0]);
+                if (data.activeStep !== undefined) setActiveStep(data.activeStep);
+            } catch {
+                setDisplaySearchResults([]);
+                setActiveStep(0);
+            }
+        } else {
+            setDisplaySearchResults([]);
+            setSearchQuery("");
+            setAppIds([]);
+            setCountry("US");
+            setSortValue(sortOptions[0]);
+            setActiveStep(0);
+        }
+    }, [selectedScraper, setActiveStep]);
 
     // Get total number of reviews to be scraped using limit of 10,000 reviews per app
     const totalReviewCount = rows.reduce((sum, row) => (sum += Math.min(row.reviewsCount, 10000)), 0);
