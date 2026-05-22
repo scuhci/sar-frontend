@@ -79,7 +79,7 @@ const Home = ({ flipState }) => {
                         </Typography>
 
                         <Typography variant="p" className="home-text">
-                            A tool for academic researchers to scrape data about mobile
+                            A tool for academic researchers to scrape review data about mobile
                             apps from the{" "}
                             {selectedScraper === "Play Store"
                                 ? "Google Play"
