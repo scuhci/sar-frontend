@@ -13,6 +13,11 @@ import Link from "@mui/material/Link";
 import { useScraper } from "../components/SelectedScraperProvider";
 import filterCsvByAppIds from "../utils/filterCsvByAppIds";
 import {
+    getOrderedRowIds,
+    getPaginatedRowIds,
+    handlePageScopedRowSelectionChange,
+} from "../utils/getPaginatedRowIds";
+import {
     MOCK_SEARCH_RESULTS_ENABLED,
     MOCK_SEARCH_RESULTS,
     MOCK_SEARCH_QUERY,
@@ -50,6 +55,8 @@ const SearchBar = ({ flipState, reviewsDown = false }) => {
 
     const [displayPermissions, setDisplayPermissions] = useState(false);
     const [rowSelectionModel, setRowSelectionModel] = useState([]);
+    const [paginationModel, setPaginationModel] = useState({ page: 0, pageSize: 5 });
+    const [sortModel, setSortModel] = useState([]);
 
     const rows =
         displayPermissions && selectedScraper === "Play Store"
@@ -169,6 +176,12 @@ const SearchBar = ({ flipState, reviewsDown = false }) => {
         setIncludePermissions(!includePermissions);
     };
 
+    const handleRowSelectionModelChange = (newSelection) => {
+        const allRowIds = getOrderedRowIds(rows, sortModel);
+        const pageRowIds = getPaginatedRowIds(allRowIds, paginationModel);
+        setRowSelectionModel(handlePageScopedRowSelectionChange(newSelection, allRowIds, pageRowIds));
+    };
+
     const handleDownloadAllResults = async () => {
         try {
             const downloadCount = rowSelectionModel.length > 0 ? rowSelectionModel.length : totalCount;
@@ -261,6 +274,7 @@ const SearchBar = ({ flipState, reviewsDown = false }) => {
 
     useEffect(() => {
         setRowSelectionModel([]);
+        setPaginationModel({ page: 0, pageSize: 5 });
     }, [searchResults]);
 
     return (
@@ -349,12 +363,16 @@ const SearchBar = ({ flipState, reviewsDown = false }) => {
                                     paginationModel: { pageSize: 5 },
                                 },
                             }}
+                            paginationModel={paginationModel}
+                            onPaginationModelChange={setPaginationModel}
+                            sortModel={sortModel}
+                            onSortModelChange={setSortModel}
                             pageSizeOptions={[5, 10, 25]}
                             disableColumnSelector
                             getRowId={(row) => row.appId}
                             {...dataGridSelectionProps}
                             rowSelectionModel={rowSelectionModel}
-                            onRowSelectionModelChange={(newSelection) => setRowSelectionModel(newSelection)}
+                            onRowSelectionModelChange={handleRowSelectionModelChange}
                         />
                         <div className="download-button-container">
                             <Button

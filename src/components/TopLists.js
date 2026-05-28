@@ -35,6 +35,11 @@ import LoadingTopLists from "./LoadingTopLists";
 import NoResults from "./NoResults";
 import { useScraper } from "../components/SelectedScraperProvider";
 import filterCsvByAppIds from "../utils/filterCsvByAppIds";
+import {
+    getOrderedRowIds,
+    getPaginatedRowIds,
+    handlePageScopedRowSelectionChange,
+} from "../utils/getPaginatedRowIds";
 
 // For the checkbox
 import FormGroup from "@mui/material/FormGroup";
@@ -88,6 +93,8 @@ const TopLists = ({ flipState }) => {
     const [downloadQuery, setDownloadQuery] = useState("TOP_FREEUS");
     const [fullQuery, setFullQuery] = useState(["Top Free"]);
     const [rowSelectionModel, setRowSelectionModel] = useState([]);
+    const [paginationModel, setPaginationModel] = useState({ page: 0, pageSize: 5 });
+    const [sortModel, setSortModel] = useState([{ field: "reviewsCount", sort: "desc" }]);
 
     const location = useLocation();
     //const navigate = useNavigate();
@@ -127,6 +134,7 @@ const TopLists = ({ flipState }) => {
 
     useEffect(() => {
         setRowSelectionModel([]);
+        setPaginationModel({ page: 0, pageSize: 5 });
     }, [searchResults]);
 
     const rows =
@@ -182,6 +190,12 @@ const TopLists = ({ flipState }) => {
                   reviewsCount: application.reviews,
                   reviews: [application.reviews, application.appId, country],
               }));
+
+    const handleRowSelectionModelChange = (newSelection) => {
+        const allRowIds = getOrderedRowIds(rows, sortModel);
+        const pageRowIds = getPaginatedRowIds(allRowIds, paginationModel);
+        setRowSelectionModel(handlePageScopedRowSelectionChange(newSelection, allRowIds, pageRowIds));
+    };
 
     const handleCategoryChange = (event) => {
         if (event.target) {
@@ -538,12 +552,16 @@ const TopLists = ({ flipState }) => {
                                         sortModel: [{ field: "reviewsCount", sort: "desc" }],
                                     },
                                 }}
+                                paginationModel={paginationModel}
+                                onPaginationModelChange={setPaginationModel}
+                                sortModel={sortModel}
+                                onSortModelChange={setSortModel}
                                 pageSizeOptions={[5, 10, 25]}
                                 disableColumnSelector
                                 getRowId={(row) => row.appId}
                                 {...dataGridSelectionProps}
                                 rowSelectionModel={rowSelectionModel}
-                                onRowSelectionModelChange={(newSelection) => setRowSelectionModel(newSelection)}
+                                onRowSelectionModelChange={handleRowSelectionModelChange}
                             />
                             <div className="download-button-container">
                                 <Button
