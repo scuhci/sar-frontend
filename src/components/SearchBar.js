@@ -6,7 +6,7 @@ import "../css/SearchBar.css";
 import Loading from "./Loading";
 import ExampleSearches from "./ExampleSearches";
 import ExampleTopCharts from "./ExampleTopCharts";
-import { appStoreColumns, columns, playStoreColumns, withSelectionColumn } from "../constants/columns";
+import { appStoreColumns, columns, playStoreColumns, withSelectionColumn, dataGridSelectionProps } from "../constants/columns";
 import { permissionColumns } from "../constants/permissionColumns";
 import { gplayCountries } from "../constants/countryCodes";
 import Link from "@mui/material/Link";
@@ -352,10 +352,9 @@ const SearchBar = ({ flipState, reviewsDown = false }) => {
                             pageSizeOptions={[5, 10, 25]}
                             disableColumnSelector
                             getRowId={(row) => row.appId}
-                            checkboxSelection
+                            {...dataGridSelectionProps}
                             rowSelectionModel={rowSelectionModel}
                             onRowSelectionModelChange={(newSelection) => setRowSelectionModel(newSelection)}
-                            disableRowSelectionOnClick
                         />
                         <div className="download-button-container">
                             <Button

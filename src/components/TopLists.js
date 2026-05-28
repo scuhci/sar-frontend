@@ -29,7 +29,7 @@ import {
 } from "../constants/topListCategories";
 import { gplayCountries, iosCountries } from "../constants/countryCodes";
 import axios from "axios";
-import { columns, playStoreColumns, appStoreColumns, withSelectionColumn } from "../constants/columns";
+import { columns, playStoreColumns, appStoreColumns, withSelectionColumn, dataGridSelectionProps } from "../constants/columns";
 import { permissionColumns } from "../constants/permissionColumns";
 import LoadingTopLists from "./LoadingTopLists";
 import NoResults from "./NoResults";
@@ -541,10 +541,9 @@ const TopLists = ({ flipState }) => {
                                 pageSizeOptions={[5, 10, 25]}
                                 disableColumnSelector
                                 getRowId={(row) => row.appId}
-                                checkboxSelection
+                                {...dataGridSelectionProps}
                                 rowSelectionModel={rowSelectionModel}
                                 onRowSelectionModelChange={(newSelection) => setRowSelectionModel(newSelection)}
-                                disableRowSelectionOnClick
                             />
                             <div className="download-button-container">
                                 <Button

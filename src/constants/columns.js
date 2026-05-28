@@ -7,10 +7,18 @@ import DownloadReviews from "../components/DownloadReviews";
 
 // Row selection checkboxes are rendered by DataGrid's checkboxSelection prop,
 // placed to the left of Icon (the first data column in fieldNames).
+
+// Select-all applies to the current page only; download-all uses no selection
 export const selectionColumnProps = {
   width: 52,
   minWidth: 52,
   maxWidth: 52,
+};
+
+export const dataGridSelectionProps = {
+  checkboxSelection: true,
+  checkboxSelectionVisibleOnly: true,
+  disableRowSelectionOnClick: true,
 };
 
 export const withSelectionColumn = (dataColumns) => [
