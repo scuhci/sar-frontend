@@ -2,7 +2,21 @@ import React from "react";
 import Avatar from "@mui/material/Avatar";
 import Button from "@mui/material/Button";
 import { Tooltip } from "@mui/material";
+import { GRID_CHECKBOX_SELECTION_COL_DEF } from "@mui/x-data-grid";
 import DownloadReviews from "../components/DownloadReviews";
+
+// Row selection checkboxes are rendered by DataGrid's checkboxSelection prop,
+// placed to the left of Icon (the first data column in fieldNames).
+export const selectionColumnProps = {
+  width: 52,
+  minWidth: 52,
+  maxWidth: 52,
+};
+
+export const withSelectionColumn = (dataColumns) => [
+  { ...GRID_CHECKBOX_SELECTION_COL_DEF, ...selectionColumnProps },
+  ...dataColumns,
+];
 // Map of field names to header names
 // Keeps track of fields where the header name is distinct from the field name
 // Used to generate renderHeader attribute
@@ -276,7 +290,7 @@ Object.keys(newFieldNames).forEach((field) => {
   if (index < appStoreColumns.length) {
     appStoreColumns.splice(index, 0, newColumn); // Insert at the specified index
   } else {
-    appStoreColumns[index] = newColumn; // Add at the end if index exceeds current length
+    appStoreColumns.push(newColumn); // Append when index exceeds current length
   }
 });
 

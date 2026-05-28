@@ -29,11 +29,12 @@ import {
 } from "../constants/topListCategories";
 import { gplayCountries, iosCountries } from "../constants/countryCodes";
 import axios from "axios";
-import { columns, playStoreColumns, appStoreColumns } from "../constants/columns";
+import { columns, playStoreColumns, appStoreColumns, withSelectionColumn } from "../constants/columns";
 import { permissionColumns } from "../constants/permissionColumns";
 import LoadingTopLists from "./LoadingTopLists";
 import NoResults from "./NoResults";
 import { useScraper } from "../components/SelectedScraperProvider";
+import filterCsvByAppIds from "../utils/filterCsvByAppIds";
 
 // For the checkbox
 import FormGroup from "@mui/material/FormGroup";
@@ -86,6 +87,7 @@ const TopLists = ({ flipState }) => {
     const [includePermissions, setIncludePermissions] = useState(false);
     const [downloadQuery, setDownloadQuery] = useState("TOP_FREEUS");
     const [fullQuery, setFullQuery] = useState(["Top Free"]);
+    const [rowSelectionModel, setRowSelectionModel] = useState([]);
 
     const location = useLocation();
     //const navigate = useNavigate();
@@ -122,6 +124,10 @@ const TopLists = ({ flipState }) => {
             setCollection(location.state.collectionState);
         }
     }, [location.state]);
+
+    useEffect(() => {
+        setRowSelectionModel([]);
+    }, [searchResults]);
 
     const rows =
         displayPermissions && selectedScraper === "Play Store"
@@ -299,6 +305,8 @@ const TopLists = ({ flipState }) => {
 
     const handleDownloadAllResults = async () => {
         try {
+            const downloadCount = rowSelectionModel.length > 0 ? rowSelectionModel.length : totalCount;
+
             const response = await axios.get(
                 selectedScraper === "Play Store"
                     ? `/api/download-top-csv?query=${downloadQuery}&includePermissions=${includePermissions}`
@@ -313,13 +321,13 @@ const TopLists = ({ flipState }) => {
 
             const relog_response = await axios.get(
                 selectedScraper === "Play Store"
-                    ? `/api/download-top-relog?collection=${fullQuery[0]}&category=${fullQuery[1]}&country=${fullQuery[2]}&includePermissions=${includePermissions}&totalCount=${totalCount}`
+                    ? `/api/download-top-relog?collection=${fullQuery[0]}&category=${fullQuery[1]}&country=${fullQuery[2]}&includePermissions=${includePermissions}&totalCount=${downloadCount}`
                     : `/ios/download-top-relog?collection=${fullQuery[0]}&category=${fullQuery[1]}&country=${
                           fullQuery[2]
                       }&device=${getNameByCode(
                           iosDevices,
                           device,
-                      )}&includePermissions=${includePermissions}&totalCount=${totalCount}`,
+                      )}&includePermissions=${includePermissions}&totalCount=${downloadCount}`,
                 {
                     responseType: "blob", //handling the binary data
                     headers: {
@@ -342,8 +350,10 @@ const TopLists = ({ flipState }) => {
             const filename_relog = filename.slice(0, -4) + "_relog.txt";
             const filename_zip = filename.slice(0, -4) + ".zip";
             console.log(`Relog filename from header: ${filename_relog}`);
-            // Create a URL from the blob
-            const csv_file = new Blob([response.data]);
+            const csv_file =
+                rowSelectionModel.length > 0
+                    ? await filterCsvByAppIds(response.data, rowSelectionModel, false)
+                    : new Blob([response.data]);
             const relog_file = new Blob([relog_response.data]);
             const zip = new JSZip();
             zip.file(filename, csv_file);
@@ -513,13 +523,13 @@ const TopLists = ({ flipState }) => {
                             {/** Automaticaly sort by review count */}
                             <DataGrid
                                 rows={rows}
-                                columns={
+                                columns={withSelectionColumn(
                                     selectedScraper === "Play Store"
                                         ? displayPermissions
                                             ? Array.prototype.concat(columns, permissionColumns)
                                             : playStoreColumns
-                                        : appStoreColumns
-                                }
+                                        : appStoreColumns,
+                                )}
                                 initialState={{
                                     pagination: {
                                         paginationModel: { pageSize: 5 },
@@ -531,6 +541,9 @@ const TopLists = ({ flipState }) => {
                                 pageSizeOptions={[5, 10, 25]}
                                 disableColumnSelector
                                 getRowId={(row) => row.appId}
+                                checkboxSelection
+                                rowSelectionModel={rowSelectionModel}
+                                onRowSelectionModelChange={(newSelection) => setRowSelectionModel(newSelection)}
                                 disableRowSelectionOnClick
                             />
                             <div className="download-button-container">
@@ -540,7 +553,9 @@ const TopLists = ({ flipState }) => {
                                     onClick={handleDownloadAllResults}
                                     className="download-button"
                                 >
-                                    Download ({totalCount} Results + Reproducibility Log as ZIP)
+                                    {rowSelectionModel.length > 0
+                                        ? `Download (${rowSelectionModel.length} Selected + Reproducibility Log as ZIP)`
+                                        : `Download (${totalCount} Results + Reproducibility Log as ZIP)`}
                                 </Button>
                             </div>
                         </div>

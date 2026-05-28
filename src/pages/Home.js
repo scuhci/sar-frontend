@@ -14,6 +14,7 @@ import { useScraper } from "../components/SelectedScraperProvider";
 import Footer from "../components/Footer";
 import EndpointError from "../components/ErrorStates/EndpointError";
 import { useServiceHealthContext } from "../components/ServiceHealthProvider";
+import { MOCK_SEARCH_RESULTS_ENABLED } from "../constants/mockSearchResults";
 
 const Home = ({ flipState }) => {
     // State for choosing Play Store / iOS App Store
@@ -87,7 +88,7 @@ const Home = ({ flipState }) => {
                             store
                         </Typography>
                     </div>
-                    {showFullError ? (
+                    {showFullError && !MOCK_SEARCH_RESULTS_ENABLED ? (
                         <EndpointError
                             endpointType={"Scrape"}
                             selectedScraper={selectedScraper}
