@@ -363,7 +363,7 @@ const SearchBar = ({ flipState, reviewsDown = false }) => {
                                 color="primary"
                                 onClick={handleDownloadAllResults}
                                 className="download-button"
-                                disabled={MOCK_SEARCH_RESULTS_ENABLED}
+                                disabled={MOCK_SEARCH_RESULTS_ENABLED && !fixedSearchQuery}
                             >
                                 {rowSelectionModel.length > 0
                                     ? `Download (${rowSelectionModel.length} Selected + Reproducibility Log as ZIP)`
