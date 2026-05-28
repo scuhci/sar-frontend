@@ -12,10 +12,24 @@ import { Android, Apple } from "@mui/icons-material";
 
 // import { useLocation, useNavigate } from "react-router-dom";
 import { useScraper } from "../components/SelectedScraperProvider";
+import ReviewsError from "../components/ErrorStates/ReviewsError";
+import EndpointError from "../components/ErrorStates/EndpointError";
+import { useServiceHealthContext } from "../components/ServiceHealthProvider";
 
 const TopCharts = ({ flipState }) => {
     // const [selectedScraper, setSelectedScraper] = React.useState("Play Store");
     const { selectedScraper, setSelectedScraper } = useScraper();
+
+    // Service health — decides whether to show the full error state,
+    // the reviews banner, or the normal UI.
+    const { isListDown, isReviewsDown, isUnhealthy, loading: healthLoading } =
+        useServiceHealthContext();
+
+    // Show the full error state when the list service (or whole scraper) is down
+    const showFullError = !healthLoading && (isListDown || isUnhealthy);
+
+    // Show the reviews warning banner when reviews is down but list is still up
+    const showReviewsBanner = !healthLoading && isReviewsDown && !showFullError;
 
     // Should be an undefined object if it's on a laptop
     const userAgent = new UAParser().getDevice();
@@ -70,7 +84,6 @@ const TopCharts = ({ flipState }) => {
                                 BETA
                             </Chip>
                         </Typography>
-
                         <Typography variant="p" className="home-text">
                             Fetch top charts for different countries, collections, and
                             categories for the{" "}
@@ -79,8 +92,16 @@ const TopCharts = ({ flipState }) => {
                                 : "iOS App"}{" "}
                             store.
                         </Typography>
+                        {showReviewsBanner && <ReviewsError />}
                     </div>
-                    <TopLists flipState={flipState} selectedScraper={selectedScraper} />
+                    {showFullError ? (
+                        <EndpointError
+                            endpointType={"TopCharts"}
+                            selectedScraper={selectedScraper}
+                        />
+                    ) : (
+                        <TopLists flipState={flipState} selectedScraper={selectedScraper} />
+                    )}
                 </div>
                 <Citation />
                 <Footer/>

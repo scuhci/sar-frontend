@@ -6,11 +6,23 @@ import "../css/SearchBar.css";
 import Loading from "./Loading";
 import ExampleSearches from "./ExampleSearches";
 import ExampleTopCharts from "./ExampleTopCharts";
-import { appStoreColumns, columns, playStoreColumns } from "../constants/columns";
+import { appStoreColumns, columns, playStoreColumns, withSelectionColumn, dataGridSelectionProps } from "../constants/columns";
 import { permissionColumns } from "../constants/permissionColumns";
 import { gplayCountries } from "../constants/countryCodes";
 import Link from "@mui/material/Link";
 import { useScraper } from "../components/SelectedScraperProvider";
+import filterCsvByAppIds from "../utils/filterCsvByAppIds";
+import {
+    getOrderedRowIds,
+    getPaginatedRowIds,
+    handlePageScopedRowSelectionChange,
+} from "../utils/getPaginatedRowIds";
+import {
+    MOCK_SEARCH_RESULTS_ENABLED,
+    MOCK_SEARCH_RESULTS,
+    MOCK_SEARCH_QUERY,
+    MOCK_TOTAL_COUNT,
+} from "../constants/mockSearchResults";
 
 // For the checkbox
 import FormGroup from "@mui/material/FormGroup";
@@ -22,11 +34,12 @@ import Stack from "@mui/material/Stack";
 import InfoIcon from "@mui/icons-material/Info";
 import { Tooltip } from "@mui/material";
 import Dropdown from "./Dropdown";
+import ReviewsError from "./ErrorStates/ReviewsError";
 
 // zip
 let JSZip = require("jszip");
 
-const SearchBar = ({ flipState }) => {
+const SearchBar = ({ flipState, reviewsDown = false }) => {
     const { selectedScraper } = useScraper();
     const [searchQuery, setSearchQuery] = useState("");
     const [resultsText, setResultsText] = useState("");
@@ -41,6 +54,9 @@ const SearchBar = ({ flipState }) => {
     const sampleSearch = ["medication reminders", "self-care", "smartphone addiction"];
 
     const [displayPermissions, setDisplayPermissions] = useState(false);
+    const [rowSelectionModel, setRowSelectionModel] = useState([]);
+    const [paginationModel, setPaginationModel] = useState({ page: 0, pageSize: 5 });
+    const [sortModel, setSortModel] = useState([]);
 
     const rows =
         displayPermissions && selectedScraper === "Play Store"
@@ -172,8 +188,16 @@ const SearchBar = ({ flipState }) => {
         setIncludePermissions(!includePermissions);
     };
 
+    const handleRowSelectionModelChange = (newSelection) => {
+        const allRowIds = getOrderedRowIds(rows, sortModel);
+        const pageRowIds = getPaginatedRowIds(allRowIds, paginationModel);
+        setRowSelectionModel(handlePageScopedRowSelectionChange(newSelection, allRowIds, pageRowIds));
+    };
+
     const handleDownloadAllResults = async () => {
         try {
+            const downloadCount = rowSelectionModel.length > 0 ? rowSelectionModel.length : totalCount;
+
             const response = await axios.get(
                 selectedScraper === "Play Store"
                     ? `/api/download-csv?query=${fixedSearchQuery}&includePermissions=${includePermissions}&countryCode=${country}`
@@ -188,8 +212,8 @@ const SearchBar = ({ flipState }) => {
 
             const relog_response = await axios.get(
                 selectedScraper === "Play Store"
-                    ? `/api/download-relog?query=${fixedSearchQuery}&includePermissions=${includePermissions}&totalCount=${totalCount}&countryCode=${country}&store=${"Google Play Store"}`
-                    : `/ios/download-relog?query=${fixedSearchQuery}&totalCount=${totalCount}&countryCode=${country}&store=${"iOS App Store"}`, // Change to URL for app store scraper
+                    ? `/api/download-relog?query=${fixedSearchQuery}&includePermissions=${includePermissions}&totalCount=${downloadCount}&countryCode=${country}&store=${"Google Play Store"}`
+                    : `/ios/download-relog?query=${fixedSearchQuery}&totalCount=${downloadCount}&countryCode=${country}&store=${"iOS App Store"}`, // Change to URL for app store scraper
                 {
                     responseType: "blob", //handling the binary data
                     headers: {
@@ -213,10 +237,12 @@ const SearchBar = ({ flipState }) => {
             const filename_relog = filename.slice(0, -4) + "_relog.txt";
             const filename_zip = filename.slice(0, -4) + ".zip";
             console.log(`Relog filename from header: ${filename_relog}`);
-            // Create a URL from the blob
-            const csv_file = new Blob(["\ufeff", response.data], {
-                type: "text/csv;charset=utf-8",
-            });
+            const csv_file =
+                rowSelectionModel.length > 0
+                    ? await filterCsvByAppIds(response.data, rowSelectionModel)
+                    : new Blob(["\ufeff", response.data], {
+                          type: "text/csv;charset=utf-8",
+                      });
             const relog_file = new Blob(["\ufeff", relog_response.data], {
                 type: "text/plain;charset=utf-8",
             });
@@ -268,7 +294,22 @@ const SearchBar = ({ flipState }) => {
             setFixedSearchQuery("");
             setCountry("US");
         }
+        if (!selectedScraper) {
+            return;
+        }
+        if (MOCK_SEARCH_RESULTS_ENABLED) {
+            setSearchResults(MOCK_SEARCH_RESULTS);
+            setResultsText(MOCK_SEARCH_QUERY);
+            setTotalCount(MOCK_TOTAL_COUNT);
+            return;
+        }
+        setSearchResults([]);
     }, [selectedScraper]);
+
+    useEffect(() => {
+        setRowSelectionModel([]);
+        setPaginationModel({ page: 0, pageSize: 5 });
+    }, [searchResults]);
 
     return (
         <div className="search-bar-container">
@@ -335,7 +376,8 @@ const SearchBar = ({ flipState }) => {
                 time={queryTime} // this + other combos will be used as a unique identifier for queries
                 selectedScraper={selectedScraper}
             />
-            {searchResults.length > 0 ? (
+            {reviewsDown && <ReviewsError />}
+            {searchResults.length > 0 && selectedScraper ? (
                 <>
                     <div className="search-result-text">
                         <Typography variant="h5">Results for "{resultsText}"</Typography>
@@ -343,22 +385,28 @@ const SearchBar = ({ flipState }) => {
                     <div className="data-grid-container">
                         <DataGrid
                             rows={rows}
-                            columns={
+                            columns={withSelectionColumn(
                                 selectedScraper === "Play Store"
                                     ? displayPermissions
                                         ? Array.prototype.concat(columns, permissionColumns)
                                         : playStoreColumns
-                                    : appStoreColumns
-                            }
+                                    : appStoreColumns,
+                            )}
                             initialState={{
                                 pagination: {
                                     paginationModel: { pageSize: 5 },
                                 },
                             }}
+                            paginationModel={paginationModel}
+                            onPaginationModelChange={setPaginationModel}
+                            sortModel={sortModel}
+                            onSortModelChange={setSortModel}
                             pageSizeOptions={[5, 10, 25]}
                             disableColumnSelector
                             getRowId={(row) => row.appId}
-                            disableRowSelectionOnClick
+                            {...dataGridSelectionProps}
+                            rowSelectionModel={rowSelectionModel}
+                            onRowSelectionModelChange={handleRowSelectionModelChange}
                         />
                         <div className="download-button-container">
                             <Button
@@ -366,8 +414,11 @@ const SearchBar = ({ flipState }) => {
                                 color="primary"
                                 onClick={handleDownloadAllResults}
                                 className="download-button"
+                                disabled={MOCK_SEARCH_RESULTS_ENABLED && !fixedSearchQuery}
                             >
-                                Download ({totalCount} Results + Reproducibility Log as ZIP)
+                                {rowSelectionModel.length > 0
+                                    ? `Download (${rowSelectionModel.length} Selected + Reproducibility Log as ZIP)`
+                                    : `Download (${totalCount} Results + Reproducibility Log as ZIP)`}
                             </Button>
                         </div>
                     </div>
