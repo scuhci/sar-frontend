@@ -4,8 +4,9 @@
 <head>
   <meta charset="utf-8" />
   <!-- Add support for play store icons -->
+  <!-- Updated CSP to allow Google Analytics -->
   <meta http-equiv="Content-Security-Policy"
-    content="default-src 'self'; style-src 'self' 'unsafe-inline'; img-src 'self' data: blob: https://play-lh.googleusercontent.com https://is1-ssl.mzstatic.com https://smar-team.s3.us-west-1.amazonaws.com; font-src 'self' data:; script-src 'self'" />
+    content="default-src 'self'; style-src 'self' 'unsafe-inline'; img-src 'self' data: blob: https://play-lh.googleusercontent.com https://is1-ssl.mzstatic.com https://smar-team.s3.us-west-1.amazonaws.com https://www.google-analytics.com; font-src 'self' data:; script-src 'self' 'unsafe-inline' https://www.googletagmanager.com https://www.google-analytics.com; connect-src 'self' https://www.google-analytics.com https://analytics.google.com;" />
   <link rel="icon" href="%PUBLIC_URL%/favicon.png" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <meta name="theme-color" content="#000000" />
@@ -27,6 +28,16 @@
       Learn how to configure a non-root public URL by running `npm run build`.
     -->
   <title>SMAR</title>
+
+  <!-- Google tag (gtag.js) -->
+  <script async src="https://www.googletagmanager.com/gtag/js?id=G-NE3RESV55L"></script>
+  <script>
+    window.dataLayer = window.dataLayer || [];
+    function gtag(){dataLayer.push(arguments);}
+    gtag('js', new Date());
+    gtag('config', 'G-NE3RESV55L');
+  </script>
+
 </head>
 
 <body>
