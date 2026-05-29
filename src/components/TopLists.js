@@ -350,6 +350,9 @@ const TopLists = ({ flipState }) => {
                     flipState();
                     setShowTable(true);
                     console.error("Error fetching top lists:", error);
+                    console.error("Response status:", error.response?.status);
+                    console.error("Response data:", error.response?.data);
+                    console.error("Response headers:", error.response?.headers);
                 }
                 setSearchResults([]);
                 setTotalCount(0);
