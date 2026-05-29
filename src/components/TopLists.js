@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { useLocation, useNavigate } from "react-router-dom";
+import { useLocation } from "react-router-dom";
 import "../css/TopList.css";
 import "../css/SearchBar.css";
 import { Select, FormControl, MenuItem, InputLabel, Typography, Button } from "@mui/material";
@@ -27,13 +27,19 @@ import {
     iosCategories_toppaidipadapplications,
     iosCategories_topgrossingipadapplications,
 } from "../constants/topListCategories";
-import { gplayCountries, iosCountries } from "../constants/countryCodes";
+import { gplayCountries } from "../constants/countryCodes";
 import axios from "axios";
-import { columns, playStoreColumns, appStoreColumns } from "../constants/columns";
+import { columns, playStoreColumns, appStoreColumns, withSelectionColumn, dataGridSelectionProps } from "../constants/columns";
 import { permissionColumns } from "../constants/permissionColumns";
 import LoadingTopLists from "./LoadingTopLists";
 import NoResults from "./NoResults";
 import { useScraper } from "../components/SelectedScraperProvider";
+import filterCsvByAppIds from "../utils/filterCsvByAppIds";
+import {
+    getOrderedRowIds,
+    getPaginatedRowIds,
+    handlePageScopedRowSelectionChange,
+} from "../utils/getPaginatedRowIds";
 
 // For the checkbox
 import FormGroup from "@mui/material/FormGroup";
@@ -44,6 +50,7 @@ import Stack from "@mui/material/Stack";
 //Tooltip
 import InfoIcon from "@mui/icons-material/Info";
 import { Tooltip } from "@mui/material";
+import ReloadButton from "./ErrorStates/ReloadButton";
 
 const iosCategoriesByCollection = {
     topmacapps: iosCategories_topmacapps,
@@ -85,42 +92,66 @@ const TopLists = ({ flipState }) => {
     const [includePermissions, setIncludePermissions] = useState(false);
     const [downloadQuery, setDownloadQuery] = useState("TOP_FREEUS");
     const [fullQuery, setFullQuery] = useState(["Top Free"]);
+    const [rowSelectionModel, setRowSelectionModel] = useState([]);
+    const [paginationModel, setPaginationModel] = useState({ page: 0, pageSize: 5 });
+    const [sortModel, setSortModel] = useState([{ field: "reviewsCount", sort: "desc" }]);
 
     const location = useLocation();
     //const navigate = useNavigate();
 
     useEffect(() => {
-        console.log(selectedScraper);
-        if (selectedScraper === "Play Store") {
-            setCollection("TOP_FREE");
-            setCategory("");
-            setCountry("US");
-        } else if (selectedScraper === "App Store") {
-            setCollection("topfreeapplications");
-            setCategory("");
-            setCountry("US");
-            setDevice("IOS");
-        }
-        setShowTable(false);
-    }, [selectedScraper]);
-
-    useEffect(() => {
-        if (selectedScraper === "App Store") {
-            if (device === "MAC") {
-                setCollection("topmacapps");
-            } else if (device === "IOS") {
+        const cached = sessionStorage.getItem(`toplists_cache_${selectedScraper}`);
+        if (cached) {
+            try {
+                const data = JSON.parse(cached);
+                setCollection(data.collection);
+                setDevice(data.device ?? "IOS");
+                setCategory(data.category ?? "");
+                setCountry(data.country ?? "US");
+                setSearchResults(data.searchResults ?? []);
+                setTotalCount(data.totalCount ?? 0);
+                setDisplayPermissions(data.displayPermissions ?? false);
+                setShowTable(data.showTable ?? false);
+                setDownloadQuery(data.downloadQuery ?? "TOP_FREEUS");
+                setFullQuery(data.fullQuery ?? ["Top Free"]);
+            } catch {
+                setShowTable(false);
+                if (selectedScraper === "Play Store") {
+                    setCollection("TOP_FREE");
+                    setCategory("");
+                    setCountry("US");
+                } else {
+                    setCollection("topfreeapplications");
+                    setCategory("");
+                    setCountry("US");
+                    setDevice("IOS");
+                }
+            }
+        } else {
+            setShowTable(false);
+            if (selectedScraper === "Play Store") {
+                setCollection("TOP_FREE");
+                setCategory("");
+                setCountry("US");
+            } else {
                 setCollection("topfreeapplications");
-            } else if (device === "IPAD") {
-                setCollection("topfreeipadapplications");
+                setCategory("");
+                setCountry("US");
+                setDevice("IOS");
             }
         }
-    }, [device, selectedScraper]);
+    }, [selectedScraper]);
 
     useEffect(() => {
         if (location.state && location.state.collectionState) {
             setCollection(location.state.collectionState);
         }
     }, [location.state]);
+
+    useEffect(() => {
+        setRowSelectionModel([]);
+        setPaginationModel({ page: 0, pageSize: 5 });
+    }, [searchResults]);
 
     const rows =
         displayPermissions && selectedScraper === "Play Store"
@@ -176,6 +207,12 @@ const TopLists = ({ flipState }) => {
                   reviews: [application.reviews, application.appId, country],
               }));
 
+    const handleRowSelectionModelChange = (newSelection) => {
+        const allRowIds = getOrderedRowIds(rows, sortModel);
+        const pageRowIds = getPaginatedRowIds(allRowIds, paginationModel);
+        setRowSelectionModel(handlePageScopedRowSelectionChange(newSelection, allRowIds, pageRowIds));
+    };
+
     const handleCategoryChange = (event) => {
         if (event.target) {
             setCategory(event.target.value);
@@ -197,7 +234,16 @@ const TopLists = ({ flipState }) => {
 
     const handleDeviceChange = (event) => {
         if (event.target) {
-            setDevice(event.target.value);
+            const newDevice = event.target.value;
+            setDevice(newDevice);
+            if (newDevice === "MAC") {
+                setCollection("topmacapps");
+            } else if (newDevice === "IOS") {
+                setCollection("topfreeapplications");
+            } else if (newDevice === "IPAD") {
+                setCollection("topfreeipadapplications");
+            }
+            setCategory("");
         }
     };
 
@@ -234,8 +280,32 @@ const TopLists = ({ flipState }) => {
         }
         const newAbortController = new AbortController();
         setAbortController(newAbortController);
-
         setIsLoading(true);
+
+        let newFullQuery, newDownloadQuery;
+        if (selectedScraper === "Play Store") {
+            newFullQuery = [
+                getNameByCode(gplayCollections, collection),
+                getNameByCode(gplayCategoriesByCollection[collection] ?? gplayCategories, category),
+                getNameByCode(gplayCountries, country),
+            ];
+            newDownloadQuery = collection.concat(category, country);
+        } else {
+            newFullQuery = [
+                getNameByCode(
+                    iosCollections.filter((item) => item.device === device).flatMap((item) => item.collections),
+                    collection,
+                ),
+                getNameByCode(iosCategoriesByCollection[collection] ?? iosCategories, category),
+                getNameByCode(gplayCountries, country),
+            ];
+            newDownloadQuery = collection.concat(
+                getIosCategoryByCode(iosCategoriesByCollection[collection] ?? iosCategories, category),
+                country,
+            );
+        }
+        setFullQuery(newFullQuery);
+        setDownloadQuery(newDownloadQuery);
 
         axios
             .get(
@@ -256,7 +326,21 @@ const TopLists = ({ flipState }) => {
                 setSearchResults(response.data.results);
                 setTotalCount(response.data.totalCount);
                 setIsLoading(false);
-                console.log("Top lists fetched successfully:", response.data);
+                sessionStorage.setItem(
+                    `toplists_cache_${selectedScraper}`,
+                    JSON.stringify({
+                        collection,
+                        device,
+                        category,
+                        country,
+                        searchResults: response.data.results,
+                        totalCount: response.data.totalCount,
+                        displayPermissions: includePermissions,
+                        showTable: true,
+                        downloadQuery: newDownloadQuery,
+                        fullQuery: newFullQuery,
+                    }),
+                );
             })
             .catch((error) => {
                 if (axios.isCancel(error)) {
@@ -273,35 +357,13 @@ const TopLists = ({ flipState }) => {
                 setSearchResults([]);
                 setTotalCount(0);
                 setIsLoading(false);
-                console.log(downloadQuery);
             });
-        if (selectedScraper === "Play Store") {
-                setFullQuery([
-                    getNameByCode(gplayCollections, collection),
-                    getNameByCode(gplayCategoriesByCollection[collection] ?? gplayCategories, category),  // ✅ Use filtered
-                    getNameByCode(gplayCountries, country),
-                ]);
-            setDownloadQuery(collection.concat(category, country));
-        } else {
-            setFullQuery([
-                getNameByCode(
-                    iosCollections.filter((item) => item.device === device).flatMap((item) => item.collections),
-                    collection,
-                ),
-                getNameByCode(iosCategoriesByCollection[collection] ?? iosCategories, category),
-                getNameByCode(gplayCountries, country),
-            ]);
-            setDownloadQuery(
-                collection.concat(
-                    getIosCategoryByCode(iosCategoriesByCollection[collection] ?? iosCategories, category),
-                    country,
-                ),
-            );
-        }
     };
 
     const handleDownloadAllResults = async () => {
         try {
+            const downloadCount = rowSelectionModel.length > 0 ? rowSelectionModel.length : totalCount;
+
             const response = await axios.get(
                 selectedScraper === "Play Store"
                     ? `/api/download-top-csv?query=${downloadQuery}&includePermissions=${includePermissions}`
@@ -316,13 +378,13 @@ const TopLists = ({ flipState }) => {
 
             const relog_response = await axios.get(
                 selectedScraper === "Play Store"
-                    ? `/api/download-top-relog?collection=${fullQuery[0]}&category=${fullQuery[1]}&country=${fullQuery[2]}&includePermissions=${includePermissions}&totalCount=${totalCount}`
+                    ? `/api/download-top-relog?collection=${fullQuery[0]}&category=${fullQuery[1]}&country=${fullQuery[2]}&includePermissions=${includePermissions}&totalCount=${downloadCount}`
                     : `/ios/download-top-relog?collection=${fullQuery[0]}&category=${fullQuery[1]}&country=${
                           fullQuery[2]
                       }&device=${getNameByCode(
                           iosDevices,
                           device,
-                      )}&includePermissions=${includePermissions}&totalCount=${totalCount}`,
+                      )}&includePermissions=${includePermissions}&totalCount=${downloadCount}`,
                 {
                     responseType: "blob", //handling the binary data
                     headers: {
@@ -345,8 +407,10 @@ const TopLists = ({ flipState }) => {
             const filename_relog = filename.slice(0, -4) + "_relog.txt";
             const filename_zip = filename.slice(0, -4) + ".zip";
             console.log(`Relog filename from header: ${filename_relog}`);
-            // Create a URL from the blob
-            const csv_file = new Blob([response.data]);
+            const csv_file =
+                rowSelectionModel.length > 0
+                    ? await filterCsvByAppIds(response.data, rowSelectionModel, false)
+                    : new Blob([response.data]);
             const relog_file = new Blob([relog_response.data]);
             const zip = new JSZip();
             zip.file(filename, csv_file);
@@ -516,13 +580,13 @@ const TopLists = ({ flipState }) => {
                             {/** Automaticaly sort by review count */}
                             <DataGrid
                                 rows={rows}
-                                columns={
+                                columns={withSelectionColumn(
                                     selectedScraper === "Play Store"
                                         ? displayPermissions
                                             ? Array.prototype.concat(columns, permissionColumns)
                                             : playStoreColumns
-                                        : appStoreColumns
-                                }
+                                        : appStoreColumns,
+                                )}
                                 initialState={{
                                     pagination: {
                                         paginationModel: { pageSize: 5 },
@@ -531,10 +595,16 @@ const TopLists = ({ flipState }) => {
                                         sortModel: [{ field: "reviewsCount", sort: "desc" }],
                                     },
                                 }}
+                                paginationModel={paginationModel}
+                                onPaginationModelChange={setPaginationModel}
+                                sortModel={sortModel}
+                                onSortModelChange={setSortModel}
                                 pageSizeOptions={[5, 10, 25]}
                                 disableColumnSelector
                                 getRowId={(row) => row.appId}
-                                disableRowSelectionOnClick
+                                {...dataGridSelectionProps}
+                                rowSelectionModel={rowSelectionModel}
+                                onRowSelectionModelChange={handleRowSelectionModelChange}
                             />
                             <div className="download-button-container">
                                 <Button
@@ -543,7 +613,9 @@ const TopLists = ({ flipState }) => {
                                     onClick={handleDownloadAllResults}
                                     className="download-button"
                                 >
-                                    Download ({totalCount} Results + Reproducibility Log as ZIP)
+                                    {rowSelectionModel.length > 0
+                                        ? `Download (${rowSelectionModel.length} Selected + Reproducibility Log as ZIP)`
+                                        : `Download (${totalCount} Results + Reproducibility Log as ZIP)`}
                                 </Button>
                             </div>
                         </div>
