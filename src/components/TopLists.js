@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { useLocation, useNavigate } from "react-router-dom";
+import { useLocation } from "react-router-dom";
 import "../css/TopList.css";
 import "../css/SearchBar.css";
 import { Select, FormControl, MenuItem, InputLabel, Typography, Button } from "@mui/material";
@@ -27,7 +27,7 @@ import {
     iosCategories_toppaidipadapplications,
     iosCategories_topgrossingipadapplications,
 } from "../constants/topListCategories";
-import { gplayCountries, iosCountries } from "../constants/countryCodes";
+import { gplayCountries } from "../constants/countryCodes";
 import axios from "axios";
 import { columns, playStoreColumns, appStoreColumns, withSelectionColumn, dataGridSelectionProps } from "../constants/columns";
 import { permissionColumns } from "../constants/permissionColumns";
@@ -100,31 +100,47 @@ const TopLists = ({ flipState }) => {
     //const navigate = useNavigate();
 
     useEffect(() => {
-        console.log(selectedScraper);
-        if (selectedScraper === "Play Store") {
-            setCollection("TOP_FREE");
-            setCategory("");
-            setCountry("US");
-        } else if (selectedScraper === "App Store") {
-            setCollection("topfreeapplications");
-            setCategory("");
-            setCountry("US");
-            setDevice("IOS");
-        }
-        setShowTable(false);
-    }, [selectedScraper]);
-
-    useEffect(() => {
-        if (selectedScraper === "App Store") {
-            if (device === "MAC") {
-                setCollection("topmacapps");
-            } else if (device === "IOS") {
+        const cached = sessionStorage.getItem(`toplists_cache_${selectedScraper}`);
+        if (cached) {
+            try {
+                const data = JSON.parse(cached);
+                setCollection(data.collection);
+                setDevice(data.device ?? "IOS");
+                setCategory(data.category ?? "");
+                setCountry(data.country ?? "US");
+                setSearchResults(data.searchResults ?? []);
+                setTotalCount(data.totalCount ?? 0);
+                setDisplayPermissions(data.displayPermissions ?? false);
+                setShowTable(data.showTable ?? false);
+                setDownloadQuery(data.downloadQuery ?? "TOP_FREEUS");
+                setFullQuery(data.fullQuery ?? ["Top Free"]);
+            } catch {
+                setShowTable(false);
+                if (selectedScraper === "Play Store") {
+                    setCollection("TOP_FREE");
+                    setCategory("");
+                    setCountry("US");
+                } else {
+                    setCollection("topfreeapplications");
+                    setCategory("");
+                    setCountry("US");
+                    setDevice("IOS");
+                }
+            }
+        } else {
+            setShowTable(false);
+            if (selectedScraper === "Play Store") {
+                setCollection("TOP_FREE");
+                setCategory("");
+                setCountry("US");
+            } else {
                 setCollection("topfreeapplications");
-            } else if (device === "IPAD") {
-                setCollection("topfreeipadapplications");
+                setCategory("");
+                setCountry("US");
+                setDevice("IOS");
             }
         }
-    }, [device, selectedScraper]);
+    }, [selectedScraper]);
 
     useEffect(() => {
         if (location.state && location.state.collectionState) {
@@ -218,7 +234,16 @@ const TopLists = ({ flipState }) => {
 
     const handleDeviceChange = (event) => {
         if (event.target) {
-            setDevice(event.target.value);
+            const newDevice = event.target.value;
+            setDevice(newDevice);
+            if (newDevice === "MAC") {
+                setCollection("topmacapps");
+            } else if (newDevice === "IOS") {
+                setCollection("topfreeapplications");
+            } else if (newDevice === "IPAD") {
+                setCollection("topfreeipadapplications");
+            }
+            setCategory("");
         }
     };
 
@@ -255,8 +280,32 @@ const TopLists = ({ flipState }) => {
         }
         const newAbortController = new AbortController();
         setAbortController(newAbortController);
-
         setIsLoading(true);
+
+        let newFullQuery, newDownloadQuery;
+        if (selectedScraper === "Play Store") {
+            newFullQuery = [
+                getNameByCode(gplayCollections, collection),
+                getNameByCode(gplayCategoriesByCollection[collection] ?? gplayCategories, category),
+                getNameByCode(gplayCountries, country),
+            ];
+            newDownloadQuery = collection.concat(category, country);
+        } else {
+            newFullQuery = [
+                getNameByCode(
+                    iosCollections.filter((item) => item.device === device).flatMap((item) => item.collections),
+                    collection,
+                ),
+                getNameByCode(iosCategoriesByCollection[collection] ?? iosCategories, category),
+                getNameByCode(gplayCountries, country),
+            ];
+            newDownloadQuery = collection.concat(
+                getIosCategoryByCode(iosCategoriesByCollection[collection] ?? iosCategories, category),
+                country,
+            );
+        }
+        setFullQuery(newFullQuery);
+        setDownloadQuery(newDownloadQuery);
 
         axios
             .get(
@@ -277,6 +326,21 @@ const TopLists = ({ flipState }) => {
                 setSearchResults(response.data.results);
                 setTotalCount(response.data.totalCount);
                 setIsLoading(false);
+                sessionStorage.setItem(
+                    `toplists_cache_${selectedScraper}`,
+                    JSON.stringify({
+                        collection,
+                        device,
+                        category,
+                        country,
+                        searchResults: response.data.results,
+                        totalCount: response.data.totalCount,
+                        displayPermissions: includePermissions,
+                        showTable: true,
+                        downloadQuery: newDownloadQuery,
+                        fullQuery: newFullQuery,
+                    }),
+                );
             })
             .catch((error) => {
                 if (axios.isCancel(error)) {
@@ -290,31 +354,7 @@ const TopLists = ({ flipState }) => {
                 setSearchResults([]);
                 setTotalCount(0);
                 setIsLoading(false);
-                console.log(downloadQuery);
             });
-        if (selectedScraper === "Play Store") {
-                setFullQuery([
-                    getNameByCode(gplayCollections, collection),
-                    getNameByCode(gplayCategoriesByCollection[collection] ?? gplayCategories, category),  // ✅ Use filtered
-                    getNameByCode(gplayCountries, country),
-                ]);
-            setDownloadQuery(collection.concat(category, country));
-        } else {
-            setFullQuery([
-                getNameByCode(
-                    iosCollections.filter((item) => item.device === device).flatMap((item) => item.collections),
-                    collection,
-                ),
-                getNameByCode(iosCategoriesByCollection[collection] ?? iosCategories, category),
-                getNameByCode(gplayCountries, country),
-            ]);
-            setDownloadQuery(
-                collection.concat(
-                    getIosCategoryByCode(iosCategoriesByCollection[collection] ?? iosCategories, category),
-                    country,
-                ),
-            );
-        }
     };
 
     const handleDownloadAllResults = async () => {
