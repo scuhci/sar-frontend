@@ -215,6 +215,7 @@ export const columns = fieldNames.map((fieldName) => ({
   renderHeader: renderHeader(fieldName),
   renderCell: renderCell(fieldName),
   minWidth: minWidth(fieldName),
+  ...(fieldName === "icon" ? { disableColumnMenu: true } : {}),
 }));
 
 // Named columns based on selected scraper being 'Play Store' or 'App Store'
