@@ -147,6 +147,18 @@ const SearchBar = ({ flipState, reviewsDown = false }) => {
                 setResultsText(term);
                 setTotalCount(response.data.totalCount);
                 setIsLoading(false);
+                sessionStorage.setItem(
+                    `search_cache_${selectedScraper}`,
+                    JSON.stringify({
+                        searchQuery: term,
+                        fixedSearchQuery: term,
+                        searchResults: response.data.results,
+                        resultsText: term,
+                        totalCount: response.data.totalCount,
+                        country,
+                        displayPermissions: includePermissions,
+                    }),
+                );
             })
             .catch((error) => {
                 if (axios.isCancel(error)) {
@@ -258,6 +270,28 @@ const SearchBar = ({ flipState, reviewsDown = false }) => {
     };
 
     useEffect(() => {
+        const cached = sessionStorage.getItem(`search_cache_${selectedScraper}`);
+        if (cached) {
+            try {
+                const data = JSON.parse(cached);
+                setSearchQuery(data.searchQuery ?? "");
+                setFixedSearchQuery(data.fixedSearchQuery ?? "");
+                setSearchResults(data.searchResults ?? []);
+                setResultsText(data.resultsText ?? "");
+                setTotalCount(data.totalCount ?? 0);
+                setCountry(data.country ?? "US");
+                setDisplayPermissions(data.displayPermissions ?? false);
+            } catch {
+                setSearchResults([]);
+            }
+        } else {
+            setSearchResults([]);
+            setResultsText("");
+            setTotalCount(0);
+            setSearchQuery("");
+            setFixedSearchQuery("");
+            setCountry("US");
+        }
         if (!selectedScraper) {
             return;
         }

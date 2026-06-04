@@ -47,9 +47,11 @@ This project was made with love at the [Santa Clara University HCI Lab](https://
 1. Clone down the `sar-frontend` and `SAR-backend` repositories to your local machine.
 
 2. To use our stable, deployed branch: `git checkout production` in the frontend repository.  You will need to open 2 backend terminals, 1 with `git checkout gplay-backend` and 1 with `git checkout ios-backend`. By default, the production frontend connects directly to the live SMAR backend. If you would like to run the backends locally, you will need to modify backend calls to go to your local machine rather than the live backend. A guide for this will be provided soon!
+   
+3. All Necessary Packages must be installed by typing ''
 
 4. To start `sar-backend` : Run `node index.js`
    
 5. To start `sar-ios-backend`: Run `node index.js`
 
-6. To start `sar-frontend` : Run `npm-start`
+6. To start `sar-frontend` : Run `npm start`
