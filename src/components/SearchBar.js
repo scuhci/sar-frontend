@@ -63,7 +63,6 @@ const SearchBar = ({ flipState, reviewsDown = false }) => {
             ? searchResults.map((application) => ({
                   ...application,
                   reviewsCount: application.reviews,
-                  reviews: [application.reviews, application.appId, application.country],
 
                   // PERMISSIONS
                   // All truncated to two(ish) most relevant words.'
@@ -109,7 +108,6 @@ const SearchBar = ({ flipState, reviewsDown = false }) => {
             : searchResults.map((application) => ({
                   ...application,
                   reviewsCount: application.reviews,
-                  reviews: [application.reviews, application.appId, application.country],
               }));
 
     const handleCountryChange = (newCountry) => {

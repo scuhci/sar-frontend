@@ -1,9 +1,6 @@
 import React from "react";
 import Avatar from "@mui/material/Avatar";
-import Button from "@mui/material/Button";
-import { Tooltip } from "@mui/material";
 import { GRID_CHECKBOX_SELECTION_COL_DEF } from "@mui/x-data-grid";
-import DownloadReviews from "../components/DownloadReviews";
 
 // Row selection checkboxes are rendered by DataGrid's checkboxSelection prop,
 // placed to the left of Icon (the first data column in fieldNames).
@@ -30,7 +27,6 @@ export const withSelectionColumn = (dataColumns) => [
 const headerNames = {
   title: "App Name",
   reviewsCount: "Total Reviews",
-  reviews: "",
   summary: "Description",
   score: "Average Rating",
   source: "Scraped From",
@@ -75,40 +71,6 @@ const renderHeader = (fieldName) => {
   }
 };
 
-// Function to render a button to scrape reviews from an app
-// only if review count is greater than 0 and less than 100,000
-const renderScrapeReviewButton = (params) => {
-  // Disable button if no reviews found
-  if (params.value[0] <= 0) {
-    return (
-      <div className="Reviews count & button">
-        <Tooltip title="Unable to scrape reviews for this app due to no reviews being found.">
-          <span>
-            <Button disabled variant="outlined" size="small">
-              <strong>Scrape Reviews</strong>
-            </Button>
-          </span>
-        </Tooltip>
-      </div>
-    );
-  }
-  // Disable button if too many reviews found
-  if (params.value[0] >= 100000) {
-    return (
-      <div className="Reviews count & button">
-        <Tooltip title="Unable to scrape reviews for this app due to review count being greater than max 100000 reviews.">
-          <span>
-            <Button disabled variant="outlined" size="small">
-              <strong>Scrape Reviews</strong>
-            </Button>
-          </span>
-        </Tooltip>
-      </div>
-    );
-  }
-  return DownloadReviews(params.value[1], params.value[2]);
-};
-
 // Function to render avatar for icon column
 const renderIcon = (params) => <Avatar src={params.value} alt="Icon" />;
 
@@ -117,18 +79,12 @@ const renderIcon = (params) => <Avatar src={params.value} alt="Icon" />;
 const booleanFields = ["available", "offersIAP", "adSupported", "downloadable"];
 
 // Helper function for creating renderCell attribute
-// For fields "review" and "icon", returns their respective renderCell functions
-// For boolean fields, returns the function (params) => params.value.toString()
+// For field "icon", returns renderIcon; for boolean fields, returns toString()
 // For non-boolean fields, returns the function (params) => params.value ?? "-"
 const renderCell = (fieldName) => {
-  // Case 1: field is "review"
-  if (fieldName === "reviews") return renderScrapeReviewButton;
-  // Case 2: field is "icon"
   if (fieldName === "icon") return renderIcon;
-  // Case 3: field is a boolean field
   if (booleanFields.includes(fieldName))
     return (params) => params.value.toString();
-  // Case 4: field is a non-boolean field
   return (params) => params.value ?? "-";
 };
 
@@ -137,7 +93,6 @@ const narrowWidthFields = ["icon"];
 // List of fields that need a larger width
 // Used to set minWidth to 200
 const largeWidthFields = [
-  "reviews",
   "developer",
   "summary",
   "url",
@@ -179,7 +134,6 @@ const fieldNames = [
   "title",
   "appId",
   "reviewsCount",
-  "reviews",
   "developer",
   "currency",
   "price",
