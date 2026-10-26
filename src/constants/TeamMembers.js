@@ -7,11 +7,11 @@ export const teamMembers = [
         bio: "Dr. Kai Lukoff is an Assistant Professor at Santa Clara University, leading the Human-Computer Interaction Lab in the Department of Computer Science & Engineering. He uses human-centered methods to research, design, and develop technologies with social impact.",
     },
     {
-        name: "Ilona van der Linden",
+        name: "Abhinav Pala",
         role: "Project Lead & Developer",
-        imageUrl: "https://smar-team.s3.us-west-1.amazonaws.com/profile-photo/lona.jpg",
-        linkedInUrl: "https://www.linkedin.com/in/lonavdlin/",
-        bio: "Lona is a San Diego native completing her last year of her masters' in Computer Science. She received her bachelors of Computer Science from the University of Wyoming. Currently, she's writing her thesis on bias in generative AI, and working as a full stack developer for SMAR. Lona loves cooking, going to concerts, and reading a good book with her cat.",
+        imageUrl: "https://smar-team.s3.us-west-1.amazonaws.com/profile-photo/KaiLukoff.jpg",
+        linkedInUrl: "https://www.linkedin.com/in/abhinavpala/",
+        bio: "Abhinav is a Junior in Computer Science and Electrical Engineering at Santa Clara University.",
     },
     {
         name: "Kyle Zhang",
@@ -76,4 +76,27 @@ export const teamMembers = [
         linkedInUrl: "https://www.linkedin.com/in/shizhaolawrenceliu/",
         bio: "Lawrence Liu is a member of the Literature Review team for the SMAR project.",
     },
+    {
+        name: "Edrick Chang",
+        role: "Developer",
+        imageUrl: "https://smar-team.s3.us-west-1.amazonaws.com/profile-photo/KaiLukoff.jpg",
+        linkedInUrl: "https://www.linkedin.com/in/edrickchang/",
+        bio: "Edrick Chang is a member of the Developer team for the SMAR project.",
+    },
+    {
+        name: "Jemian Lam",
+        role: "UX",
+        imageUrl: "https://smar-team.s3.us-west-1.amazonaws.com/profile-photo/KaiLukoff.jpg",
+        linkedInUrl: "https://www.linkedin.com/in/jemianlam/",
+        bio: "Jemian Lam is a member of the UX & Developer team for the SMAR project.",
+    },
+    {
+        name: "Rakshitha Srinivasa",
+        role: "Developer",
+        imageUrl: "https://smar-team.s3.us-west-1.amazonaws.com/profile-photo/KaiLukoff.jpg",
+        linkedInUrl: "https://www.linkedin.com/in/rakshitha-srinivasa/",
+        bio: "Rakshitha Srinivasa is a member of the Developer team for the SMAR project.",
+    },
+
+
 ];
