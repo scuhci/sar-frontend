@@ -1,7 +1,7 @@
 import React from "react";
 import AppBar from "@mui/material/AppBar";
 import Toolbar from "@mui/material/Toolbar";
-import { Typography, Button } from "@mui/material";
+import { Typography, Button, Chip } from "@mui/material";
 import { Link , NavLink} from "react-router-dom";
 
 const NavButton = ({ to, label, onClick }) => (
@@ -51,6 +51,30 @@ const NavigationBar = ({ refresh, refreshTopLists }) => {
                   <NavButton to="/" label="Keyword & App ID Search" onClick={refresh} />
                   <NavButton to="/toplists" label="Top Charts" onClick={refreshTopLists} />
                   <NavButton to="/bulkreviews" label="Bulk Reviews" />
+                  <NavButton
+                    to="/agent-skills"
+                    label={
+                      <>
+                        Agent Skills
+                        <Chip
+                          label="Beta"
+                          size="small"
+                          variant="outlined"
+                          sx={{
+                            ml: 0.75,
+                            height: 18,
+                            fontSize: "0.6rem",
+                            fontWeight: 600,
+                            letterSpacing: "0.04em",
+                            color: "white",
+                            borderColor: "rgba(255, 255, 255, 0.7)",
+                            cursor: "inherit",
+                            "& .MuiChip-label": { px: 0.75 },
+                          }}
+                        />
+                      </>
+                    }
+                  />
                   <NavButton to="/userguide" label="User Guide" />
                   <NavButton to="/about" label="About" />
               

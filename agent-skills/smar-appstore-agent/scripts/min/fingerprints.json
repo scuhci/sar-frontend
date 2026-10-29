@@ -1,0 +1,23 @@
+{
+  "note": "built by team/build_min_appstore.sh from the sources below; scripts/fingerprint.js --check fails when a source changed since",
+  "terser": "5.51.2",
+  "bundle": "87ea2c8ad807cfc0b3c62fcf64205edeff3d623c45d771f1bb75ae54b7fdd129",
+  "sourcesFingerprint": "842e6a9a6e09ecd8f7ae95a1fa10fc5c33ad5d91eb9e0093bb4515950b97bd51",
+  "sources": {
+    "as_writer.js": "3df725c9de7149448fefc06e8ece4a71b8ca313cfee938b2166c5b16e8c1760f",
+    "as_search.js": "f8e8afba8f71788fc6b27ef55ddd9b45ee15c38d5a4f7b359be5698f266cc01b",
+    "as_chart.js": "5c97c731d385491c89d546cdb8ec1e31db51aaffe0e8b3991358b7d461ed92b8",
+    "as_reviews.js": "63be37c579794417fc87798cdcea6af9f4b8be769ad919010907c5146d359838",
+    "as_checks.js": "a7b7b3f833f4a4abd17413a879cecee0d0810386e52e11faec1f3f792abbfa4e",
+    "net_apple.js": "a5a4eff74f5227186e131cb81cf414aee8b02f773d9cecf4ed07671385b66478",
+    "appstore_core.js": "3b2177e2761679a026f371f8d1657d58f065e8cef10069a0c0e915a38e32edec",
+    "browser_driver.js": "694cf55ae035db005c468b058383196f08b2766a1059480f1d9fa44aa4bfd9f5"
+  },
+  "bundles": {
+    "appstore.bundle.min.js": {
+      "bytes": 266633,
+      "sha256": "3edfccd04d230a37cbea9da39368b08b1d2e6ad8e250528d6180d9d78c708469"
+    }
+  },
+  "sourceBytes": 504599
+}

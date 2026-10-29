@@ -1,0 +1,22 @@
+{
+  "note": "built by team/build_min.sh from the sources below; scripts/fingerprint.js --check fails when a source changed since",
+  "terser": "5.51.2",
+  "metadata": "99bf960b2d329cd7c553b0ec8adc68a1fb8f1c9c9ccc62d3257a90650b52d969",
+  "reviews": "c40c8f40fa19a6f7ad9d53b9662ba2597a8061e7514bae562919649e24d0c284",
+  "sources": {
+    "extract_play.js": "c47e0cf97f071e09318bd594927199136c01e9e59ad06bb8e0a3cc8abfaedf17",
+    "chart_fetch.js": "0d52239a8b225fa6dc5a0063015a1ada620edbc884fe5594a24d56071974d78f",
+    "browser_driver.js": "c21b9d1d5ffe49d0de5ad813db636606ae5f542c63cfdf160f17cc807cb23267",
+    "reviews_play.js": "a1d815cd768be6120ab21ff872ca5ef31e969e6d326370b007414249a0982b02"
+  },
+  "bundles": {
+    "metadata.bundle.min.js": {
+      "bytes": 137375,
+      "sha256": "628e9fbe821d9a38d14e0a77806f4e212bc9a386265a60256cc6637a602d3a10"
+    },
+    "reviews.bundle.min.js": {
+      "bytes": 36998,
+      "sha256": "c2266647c03c4bdcc5682635f3952f5c9dd55810be4e7743dca8790b82405a7b"
+    }
+  }
+}
