@@ -4,44 +4,6 @@
 > developers: what worked, what broke, what you need next. Please
 > [open an issue in this repo](https://github.com/scuhci/sar-frontend/issues).
 
-## Two versions
-
-There are two versions of the SMAR agent skills. Both write CSVs in SMAR's format.
-
-- **Full skills** (`smar-playstore-agent` 3.1.0, `smar-appstore-agent` 2.1.0): Google Play and the App Store.
-  Scripts run on your computer, every value is cross-checked against a second source, and long runs can resume.
-  Described in the rest of this page.
-- **Chrome-only Play skills** (`smar-playstore-keyword-search`, `smar-playstore-top-charts`,
-  `smar-playstore-bulk-reviews`): Google Play only, nothing to install. Claude in Chrome pastes one extractor into a
-  play.google.com tab and downloads the CSV. Details: [`chrome-only/README.md`](chrome-only/README.md).
-
-### Which version should I use?
-
-| | Full skills | Chrome-only Play skills |
-|---|---|---|
-| Stores | Google Play and Apple App Store | Google Play only |
-| Features | Keyword search + similar apps, app-ID lookup, country selection, top charts, single and bulk reviews | Keyword search + similar apps, top charts, bulk reviews |
-| Install | Claude Code: unzip into `~/.claude/skills/` (Node 18+). Claude.ai: upload the `.skill` file | Claude.ai: upload the `.skill` files; needs the Claude in Chrome extension |
-| Where it runs | Scripts on your computer (Claude Code), or the bundled browser mode in Claude in Chrome (App Store keyword search still needs a terminal) | In a play.google.com tab in your Chrome |
-| Speed | Depends on run size; built for larger runs | Fast: a keyword search took about 23 to 53 seconds in our tests |
-| Resume | Saves progress; interrupted runs resume | No; reloading the tab loses the run |
-| Best for | Research data collection, larger runs, the App Store, reproducibility | Quick exploratory pulls, users without a terminal |
-
-Similar-app lists from the Chrome-only skills can include more apps than SMAR's, and they were verified mainly on
-US runs. For important results, check with the full skills.
-
-### Downloads
-
-| Version | Skill | Download | Repo copy |
-|---|---|---|---|
-| Full | `smar-playstore-agent` 3.1.0 | [smar-tool.org/agent-skills/smar-playstore-agent.skill](https://smar-tool.org/agent-skills/smar-playstore-agent.skill) | [`public/agent-skills/smar-playstore-agent.skill`](../public/agent-skills/smar-playstore-agent.skill) |
-| Full | `smar-appstore-agent` 2.1.0 | [smar-tool.org/agent-skills/smar-appstore-agent.skill](https://smar-tool.org/agent-skills/smar-appstore-agent.skill) | [`public/agent-skills/smar-appstore-agent.skill`](../public/agent-skills/smar-appstore-agent.skill) |
-| Chrome-only | `smar-playstore-keyword-search` | [smar-tool.org/agent-skills/chrome-only/smar-playstore-keyword-search.skill](https://smar-tool.org/agent-skills/chrome-only/smar-playstore-keyword-search.skill) | [`public/agent-skills/chrome-only/smar-playstore-keyword-search.skill`](../public/agent-skills/chrome-only/smar-playstore-keyword-search.skill) |
-| Chrome-only | `smar-playstore-top-charts` | [smar-tool.org/agent-skills/chrome-only/smar-playstore-top-charts.skill](https://smar-tool.org/agent-skills/chrome-only/smar-playstore-top-charts.skill) | [`public/agent-skills/chrome-only/smar-playstore-top-charts.skill`](../public/agent-skills/chrome-only/smar-playstore-top-charts.skill) |
-| Chrome-only | `smar-playstore-bulk-reviews` | [smar-tool.org/agent-skills/chrome-only/smar-playstore-bulk-reviews.skill](https://smar-tool.org/agent-skills/chrome-only/smar-playstore-bulk-reviews.skill) | [`public/agent-skills/chrome-only/smar-playstore-bulk-reviews.skill`](../public/agent-skills/chrome-only/smar-playstore-bulk-reviews.skill) |
-
-The rest of this page describes the **full skills**.
-
 ## What this is
 
 Two skills you add to your own AI agent so it can do what [smar-tool.org](https://smar-tool.org) does and give you
@@ -64,9 +26,6 @@ A `.skill` file is a zip. Its contents are also in this folder, unzipped, so you
 each `SKILL.md`).
 
 ## What's supported
-
-This table describes the **full skills**. The Chrome-only Play skills cover Google Play keyword search (with similar
-apps), top charts and bulk reviews, with CSV download in SMAR's columns.
 
 22 SMAR workflows: 16 supported, 3 partly supported, 3 not supported yet. They are grouped by feature below.
 
@@ -127,10 +86,6 @@ it uses browser mode:
 - Play: open a play.google.com tab and ask. Everything above works.
 - App Store: open an itunes.apple.com tab and ask. Charts, reviews and app lookups work; **keyword search needs a
   shell**, so use Claude Code or Claude Desktop with a code tool for that.
-
-**Chrome-only Play skills.** In Claude.ai / Claude in Chrome: Settings > Capabilities > Skills > Upload skill, then
-pick each `.skill` file from `chrome-only/`. They need the Claude in Chrome extension. Open a play.google.com tab and
-ask; the CSV lands in your Downloads folder. See [`chrome-only/README.md`](chrome-only/README.md).
 
 **Other agents (local models etc.).** Unzip the skill, paste its `SKILL.md` into the system prompt and give the
 model a shell tool. See "Known limits" for which models worked.
