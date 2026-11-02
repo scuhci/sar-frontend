@@ -53,7 +53,6 @@ const comparisonRows = [
     { label: 'Install', full: 'Claude Code (Node 18+) or upload to Claude.ai', chrome: 'Upload to Claude.ai; needs Claude in Chrome' },
     { label: 'Where it runs', full: 'Your computer, or browser mode in Claude in Chrome', chrome: 'A play.google.com tab in Chrome' },
     { label: 'Speed', full: 'Depends on run size; built for larger runs', chrome: 'Fast (keyword search about 23 to 53 seconds)' },
-    { label: 'Checking', full: 'Every value cross-checked; unverifiable cells blanked and flagged', chrome: 'Lighter: fewer columns cross-checked' },
     { label: 'Resume', full: 'Yes, saves progress', chrome: 'No, reloading the tab loses the run' },
     { label: 'Best for', full: 'Research data, larger runs, App Store, reproducibility', chrome: 'Quick exploratory pulls, no terminal' },
 ];
@@ -63,30 +62,70 @@ const supportRows = [
         status: 'Supported',
         color: 'success',
         items: [
-            'Keyword search, including similar apps',
-            'App ID lookup',
-            'Country selection',
-            'Top charts',
-            'Reviews and bulk reviews',
-            'CSV output in SMAR format',
-            'Both Google Play and the App Store (App Store keyword search needs a terminal)',
+            {
+                name: 'Keyword search',
+                desc: 'Searches the store for your keyword in the country you choose, collects the top results plus each result\'s similar (related) apps, removes duplicates, and writes one row per app with SMAR\'s columns. Each row notes whether the app came from the search itself or from a similar-app link.',
+            },
+            {
+                name: 'App ID lookup',
+                desc: 'Give one or more app IDs (a Google Play package name; on the App Store a bundle ID, track ID or App Store link) and get one row per app with the same columns as a search. If you only know an app\'s name, the skill looks it up and asks you to confirm the match.',
+            },
+            {
+                name: 'Country selection',
+                desc: 'Searches, charts, lookups and reviews can all be run against a specific country\'s store using its two-letter code (the US by default). Other countries work, but the report marks them as not yet verified.',
+            },
+            {
+                name: 'Top charts',
+                desc: 'Downloads a store chart as a CSV. Google Play: top free, top paid or top grossing, overall or by category. App Store: iPhone, iPad or Mac charts, including the top and new apps collections, overall or by category.',
+            },
+            {
+                name: 'Reviews',
+                desc: 'Downloads one app\'s reviews, newest first. Google Play gives up to the newest 10,000 per app; the App Store gives up to the newest 500 per app, which is Apple\'s limit (the same as on SMAR).',
+            },
+            {
+                name: 'Bulk reviews',
+                desc: 'Collects the reviews of several apps into one CSV, newest first, with the same per-app limits as single-app reviews.',
+            },
+            {
+                name: 'CSV in SMAR format',
+                desc: 'Files use the same columns and column definitions as this website, so they work with anything you already built around SMAR\'s output. An optional exact-SMAR mode reproduces the website\'s file exactly, including its known quirks.',
+            },
+            {
+                name: 'Both stores',
+                desc: 'There is one skill for Google Play and one for the Apple App Store. App Store keyword search needs a terminal (for example Claude Code); everything else also works in browser mode.',
+            },
         ],
     },
     {
         status: 'Partial',
         color: 'warning',
         items: [
-            'Reproducibility log',
-            'Results preview',
-            'Top charts reviews and zipped download',
+            {
+                name: 'Reproducibility log',
+                desc: 'Every run records what was run, when and with which settings, but it is written as a separate text file and its field names differ from the website\'s log.',
+            },
+            {
+                name: 'Results preview',
+                desc: 'Instead of the website\'s table preview, you get a short written summary in the chat: rows written, whether the file is ready, and any blank cells and why.',
+            },
+            {
+                name: 'Top charts reviews and zipped download',
+                desc: 'Getting reviews for a chart\'s apps is a second step (bulk reviews after the chart), and the CSV and the log come as separate files instead of one zip.',
+            },
         ],
     },
     {
         status: 'Not yet supported',
         color: 'default',
         items: [
-            'Permissions columns',
-            'Email when done',
+            {
+                name: 'Permissions columns',
+                desc: 'The website can add each Google Play app\'s permissions (what the app is allowed to access on a device) to search and top chart results. The skills do not collect these yet; use the SMAR website for permissions.',
+            },
+            {
+                name: 'Email when done',
+                desc: 'The website can email you when a long job finishes. The skills do not send email; results arrive in your agent session. Use the SMAR website if you want an email.',
+            },
         ],
     },
 ];
@@ -174,24 +213,29 @@ const AgentSkills = () => {
                         <Table aria-label="Full skills feature support">
                             <TableHead>
                                 <TableRow>
-                                    <TableCell sx={{ width: 180 }}><b>Status</b></TableCell>
-                                    <TableCell><b>Features</b></TableCell>
+                                    <TableCell sx={{ width: { xs: 120, sm: 200 } }}><b>Feature</b></TableCell>
+                                    <TableCell><b>What it does</b></TableCell>
                                 </TableRow>
                             </TableHead>
                             <TableBody>
-                                {supportRows.map((row) => (
-                                    <TableRow key={row.status} sx={{ '&:last-child td, &:last-child th': { border: 0 } }}>
-                                        <TableCell component="th" scope="row" sx={{ verticalAlign: 'top' }}>
-                                            <Chip label={row.status} color={row.color} size="small" />
-                                        </TableCell>
-                                        <TableCell>
-                                            <Box component="ul" sx={{ margin: 0, paddingLeft: 2.5 }}>
-                                                {row.items.map((item) => (
-                                                    <li key={item}><Typography variant="body2">{item}</Typography></li>
-                                                ))}
-                                            </Box>
-                                        </TableCell>
-                                    </TableRow>
+                                {supportRows.map((group) => (
+                                    <React.Fragment key={group.status}>
+                                        <TableRow sx={{ backgroundColor: 'action.hover' }}>
+                                            <TableCell colSpan={2}>
+                                                <Chip label={group.status} color={group.color} size="small" />
+                                            </TableCell>
+                                        </TableRow>
+                                        {group.items.map((item) => (
+                                            <TableRow key={item.name}>
+                                                <TableCell component="th" scope="row" sx={{ verticalAlign: 'top' }}>
+                                                    <Typography variant="body2"><strong>{item.name}</strong></Typography>
+                                                </TableCell>
+                                                <TableCell sx={{ verticalAlign: 'top' }}>
+                                                    <Typography variant="body2">{item.desc}</Typography>
+                                                </TableCell>
+                                            </TableRow>
+                                        ))}
+                                    </React.Fragment>
                                 ))}
                             </TableBody>
                         </Table>

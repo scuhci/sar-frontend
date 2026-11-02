@@ -24,7 +24,6 @@ There are two versions of the SMAR agent skills. Both write CSVs in SMAR's forma
 | Install | Claude Code: unzip into `~/.claude/skills/` (Node 18+). Claude.ai: upload the `.skill` file | Claude.ai: upload the `.skill` files; needs the Claude in Chrome extension |
 | Where it runs | Scripts on your computer (Claude Code), or the bundled browser mode in Claude in Chrome (App Store keyword search still needs a terminal) | In a play.google.com tab in your Chrome |
 | Speed | Depends on run size; built for larger runs | Fast: a keyword search took about 23 to 53 seconds in our tests |
-| Checking | Every value cross-checked against a second source; cells that can't be verified are blanked and flagged. Stress-tested (45 issues fixed); 0 wrong values against SMAR's scraper | Values matched SMAR on normal data in our benchmark; fewer columns are cross-checked, so an unexpected store format change is less likely to be caught |
 | Resume | Saves progress; interrupted runs resume | No; reloading the tab loses the run |
 | Best for | Research data collection, larger runs, the App Store, reproducibility | Quick exploratory pulls, users without a terminal |
 
@@ -69,35 +68,47 @@ each `SKILL.md`).
 This table describes the **full skills**. The Chrome-only Play skills cover Google Play keyword search (with similar
 apps), top charts and bulk reviews, with CSV download in SMAR's columns.
 
-22 SMAR workflows: 16 supported, 3 partly supported, 3 not supported yet.
+22 SMAR workflows: 16 supported, 3 partly supported, 3 not supported yet. They are grouped by feature below.
 
-| Workflow | Status |
-|---|---|
-| **Google Play** | |
-| Keyword search | Supported |
-| Similar apps (included with keyword search, as on SMAR) | Supported |
-| App-ID lookup | Supported |
-| Country selection | Supported |
-| Top charts | Supported |
-| Reviews for one app (newest 10,000) | Supported |
-| Bulk reviews (several apps) | Supported |
-| Permissions (with search) | Not yet supported |
-| Top charts + permissions | Not yet supported |
-| **Apple App Store** | |
-| Keyword search (needs a terminal/shell, not browser-only mode) | Supported |
-| Similar apps | Supported |
-| App-ID lookup (bundle ID, track ID or App Store link) | Supported |
-| Top charts (iPhone, iPad, Mac) | Supported |
-| Reviews for one app (up to 500, Apple's feed limit) | Supported |
-| Bulk reviews (several apps) | Supported |
-| **Both stores** | |
-| CSV download (optional exact-SMAR file with `--smar-compat`) | Supported |
-| Column definitions same as SMAR | Supported |
-| Bulk reviews always newest first | Supported |
-| Reproducibility log | Partial: written as a separate file; its field names differ from SMAR's log |
-| Results preview | Partial: a short written report instead of a table |
-| Top-charts reviews + download | Partial: two steps; the CSV and the log are separate files, not zipped |
-| Email when done | Not yet supported |
+### Supported
+
+- **Keyword search.** Searches the store for your keyword in the country you choose, collects the top results plus
+  each result's similar (related) apps, removes duplicates, and writes one row per app with SMAR's columns. Each row
+  notes whether the app came from the search itself or from a similar-app link (as on SMAR).
+- **App ID lookup.** Give one or more app IDs (a Google Play package name; on the App Store a bundle ID, track ID or
+  App Store link) and get one row per app with the same columns as a search. If you only know an app's name, the
+  skill looks it up and asks you to confirm the match.
+- **Country selection.** Searches, charts, lookups and reviews can all be run against a specific country's store
+  using its two-letter code (US by default). Other countries work, but the report marks them as not yet verified.
+- **Top charts.** Downloads a store chart as a CSV. Google Play: top free, top paid or top grossing, overall or by
+  category. App Store: iPhone, iPad or Mac charts, including the top and new apps collections, overall or by
+  category.
+- **Reviews.** Downloads one app's reviews, newest first. Google Play gives up to the newest 10,000 per app; the App
+  Store gives up to the newest 500 per app, which is Apple's limit (the same as on SMAR).
+- **Bulk reviews.** Collects the reviews of several apps into one CSV, newest first, with the same per-app limits as
+  single-app reviews.
+- **CSV in SMAR format.** Files use the same columns and column definitions as the SMAR website, so they work with
+  anything you already built around SMAR's output. An optional exact-SMAR file mode (`--smar-compat`) reproduces the
+  website's file exactly, including its known quirks.
+- **Both stores.** There is one skill for Google Play and one for the Apple App Store. App Store keyword search needs
+  a terminal (for example Claude Code); everything else also works in browser mode.
+
+### Partly supported
+
+- **Reproducibility log.** Every run records what was run, when and with which settings, but it is written as a
+  separate file (`..._relog.txt`) and its field names differ from the website's log.
+- **Results preview.** Instead of the website's table preview, you get a short written summary in the chat: rows
+  written, whether the file is ready, and any blank cells and why.
+- **Top charts reviews and zipped download.** Getting reviews for a chart's apps is a second step (bulk reviews after
+  the chart), and the CSV and the log come as separate files instead of one zip.
+
+### Not yet supported
+
+- **Permissions columns.** The website can add each Google Play app's permissions (what the app is allowed to access
+  on a device) to search and top chart results. The skills do not collect these yet; use the SMAR website for
+  permissions.
+- **Email when done.** The website can email you when a long job finishes. The skills do not send email; results
+  arrive in your agent session. Use the SMAR website if you want an email.
 
 ## Install
 
