@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { TextField, Button, Typography } from "@mui/material";
+import { TextField, Button, Typography, Snackbar, Alert } from "@mui/material";
 import { DataGrid } from "@mui/x-data-grid";
 import axios from "axios";
 import "../css/SearchBar.css";
@@ -30,7 +30,10 @@ const SearchBar = ({ flipState }) => {
     const { selectedScraper } = useScraper();
     const [searchQuery, setSearchQuery] = useState("");
     const [resultsText, setResultsText] = useState("");
-    const [fixedSearchQuery, setFixedSearchQuery] = useState("");
+    // The exact parameters of the search whose results are on screen; the download uses these
+    // (not the live dropdown/checkbox values) so the ZIP matches the table.
+    const [lastSearch, setLastSearch] = useState(null);
+    const [downloadError, setDownloadError] = useState(false);
     const [searchResults, setSearchResults] = useState([]);
     const [isLoading, setIsLoading] = useState(false);
     const [totalCount, setTotalCount] = useState(0);
@@ -114,7 +117,6 @@ const SearchBar = ({ flipState }) => {
         const timeISOString = newTime.toISOString();
         setAbortController(newAbortController);
         setIsLoading(true);
-        setFixedSearchQuery(term);
         setQueryTime(timeISOString);
         axios
             .get(
@@ -127,7 +129,10 @@ const SearchBar = ({ flipState }) => {
             )
             .then((response) => {
                 flipState();
+                // A new result set replaces whatever the previous download complained about.
+                setDownloadError(false);
                 setDisplayPermissions(includePermissions);
+                setLastSearch({ term, country, includePermissions });
                 setSearchResults(response.data.results);
                 // Only set results text after getting search results
                 setResultsText(term);
@@ -161,11 +166,15 @@ const SearchBar = ({ flipState }) => {
     };
 
     const handleDownloadAllResults = async () => {
+        if (!lastSearch) return;
+        // Clear any stale "download failed" alert before this attempt starts.
+        setDownloadError(false);
+        const { term, country: searchCountry, includePermissions: searchPermissions } = lastSearch;
         try {
             const response = await axios.get(
                 selectedScraper === "Play Store"
-                    ? `/api/download-csv?query=${fixedSearchQuery}&includePermissions=${includePermissions}&countryCode=${country}`
-                    : `/ios/download-csv?query=${fixedSearchQuery}&countryCode=${country}`, // Change to URL for app store scraper
+                    ? `/api/download-csv?query=${term}&includePermissions=${searchPermissions}&countryCode=${searchCountry}`
+                    : `/ios/download-csv?query=${term}&countryCode=${searchCountry}`, // Change to URL for app store scraper
                 {
                     responseType: "blob", //handling the binary data
                     headers: {
@@ -176,8 +185,8 @@ const SearchBar = ({ flipState }) => {
 
             const relog_response = await axios.get(
                 selectedScraper === "Play Store"
-                    ? `/api/download-relog?query=${fixedSearchQuery}&includePermissions=${includePermissions}&totalCount=${totalCount}&countryCode=${country}&store=${"Google Play Store"}`
-                    : `/ios/download-relog?query=${fixedSearchQuery}&totalCount=${totalCount}&countryCode=${country}&store=${"iOS App Store"}`, // Change to URL for app store scraper
+                    ? `/api/download-relog?query=${term}&includePermissions=${searchPermissions}&totalCount=${totalCount}&countryCode=${searchCountry}&store=${"Google Play Store"}`
+                    : `/ios/download-relog?query=${term}&totalCount=${totalCount}&countryCode=${searchCountry}&store=${"iOS App Store"}`, // Change to URL for app store scraper
                 {
                     responseType: "blob", //handling the binary data
                     headers: {
@@ -225,6 +234,7 @@ const SearchBar = ({ flipState }) => {
             });
         } catch (error) {
             console.error("Error fetching or downloading the file:", error);
+            setDownloadError(true);
         }
     };
 
@@ -235,6 +245,7 @@ const SearchBar = ({ flipState }) => {
 
     useEffect(() => {
         setSearchResults([]);
+        setDownloadError(false);
     }, [selectedScraper]);
 
     return (
@@ -337,6 +348,16 @@ const SearchBar = ({ flipState }) => {
                                 Download ({totalCount} Results + Reproducibility Log as ZIP)
                             </Button>
                         </div>
+                        <Snackbar
+                            open={downloadError}
+                            autoHideDuration={6000}
+                            onClose={() => setDownloadError(false)}
+                            anchorOrigin={{ vertical: "bottom", horizontal: "center" }}
+                        >
+                            <Alert severity="error" onClose={() => setDownloadError(false)}>
+                                The download failed. Please try the search again, then download.
+                            </Alert>
+                        </Snackbar>
                     </div>
                 </>
             ) : (
