@@ -224,12 +224,6 @@ const TopLists = ({ flipState }) => {
         setIncludePermissions(!includePermissions);
     };
 
-    const handleKeyDown = (event) => {
-        if (event.key === "Enter") {
-            handleTopListQuery();
-        }
-    };
-
     const getNameByCode = (list, code) => {
         const entry = list.find((item) => item.code === code);
         return entry ? (entry.code === "" ? "" : entry.name) : null;
@@ -467,7 +461,6 @@ const TopLists = ({ flipState }) => {
                     variant="contained"
                     color="primary"
                     onClick={handleTopListQuery}
-                    onKeyDown={handleKeyDown}
                 >
                     Search
                 </Button>

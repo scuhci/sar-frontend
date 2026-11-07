@@ -1,6 +1,7 @@
 import React from "react";
 import { render, screen, fireEvent, within, waitFor, act } from "@testing-library/react";
 import { MemoryRouter, Routes, Route, useLocation } from "react-router-dom";
+import userEvent from "@testing-library/user-event";
 import axios from "axios";
 import TopLists from "./TopLists";
 import ExampleTopCharts from "./ExampleTopCharts";
@@ -230,5 +231,25 @@ describe("App Store device change", () => {
         expect(lastRequest()).toBe(
             "/ios/toplists?collection=topfreeipadapplications&category=&categoryName=&country=US&includePermissions=false",
         );
+    });
+});
+
+describe("Top Charts Search button", () => {
+    test("Enter on the focused button sends exactly one request", async () => {
+        await renderTopLists("Play Store");
+        screen.getByRole("button", { name: "Search" }).focus();
+
+        userEvent.keyboard("{Enter}");
+
+        await waitFor(() => expect(axios.get).toHaveBeenCalled());
+        expect(axios.get).toHaveBeenCalledTimes(1);
+    });
+
+    test("a click sends exactly one request", async () => {
+        await renderTopLists("Play Store");
+
+        userEvent.click(screen.getByRole("button", { name: "Search" }));
+
+        expect(axios.get).toHaveBeenCalledTimes(1);
     });
 });
