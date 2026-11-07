@@ -3,6 +3,7 @@ import { Typography, Box } from '@mui/material';
 import hciLabLogo from "../res/HCI_Logo.png";
 import "../css/Footer.css";
 import Link from '@mui/material/Link';
+import { Link as RouterLink } from 'react-router-dom';
 
 const Footer = () => {
   return (
@@ -16,6 +17,9 @@ const Footer = () => {
           rel="noopener noreferrer"
           >Human Computer Interaction Lab
         </Link> @Santa Clara University
+      </Typography>
+      <Typography variant="body2" className="footer-privacy">
+        <Link component={RouterLink} to="/privacy" className="hci-lab-text">Privacy notice</Link>
       </Typography>
     </Box>
   );
