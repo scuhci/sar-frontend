@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import Button from "@mui/material/Button";
-import { Tooltip } from "@mui/material";
+import { Tooltip, Alert, Snackbar, Portal } from "@mui/material";
 import ReviewsLoading from "./ReviewsLoading";
 import axios from "axios";
 import { useScraper } from "../components/SelectedScraperProvider";
@@ -11,6 +11,7 @@ const DownloadReviews = (appId, countryCode) => {
   const { selectedScraper } = useScraper();
   const [isLoading, setIsLoading] = useState(false);
   const [abortController, setAbortController] = useState(null);
+  const [scrapeFailed, setScrapeFailed] = useState(false);
 
   const handleCancel = () => {
     abortController.abort();
@@ -26,6 +27,7 @@ const DownloadReviews = (appId, countryCode) => {
       setAbortController(newAbortController);
       console.log("Country Code is %s\n", countryCode);
       setIsLoading(true);
+      setScrapeFailed(false);
       const response = await axios.get(
         selectedScraper === "Play Store"
           ? `/api/reviews?appId=${appId}&countryCode=${countryCode}`
@@ -83,6 +85,7 @@ const DownloadReviews = (appId, countryCode) => {
       });
     } catch (error) {
       console.error("Error fetching or downloading the reviews file:", error);
+      if (!axios.isCancel(error)) setScrapeFailed(true);
       setIsLoading(false);
     }
     setIsLoading(false);
@@ -100,6 +103,19 @@ const DownloadReviews = (appId, countryCode) => {
         </Button>
       </Tooltip>
       <ReviewsLoading open={isLoading} onCancel={handleCancel} appId={appId} />
+      {/* Portal: this renders inside a DataGrid cell, whose transformed row container would clip it. */}
+      <Portal>
+        <Snackbar
+          open={scrapeFailed}
+          autoHideDuration={8000}
+          onClose={() => setScrapeFailed(false)}
+          anchorOrigin={{ vertical: "bottom", horizontal: "center" }}
+        >
+          <Alert severity="error" onClose={() => setScrapeFailed(false)}>
+            Scraping reviews for {appId} failed. Try again later.
+          </Alert>
+        </Snackbar>
+      </Portal>
     </div>
   );
 };

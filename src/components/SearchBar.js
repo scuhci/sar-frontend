@@ -6,6 +6,7 @@ import "../css/SearchBar.css";
 import Loading from "./Loading";
 import ExampleSearches from "./ExampleSearches";
 import ExampleTopCharts from "./ExampleTopCharts";
+import NoResults from "./NoResults";
 import { appStoreColumns, columns, playStoreColumns } from "../constants/columns";
 import { permissionColumns } from "../constants/permissionColumns";
 import { gplayCountries } from "../constants/countryCodes";
@@ -26,6 +27,15 @@ import Dropdown from "./Dropdown";
 // zip
 let JSZip = require("jszip");
 
+// A short reason for a failed search: the backend's own message when it sent one.
+const searchErrorReason = (error) => {
+    if (!error.response) return "Could not reach the server.";
+    if (error.response.status === 504) return "The search took too long.";
+    const message = error.response.data && error.response.data.error;
+    if (typeof message === "string" && message.trim()) return message.trim();
+    return `The server returned status ${error.response.status}.`;
+};
+
 const SearchBar = ({ flipState }) => {
     const { selectedScraper } = useScraper();
     const [searchQuery, setSearchQuery] = useState("");
@@ -34,6 +44,7 @@ const SearchBar = ({ flipState }) => {
     // (not the live dropdown/checkbox values) so the ZIP matches the table.
     const [lastSearch, setLastSearch] = useState(null);
     const [downloadError, setDownloadError] = useState(false);
+    const [searchError, setSearchError] = useState("");
     const [searchResults, setSearchResults] = useState([]);
     const [isLoading, setIsLoading] = useState(false);
     const [totalCount, setTotalCount] = useState(0);
@@ -117,6 +128,7 @@ const SearchBar = ({ flipState }) => {
         const timeISOString = newTime.toISOString();
         setAbortController(newAbortController);
         setIsLoading(true);
+        setSearchError("");
         setQueryTime(timeISOString);
         axios
             .get(
@@ -144,6 +156,10 @@ const SearchBar = ({ flipState }) => {
                     console.log("Request canceled:", error.message);
                 } else {
                     console.error("Error fetching search results:", error);
+                    setSearchError(
+                        `Search for "${term}" failed: ${searchErrorReason(error)} ` +
+                            "No apps may match this term, or the store may be busy. Try another term or try again later.",
+                    );
                 }
                 setIsLoading(false);
             });
@@ -246,6 +262,8 @@ const SearchBar = ({ flipState }) => {
     useEffect(() => {
         setSearchResults([]);
         setDownloadError(false);
+        setResultsText("");
+        setSearchError("");
     }, [selectedScraper]);
 
     return (
@@ -313,6 +331,11 @@ const SearchBar = ({ flipState }) => {
                 time={queryTime} // this + other combos will be used as a unique identifier for queries
                 selectedScraper={selectedScraper}
             />
+            {searchError && (
+                <Alert severity="error" className="search-error" onClose={() => setSearchError("")}>
+                    {searchError}
+                </Alert>
+            )}
             {searchResults.length > 0 ? (
                 <>
                     <div className="search-result-text">
@@ -360,6 +383,8 @@ const SearchBar = ({ flipState }) => {
                         </Snackbar>
                     </div>
                 </>
+            ) : resultsText ? (
+                !isLoading && <NoResults />
             ) : (
                 !isLoading && (
                     <div className="example-searches-container">
