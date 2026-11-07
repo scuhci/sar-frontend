@@ -50,11 +50,19 @@ This project was made with love at the [Santa Clara University HCI Lab](https://
 
 3. Install dependencies with `npm ci` in each checkout. `package-lock.json` is committed so everyone (and the server) gets the same dependency tree. If you add or upgrade a package, commit the `package-lock.json` change together with `package.json`.
 
-4. To start the Google Play backend: run `node index.js` in the `gplay-production` checkout.
+4. To start the Google Play backend: run `node index.js` in the `gplay-production` checkout (listens on http://localhost:5001).
 
-5. To start the App Store backend: run `node index.js` in the `ios-production` checkout.
+5. To start the App Store backend: run `node index.js` in the `ios-production` checkout (listens on http://localhost:5002).
 
-6. To start `sar-frontend`: run `npm start`. By default the dev server forwards `/api` and `/ios` requests to the `"proxy"` address in `package.json`, which is the live server.
+6. To start `sar-frontend`: run `npm start`, then open http://localhost:3000.
+
+The dev server forwards `/api/*` to the Google Play backend and `/ios/*` to the App Store backend, stripping the prefix the same way nginx does (see `src/setupProxy.js`). By default it uses the two local backends above. To use other backends, for example the live ones, set `SMAR_PLAY_API` and/or `SMAR_IOS_API` when starting:
+
+```
+SMAR_PLAY_API=https://smar-tool.org/api SMAR_IOS_API=https://smar-tool.org/ios npm start
+```
+
+Requests made this way reach the live backends, so keep them to testing.
 
 ## Building and Deploying
 
