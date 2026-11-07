@@ -1,5 +1,6 @@
 import { useState, useEffect } from "react";
 import {
+    Alert,
     Avatar,
     Box,
     Button,
@@ -22,7 +23,7 @@ import axios from "axios";
 import { DataGrid } from "@mui/x-data-grid";
 import JSZip from "jszip";
 
-// Data grid columns from displaySearchResults
+// Data grid columns for the apps found on Step 1
 const columns = [
     {
         field: "icon",
@@ -74,56 +75,21 @@ const columns = [
     },
 ];
 
-// Helper function to add appId column to review CSV
-// Removes header row, since that is handled in combineCSVBlobs()
-async function addAppIdColumnToCSV(csvBlob, appId) {
-    // Step 1: Convert Blob to text
-    const csvText = await csvBlob.text();
-
-    // Step 2: Parse the CSV text into rows
-    const rows = csvText.split("\n");
-
-    // Step 4: Add the appId value to front of each data row
-    for (let i = 1; i < rows.length; i++) {
-        if (rows[i].trim() === "") continue; // Skip empty rows
-        let rowData = rows[i].split(",");
-        rowData.unshift(`"${appId}"`);
-        rows[i - 1] = rowData.join(",");
-    }
-    rows.pop(); // Remove last row
-
-    // Step 5: Join the rows back into a single string
-    const newCsvText = rows.join("\n");
-
-    // Step 6: Create a new Blob with the updated CSV
-    const newCsvBlob = new Blob([newCsvText, "\n"], { type: "text/csv;charset=utf-8" });
-
-    return newCsvBlob;
-}
-
-// Helper function to combine array of CSVs into one CSV
-async function combineCSVBlobs(displaySearchResults, reviewSearchResults) {
-    let allRows = [];
-    let headers = null;
-    for (let i = 0; i < displaySearchResults.length; i++) {
-        const csvBlob = reviewSearchResults[i];
-        // Convert Blob to text
-        const csvText = await csvBlob.text();
-
-        // Parse the CSV text into rows
-        const rows = csvText.split("\n");
-
-        // Process the header row (only from the first Blob)
-        if (headers === null) {
-            // Add appId to the front of headers
-            let headerData = rows[0].split(",");
-            headerData.unshift(`"appId"`);
-            headers = headerData.join(",") + "\n";
+// Helper function to combine the per-app review CSVs into one CSV with a leading appId column.
+// Each entry is { appId, csvBlob }, so every row is tagged with the app its reviews were fetched for.
+async function combineCSVBlobs(reviewResults) {
+    let header = null;
+    const dataRows = [];
+    for (const { appId, csvBlob } of reviewResults) {
+        const [csvHeader, ...rows] = (await csvBlob.text()).split("\n").filter((row) => row.trim() !== "");
+        if (header === null) {
+            header = `"appId",${csvHeader}`;
         }
-
-        allRows.push(await addAppIdColumnToCSV(csvBlob, displaySearchResults[i].results[0].appId));
+        for (const row of rows) {
+            dataRows.push(`"${appId}",${row}`);
+        }
     }
-    return new Blob(["\ufeff", headers, ...allRows], { type: "text/csv;charset=utf-8" });
+    return new Blob(["\ufeff", [header, ...dataRows].join("\n"), "\n"], { type: "text/csv;charset=utf-8" });
 }
 
 // Options for sorting reviews
@@ -134,12 +100,15 @@ const BulkReviewSearchBar = ({ flipState, activeStep, setActiveStep }) => {
     const [abortController, setAbortController] = useState(null);
     const [searchQuery, setSearchQuery] = useState("");
     const [searchQueryErrorMessage, setSearchQueryErrorMessage] = useState("");
-    const [displaySearchResults, setDisplaySearchResults] = useState([]);
+    // Apps the search resolved, in the order they were entered
+    const [apps, setApps] = useState([]);
+    // App IDs that could not be found, and app IDs whose reviews could not be fetched
+    const [notFoundAppIds, setNotFoundAppIds] = useState([]);
+    const [failedReviewAppIds, setFailedReviewAppIds] = useState([]);
     const [appIds, setAppIds] = useState([]);
     const [isLoading, setIsLoading] = useState(false);
     const [currentlySearching, setCurrentlySearching] = useState("");
     const [country, setCountry] = useState("US");
-    const [rows, setRows] = useState([]);
     const [sortValue, setSortValue] = useState(sortOptions[0]);
 
     const handleCountryChange = (newCountry) => {
@@ -183,7 +152,8 @@ const BulkReviewSearchBar = ({ flipState, activeStep, setActiveStep }) => {
 
         // Send API request for each app id
         setIsLoading(true);
-        const newDisplaySearchResults = [];
+        const foundApps = [];
+        const notFound = [];
         for (let appId of appIds) {
             setCurrentlySearching(appId);
             try {
@@ -193,35 +163,46 @@ const BulkReviewSearchBar = ({ flipState, activeStep, setActiveStep }) => {
                         ? `/api/search?query=${appId}&countryCode=${country}`
                         : `/ios/search?query=${appId}&countryCode=${country}`
                 );
-                newDisplaySearchResults.push(displayResponse.data);
+                // If the ID is not an exact match the backends fall back to a keyword search, so only accept
+                // the result for the app that was asked for, never just the first result
+                const app = displayResponse.data?.results?.find(
+                    (result) => result.appId?.toLowerCase() === appId.toLowerCase()
+                );
+                if (app) {
+                    foundApps.push(app);
+                } else {
+                    notFound.push(appId);
+                }
             } catch (error) {
                 if (axios.isCancel(error)) {
                     console.log("Request canceled:", error.message);
                 } else {
                     console.error("Error fetching search results:", error);
                 }
-                setIsLoading(false);
+                notFound.push(appId);
             }
         }
-        setDisplaySearchResults(newDisplaySearchResults);
         setIsLoading(false);
+        if (foundApps.length === 0) {
+            setSearchQueryErrorMessage(`No app found for: ${notFound.join(", ")}. Please check the app IDs.`);
+            return;
+        }
+        setApps(foundApps);
+        setNotFoundAppIds(notFound);
+        setFailedReviewAppIds([]);
         setActiveStep(1);
     };
 
-    useEffect(() => {
-        setRows(
-            displaySearchResults.map((app) => ({
-                icon: app.results[0].icon,
-                title: app.results[0].title,
-                appId: app.results[0].appId,
-                reviewsCount: app.results[0].reviews,
-                developer: app.results[0].developer,
-                score: app.results[0].score,
-                url: app.results[0].url,
-                category: app.results[0].genreId,
-            }))
-        );
-    }, [displaySearchResults]);
+    const rows = apps.map((app) => ({
+        icon: app.icon,
+        title: app.title,
+        appId: app.appId,
+        reviewsCount: app.reviews,
+        developer: app.developer,
+        score: app.score,
+        url: app.url,
+        category: app.genreId,
+    }));
 
     const handleKeyDown = (event) => {
         if (event.key === "Enter") {
@@ -236,7 +217,7 @@ const BulkReviewSearchBar = ({ flipState, activeStep, setActiveStep }) => {
     };
 
     useEffect(() => {
-        setDisplaySearchResults([]);
+        setApps([]);
     }, [selectedScraper]);
 
     // Get total number of reviews to be scraped using limit of 10,000 reviews per app
@@ -258,11 +239,14 @@ const BulkReviewSearchBar = ({ flipState, activeStep, setActiveStep }) => {
         const newAbortController = new AbortController();
         setAbortController(newAbortController);
 
-        // Send API request for each app id
+        // Send API request for each app found on Step 1
+        const selectedAppIds = apps.map((app) => app.appId);
+        setAppIds(selectedAppIds);
         setIsLoading(true);
         const reviewSearchResults = [];
+        const failed = [];
 
-        for (let appId of appIds) {
+        for (let appId of selectedAppIds) {
             setCurrentlySearching(appId);
             try {
                 // Get reviews
@@ -275,17 +259,23 @@ const BulkReviewSearchBar = ({ flipState, activeStep, setActiveStep }) => {
                         responseType: "blob", //handling the binary data
                     }
                 );
-                reviewSearchResults.push(reviewResponse.data);
+                // Keep the appId with its CSV so the combined file is tagged with the right app
+                reviewSearchResults.push({ appId, csvBlob: reviewResponse.data });
             } catch (error) {
                 if (axios.isCancel(error)) {
                     console.log("Request canceled:", error.message);
                 } else {
-                    console.error("Error fetching search results:", error);
+                    console.error("Error fetching reviews:", error);
+                    failed.push(appId);
                 }
-                setIsLoading(false);
             }
         }
-        zip.file(filename_csv, await combineCSVBlobs(displaySearchResults, reviewSearchResults));
+        setFailedReviewAppIds(failed);
+        if (reviewSearchResults.length === 0) {
+            setIsLoading(false);
+            return;
+        }
+        zip.file(filename_csv, await combineCSVBlobs(reviewSearchResults));
         zip.generateAsync({ type: "blob" }).then(function (zipFile) {
             // Create a link element, set the href to the blob URL, and trigger a download
             const url = window.URL.createObjectURL(zipFile);
@@ -456,6 +446,17 @@ const BulkReviewSearchBar = ({ flipState, activeStep, setActiveStep }) => {
                         margin: "auto",
                     }}
                 >
+                    {notFoundAppIds.length > 0 && (
+                        <Alert severity="warning" sx={{ mb: 2, textAlign: "left" }}>
+                            No app found for {notFoundAppIds.join(", ")}. These IDs are left out of the download.
+                        </Alert>
+                    )}
+                    {failedReviewAppIds.length > 0 && (
+                        <Alert severity="error" sx={{ mb: 2, textAlign: "left" }}>
+                            Reviews could not be fetched for {failedReviewAppIds.join(", ")}, so they are not in the
+                            downloaded file. Please try again.
+                        </Alert>
+                    )}
                     <div
                         style={{
                             display: "flex",
