@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import {
     Alert,
     Avatar,
@@ -98,7 +98,8 @@ async function combineCSVBlobs(reviewResults) {
 
 const BulkReviewSearchBar = ({ flipState, activeStep, setActiveStep }) => {
     const { selectedScraper } = useScraper();
-    const [abortController, setAbortController] = useState(null);
+    // Controller for the requests in flight, so Cancel can stop them
+    const abortControllerRef = useRef(null);
     const [searchQuery, setSearchQuery] = useState("");
     const [searchQueryErrorMessage, setSearchQueryErrorMessage] = useState("");
     // Apps the search resolved, in the order they were entered
@@ -144,24 +145,24 @@ const BulkReviewSearchBar = ({ flipState, activeStep, setActiveStep }) => {
         setSearchQueryErrorMessage("");
         setAppIds(appIds);
 
-        if (abortController) {
-            abortController.abort();
-        }
+        abortControllerRef.current?.abort();
         const newAbortController = new AbortController();
-        setAbortController(newAbortController);
+        abortControllerRef.current = newAbortController;
 
         // Send API request for each app id
         setIsLoading(true);
         const foundApps = [];
         const notFound = [];
         for (let appId of appIds) {
+            if (newAbortController.signal.aborted) break;
             setCurrentlySearching(appId);
             try {
                 // Get data to display on Step 2
                 const displayResponse = await axios.get(
                     selectedScraper === "Play Store"
                         ? `/api/search?query=${appId}&countryCode=${country}`
-                        : `/ios/search?query=${appId}&countryCode=${country}`
+                        : `/ios/search?query=${appId}&countryCode=${country}`,
+                    { signal: newAbortController.signal }
                 );
                 // If the ID is not an exact match the backends fall back to a keyword search, so only accept
                 // the result for the app that was asked for, never just the first result
@@ -183,6 +184,8 @@ const BulkReviewSearchBar = ({ flipState, activeStep, setActiveStep }) => {
             }
         }
         setIsLoading(false);
+        // User pressed Cancel: stay on Step 1
+        if (newAbortController.signal.aborted) return;
         if (foundApps.length === 0) {
             setSearchQueryErrorMessage(`No app found for: ${notFound.join(", ")}. Please check the app IDs.`);
             return;
@@ -212,13 +215,15 @@ const BulkReviewSearchBar = ({ flipState, activeStep, setActiveStep }) => {
 
     const handleCancel = (_event, reason) => {
         if (reason && reason === "backdropClick") return;
-        abortController.abort();
+        abortControllerRef.current?.abort();
         setIsLoading(false);
     };
 
+    // The selected apps belong to one store, so switching store goes back to the search step
     useEffect(() => {
         setApps([]);
-    }, [selectedScraper]);
+        setActiveStep(0);
+    }, [selectedScraper, setActiveStep]);
 
     // Per-app review cap enforced by each backend (Play Store 10,000, App Store 500)
     const maxReviewsPerApp = selectedScraper === "Play Store" ? 10000 : 500;
@@ -238,11 +243,9 @@ const BulkReviewSearchBar = ({ flipState, activeStep, setActiveStep }) => {
         const filename_csv = `${filename}.csv`;
         const filename_relog = `${filename}_reproducibility_log.txt`;
 
-        if (abortController) {
-            abortController.abort();
-        }
+        abortControllerRef.current?.abort();
         const newAbortController = new AbortController();
-        setAbortController(newAbortController);
+        abortControllerRef.current = newAbortController;
 
         // Send API request for each app found on Step 1
         const selectedAppIds = apps.map((app) => app.appId);
@@ -253,6 +256,7 @@ const BulkReviewSearchBar = ({ flipState, activeStep, setActiveStep }) => {
         const relogs = [];
 
         for (let appId of selectedAppIds) {
+            if (newAbortController.signal.aborted) break;
             setCurrentlySearching(appId);
             try {
                 // Get reviews
@@ -292,7 +296,8 @@ const BulkReviewSearchBar = ({ flipState, activeStep, setActiveStep }) => {
             }
         }
         setFailedReviewAppIds(failed);
-        if (reviewSearchResults.length === 0) {
+        // Nothing to download, or the user pressed Cancel (don't hand them a partial file)
+        if (reviewSearchResults.length === 0 || newAbortController.signal.aborted) {
             setIsLoading(false);
             return;
         }

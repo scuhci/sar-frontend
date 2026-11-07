@@ -324,3 +324,69 @@ describe("FTB-06: reproducibility log and per-store review cap", () => {
         expect(zipEntry(/_reproducibility_log\.txt$/).blob).toContain("could not be generated");
     });
 });
+
+describe("FTB-07: Cancel and store switching", () => {
+    // A request that only settles when its signal aborts, like axios does
+    const pendingUntilAborted = (config) =>
+        new Promise((_resolve, reject) => {
+            config?.signal?.addEventListener("abort", () =>
+                reject(Object.assign(new Error("canceled"), { name: "CanceledError" }))
+            );
+        });
+
+    test("Cancel during the search stops the remaining searches and stays on step 1", async () => {
+        // Each search answers after 100 ms unless its request is aborted first
+        mockBackend({
+            search: (appId, config) =>
+                Promise.race([
+                    pendingUntilAborted(config),
+                    new Promise((resolve) => setTimeout(() => resolve([app(appId)]), 100)),
+                ]),
+        });
+        renderFor();
+        submit("com.example.one, com.example.two, com.example.three");
+        fireEvent.click(await screen.findByRole("button", { name: "Cancel" }));
+        await waitFor(() => expect(screen.queryByRole("dialog")).toBeNull());
+        await new Promise((resolve) => setTimeout(resolve, 500));
+        expect(requested("/search")).toHaveLength(1);
+        expect(screen.getByTestId("step")).toHaveTextContent("0");
+    });
+
+    test("Cancel during the review fetch does not download a partial file", async () => {
+        mockBackend({
+            reviews: (appId, config) => (appId === "com.example.two" ? pendingUntilAborted(config) : reviewsCsv(appId)),
+        });
+        renderFor();
+        await searchFor("com.example.one, com.example.two, com.example.three");
+        clickDownload();
+        await waitFor(() => expect(requested("/reviews")).toHaveLength(2));
+        fireEvent.click(await screen.findByRole("button", { name: "Cancel" }));
+        await waitFor(() => expect(screen.queryByRole("dialog")).toBeNull());
+        expect(requested("/reviews")).toHaveLength(2);
+        expect(window.URL.createObjectURL).not.toHaveBeenCalled();
+    });
+
+    test("switching store on step 2 returns to the search step", async () => {
+        const { useScraper } = jest.requireActual("./SelectedScraperProvider");
+        const StoreSwitch = () => {
+            const { setSelectedScraper } = useScraper();
+            return <button onClick={() => setSelectedScraper("App Store")}>switch store</button>;
+        };
+        const SwitchHarness = () => {
+            const [activeStep, setActiveStep] = React.useState(0);
+            return (
+                <ScraperProvider>
+                    <StoreSwitch />
+                    <div data-testid="step">{activeStep}</div>
+                    <BulkReviewSearchBar flipState={() => {}} activeStep={activeStep} setActiveStep={setActiveStep} />
+                </ScraperProvider>
+            );
+        };
+        localStorage.setItem("selectedScraper", JSON.stringify("Play Store"));
+        render(<SwitchHarness />);
+        await searchFor("com.example.one");
+        fireEvent.click(screen.getByRole("button", { name: "switch store" }));
+        await waitFor(() => expect(screen.getByTestId("step")).toHaveTextContent("0"));
+        expect(screen.queryByRole("button", { name: "Scrape and Download Reviews" })).toBeNull();
+    });
+});
