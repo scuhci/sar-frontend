@@ -161,8 +161,8 @@ const SearchBar = ({ flipState }) => {
         }
     };
 
-    const handleChange = () => {
-        setIncludePermissions(!includePermissions);
+    const handleChange = (event) => {
+        setIncludePermissions(event.target.checked);
     };
 
     const handleDownloadAllResults = async () => {
@@ -282,7 +282,7 @@ const SearchBar = ({ flipState }) => {
                                         control={
                                             <Checkbox
                                                 size="small"
-                                                // includePermissions={includePermissions}
+                                                checked={includePermissions}
                                                 onChange={handleChange}
                                             />
                                         }
