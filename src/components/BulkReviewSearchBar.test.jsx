@@ -235,3 +235,27 @@ describe("FTB-02: rows are attributed by appId, not by position", () => {
         expect(screen.getByTestId("step")).toHaveTextContent("0");
     });
 });
+
+describe("FTB-08: an app with no reviews does not set the CSV header", () => {
+    test("the header comes from the first app that has reviews", async () => {
+        // The backends return a header-only CSV for an app with zero reviews
+        mockBackend({ reviews: (appId) => (appId === "com.empty.app" ? `"dateScraped"` : reviewsCsv(appId)) });
+        renderFor();
+        await searchFor("com.empty.app, com.example.two");
+        clickDownload();
+        await waitFor(() => expect(window.URL.createObjectURL).toHaveBeenCalled());
+        const lines = await csvLines();
+        expect(lines[0]).toBe(`"appId",${REVIEWS_HEADER}`);
+        expect(lines).toHaveLength(3);
+        lines.slice(1).forEach((line) => expect(line.startsWith(`"com.example.two",`)).toBe(true));
+    });
+
+    test("when no app has reviews the file is header-only", async () => {
+        mockBackend({ reviews: () => `"dateScraped"` });
+        renderFor();
+        await searchFor("com.empty.one, com.empty.two");
+        clickDownload();
+        await waitFor(() => expect(window.URL.createObjectURL).toHaveBeenCalled());
+        expect(await csvLines()).toEqual([`"appId","dateScraped"`]);
+    });
+});

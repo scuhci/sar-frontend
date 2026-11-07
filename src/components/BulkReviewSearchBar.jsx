@@ -79,9 +79,17 @@ const columns = [
 // Each entry is { appId, csvBlob }, so every row is tagged with the app its reviews were fetched for.
 async function combineCSVBlobs(reviewResults) {
     let header = null;
+    let emptyAppHeader = null;
     const dataRows = [];
     for (const { appId, csvBlob } of reviewResults) {
         const [csvHeader, ...rows] = (await csvBlob.text()).split("\n").filter((row) => row.trim() !== "");
+        if (csvHeader === undefined) continue;
+        // An app with no reviews comes back header-only ("dateScraped"), so take the header from the
+        // first app that has reviews; fall back to the empty one only if no app has any
+        if (rows.length === 0) {
+            emptyAppHeader = emptyAppHeader ?? `"appId",${csvHeader}`;
+            continue;
+        }
         if (header === null) {
             header = `"appId",${csvHeader}`;
         }
@@ -89,6 +97,7 @@ async function combineCSVBlobs(reviewResults) {
             dataRows.push(`"${appId}",${row}`);
         }
     }
+    header = header ?? emptyAppHeader ?? `"appId"`;
     return new Blob(["\ufeff", [header, ...dataRows].join("\n"), "\n"], { type: "text/csv;charset=utf-8" });
 }
 
