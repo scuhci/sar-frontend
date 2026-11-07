@@ -7,9 +7,6 @@ import { DataGrid } from "@mui/x-data-grid";
 import {
     gplayCategories,
     gplayCollections,
-    gplayCategories_topfree,
-    gplayCategories_toppaid,
-    gplayCategories_topgrossing,
     iosCategories,
     iosCollections,
     iosDevices,
@@ -60,12 +57,6 @@ const iosCategoriesByCollection = {
     toppaidipadapplications: iosCategories_toppaidipadapplications,
     topgrossingipadapplications: iosCategories_topgrossingipadapplications,
 };
-
-const gplayCategoriesByCollection = {
-    TOP_FREE: gplayCategories_topfree,
-    TOP_PAID: gplayCategories_toppaid,
-    GROSSING: gplayCategories_topgrossing,
-}
 
 // Device ("MAC" | "IOS" | "IPAD") an App Store collection belongs to, or undefined for Play collections.
 const getIosDeviceForCollection = (collectionCode) =>
@@ -280,7 +271,7 @@ const TopLists = ({ flipState }) => {
         if (selectedScraper === "Play Store") {
                 setFullQuery([
                     getNameByCode(gplayCollections, collection),
-                    getNameByCode(gplayCategoriesByCollection[collection] ?? gplayCategories, category),  // ✅ Use filtered
+                    getNameByCode(gplayCategories, category),
                     getNameByCode(countries, country),
                 ]);
             setDownloadQuery(collection.concat(category, country));
@@ -447,7 +438,7 @@ const TopLists = ({ flipState }) => {
                         onChange={handleCategoryChange}
                     >
                         {(selectedScraper === "Play Store"
-                            ? (gplayCategoriesByCollection[collection] ?? gplayCategories)
+                            ? gplayCategories
                             : (iosCategoriesByCollection[collection] ?? iosCategories)
                         ).map(({ code, name }, index) => (
                             <MenuItem key={index} value={code}>

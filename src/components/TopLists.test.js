@@ -7,6 +7,7 @@ import TopLists from "./TopLists";
 import ExampleTopCharts from "./ExampleTopCharts";
 import { ScraperProvider, useScraper } from "./SelectedScraperProvider";
 import { gplayCountries, iosCountries } from "../constants/countryCodes";
+import { gplayCategories } from "../constants/topListCategories";
 
 jest.mock("axios");
 
@@ -251,5 +252,23 @@ describe("Top Charts Search button", () => {
         userEvent.click(screen.getByRole("button", { name: "Search" }));
 
         expect(axios.get).toHaveBeenCalledTimes(1);
+    });
+});
+
+describe("Play Store Top Charts categories", () => {
+    test.each(["Top Free", "Top Paid", "Top Grossing"])("%s offers every Google Play category", async (collection) => {
+        await renderTopLists("Play Store");
+        await pick("Collection*", collection);
+
+        expect(optionNames("Category*")).toEqual(gplayCategories.map(({ name }) => name));
+    });
+
+    test("a formerly hidden category is sent and labelled", async () => {
+        await renderTopLists("Play Store");
+        await pick("Category*", "Health and Fitness");
+
+        fireEvent.click(screen.getByRole("button", { name: "Search" }));
+        expect(lastRequest()).toMatch(/^\/api\/toplists\?collection=TOP_FREE&category=HEALTH_AND_FITNESS&country=US&/);
+        expect((await screen.findByRole("dialog")).textContent).toContain("Top Free Health and Fitness Apps");
     });
 });
