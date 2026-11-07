@@ -71,6 +71,11 @@ const gplayCategoriesByCollection = {
 const getIosDeviceForCollection = (collectionCode) =>
     iosCollections.find((item) => item.collections.some(({ code }) => code === collectionCode))?.device;
 
+// "Top Free Social Apps" on the Play Store. App Store collection names already end in "Apps"
+// ("Top Free iOS Apps"), so fold the category in ("Top Free iOS Games Apps") instead of repeating it.
+const describeApps = (collectionName, categoryName) =>
+    [(collectionName ?? "").trim().replace(/ Apps$/, ""), categoryName, "Apps"].filter(Boolean).join(" ");
+
 const defaultIosCollectionByDevice = {
     MAC: "topmacapps",
     IOS: "topfreeapplications",
@@ -496,9 +501,8 @@ const TopLists = ({ flipState }) => {
             <LoadingTopLists
                 open={isLoading}
                 onCancel={handleCancel}
-                country={getNameByCode(countries, country)}
-                collection={getNameByCode(gplayCollections, collection)}
-                category={getNameByCode(gplayCategoriesByCollection[collection] ?? gplayCategories, category)}
+                country={fullQuery[2]}
+                apps={describeApps(fullQuery[0], fullQuery[1])}
             />
             {showTable &&
                 (totalCount > 0 ? (
@@ -506,11 +510,11 @@ const TopLists = ({ flipState }) => {
                         <div className="search-result-text">
                             {totalCount === 1 ? (
                                 <Typography variant="h5">
-                                    {totalCount} Result for {fullQuery[0]} {fullQuery[1]} Apps in {fullQuery[2]}
+                                    {totalCount} Result for {describeApps(fullQuery[0], fullQuery[1])} in {fullQuery[2]}
                                 </Typography>
                             ) : (
                                 <Typography variant="h5">
-                                    {totalCount} Results for {fullQuery[0]} {fullQuery[1]} Apps in {fullQuery[2]}
+                                    {totalCount} Results for {describeApps(fullQuery[0], fullQuery[1])} in {fullQuery[2]}
                                 </Typography>
                             )}
                         </div>

@@ -1,5 +1,5 @@
 import React from "react";
-import { render, screen, fireEvent, within, waitFor } from "@testing-library/react";
+import { render, screen, fireEvent, within, waitFor, act } from "@testing-library/react";
 import { MemoryRouter, Routes, Route, useLocation } from "react-router-dom";
 import axios from "axios";
 import TopLists from "./TopLists";
@@ -152,5 +152,57 @@ describe("Top Charts country select", () => {
         fireEvent.click(screen.getByRole("button", { name: "Search" }));
         expect(lastRequest()).toMatch(/^\/ios\/toplists\?.*&country=JP&/);
         expect((await screen.findByRole("dialog")).textContent).toMatch(/in Japan\.\.\./);
+    });
+});
+
+describe("Top Charts loading dialog and result heading", () => {
+    // The Play Store grid calls .toString() on these columns, so every fake row needs them.
+    const fakeApp = (appId, reviews) => ({
+        appId,
+        title: appId,
+        reviews,
+        available: true,
+        offersIAP: false,
+        adSupported: false,
+        downloadable: true,
+    });
+
+    // Returns the dialog text while the request is pending, then the heading once it resolves.
+    const searchAndResolve = async () => {
+        let resolveRequest;
+        axios.get.mockImplementation(() => new Promise((resolve) => (resolveRequest = resolve)));
+        fireEvent.click(screen.getByRole("button", { name: "Search" }));
+        const dialogText = (await screen.findByRole("dialog")).textContent;
+        await act(async () => {
+            resolveRequest({ data: { totalCount: 2, results: [fakeApp("a.b", 5), fakeApp("c.d", 3)] } });
+        });
+        const headingText = (await screen.findByText(/Results for/)).textContent;
+        return { dialogText, headingText };
+    };
+
+    test("App Store names the App Store collection", async () => {
+        await renderTopLists("App Store");
+        const { dialogText, headingText } = await searchAndResolve();
+
+        expect(dialogText).toContain("Scraping data for Top Free iOS Apps in United States...");
+        expect(headingText).toBe("2 Results for Top Free iOS Apps in United States");
+    });
+
+    test("App Store folds the category into the collection name", async () => {
+        await renderTopLists("App Store");
+        await pick("Category*", "Games");
+        const { dialogText, headingText } = await searchAndResolve();
+
+        expect(dialogText).toContain("Scraping data for Top Free iOS Games Apps in United States...");
+        expect(headingText).toBe("2 Results for Top Free iOS Games Apps in United States");
+    });
+
+    test("Play Store wording is unchanged", async () => {
+        await renderTopLists("Play Store");
+        await pick("Category*", "Puzzle Games");
+        const { dialogText, headingText } = await searchAndResolve();
+
+        expect(dialogText).toContain("Scraping data for Top Free Puzzle Games Apps in United States...");
+        expect(headingText).toBe("2 Results for Top Free Puzzle Games Apps in United States");
     });
 });
