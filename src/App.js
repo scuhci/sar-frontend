@@ -5,6 +5,7 @@ import { UAParser } from "ua-parser-js";
 import Home from "./pages/Home";
 import About from "./pages/About";
 import NavigationBar from "./components/NavigationBar";
+import MobileScreen from "./components/MobileScreen";
 import UserGuide from "./pages/UserGuide";
 import TopCharts from "./pages/TopCharts";
 import { ScraperProvider } from "./components/SelectedScraperProvider";
@@ -43,12 +44,15 @@ function App() {
         if (showSearchResults) reloadAt(event, "/toplists", { state: { selectedScraper: "Play Store" } });
     };
 
+    // Every route shows the mobile screen on a phone; the pages are desktop-only
+    if (isMobileDevice) {
+        return <MobileScreen />;
+    }
+
     return (
         <ScraperProvider>
             <div>
-                {!isMobileDevice && (
-                    <NavigationBar refresh={refresh} refreshTopLists={refreshTopLists} />
-                )}
+                <NavigationBar refresh={refresh} refreshTopLists={refreshTopLists} />
                 <Routes className="App">
                     <Route path="/" element={<Home flipState={flipState} />} />
                     <Route path="/toplists" element={<TopCharts flipState={flipState} />} />

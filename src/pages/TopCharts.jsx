@@ -1,8 +1,6 @@
 import React, { useEffect } from "react";
 import TopLists from "../components/TopLists";
 import Footer from "../components/Footer";
-import MobileScreen from "../components/MobileScreen";
-import { UAParser } from 'ua-parser-js';
 import "../css/Home.css";
 import Citation from "../components/Citation";
 
@@ -17,10 +15,6 @@ const TopCharts = ({ flipState }) => {
     // const [selectedScraper, setSelectedScraper] = React.useState("Play Store");
     const { selectedScraper, setSelectedScraper } = useScraper();
 
-    // Should be an undefined object if it's on a laptop
-    const userAgent = new UAParser().getDevice();
-    const isMobileDevice = userAgent.type === 'mobile';
-
     // const location = useLocation();
     // const navigate = useNavigate();
 
@@ -31,8 +25,7 @@ const TopCharts = ({ flipState }) => {
     //     }
     // }, [location.state]);
 
-    // Switch to mobile device screen if user is on a mobile device
-    return !isMobileDevice ? (
+    return (
         <>
             <div className="app-container">
                 <div className="content">
@@ -87,8 +80,6 @@ const TopCharts = ({ flipState }) => {
                 <br/>
             </div>
         </>
-    ) : (
-        <MobileScreen />
     );
 };
 

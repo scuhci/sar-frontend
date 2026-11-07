@@ -1,6 +1,4 @@
 import React, { useState } from "react";
-import MobileScreen from "../components/MobileScreen";
-import { UAParser } from "ua-parser-js";
 import "../css/Home.css";
 import Citation from "../components/Citation";
 import Footer from "../components/Footer";
@@ -18,12 +16,7 @@ const BulkReviews = ({ flipState }) => {
     // State for step the user is on, the search step (0) or the download step (1)
     const [activeStep, setActiveStep] = useState(0);
 
-    // Should be an undefined object if it's on a laptop
-    const userAgent = new UAParser().getDevice();
-    const isMobileDevice = userAgent.type === "mobile";
-
-    // Switch to mobile device screen if user is on a mobile device
-    return !isMobileDevice ? (
+    return (
         <>
             <div className="app-container">
                 <div className="content">
@@ -67,8 +60,6 @@ const BulkReviews = ({ flipState }) => {
                 <br />
             </div>
         </>
-    ) : (
-        <MobileScreen />
     );
 };
 
