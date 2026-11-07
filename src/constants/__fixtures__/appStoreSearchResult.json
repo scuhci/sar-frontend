@@ -1,0 +1,56 @@
+{
+  "id": 389801252,
+  "appId": "com.burbn.instagram",
+  "title": "Instagram",
+  "url": "https://apps.apple.com/us/app/instagram/id389801252?uo=4",
+  "description": "Little moments lead to big friendships. Share yours on Instagram.  \u2014 From Meta  Connect with friends, find other fans, and see what people around you are up to ",
+  "icon": "https://is1-ssl.mzstatic.com/image/thumb/Purple211/v4/b0/91/85/b09185ca-7b74-87a4-adaf-1755d434ee22/Prod-0-0-1x_U007epad-0-1-0-sRGB-85-220.png/512x512bb.jpg",
+  "genres": [
+    "Photo & Video",
+    "Social Networking"
+  ],
+  "genreIds": [
+    "6008",
+    "6005"
+  ],
+  "primaryGenre": "Photo & Video",
+  "primaryGenreId": 6008,
+  "contentRating": "12+",
+  "languages": [
+    "BN",
+    "HR"
+  ],
+  "size": "700773376",
+  "requiredOsVersion": "16.3",
+  "released": "2010-10-06T08:12:41Z",
+  "updated": "2026-11-04T14:29:10Z",
+  "releaseNotes": "Performance optimizations and stability improvements for a smoother, more reliable experience.",
+  "version": "454.1",
+  "price": 0,
+  "currency": "USD",
+  "free": true,
+  "developerId": 389801255,
+  "developer": "Instagram, Inc.",
+  "developerUrl": "https://apps.apple.com/us/developer/instagram-inc/id389801255?uo=4",
+  "developerWebsite": "http://instagram.com/",
+  "score": 4.69055,
+  "reviews": 29684781,
+  "currentVersionScore": 4.69055,
+  "currentVersionReviews": 29684781,
+  "screenshots": [
+    "https://is1-ssl.mzstatic.com/image/thumb/PurpleSource221/v4/40/d2/ed/40d2ed5a-6217-60a0-22bb-ca38d63689b4/1_iOS_5.5.jpg/392x696bb.jpg",
+    "https://is1-ssl.mzstatic.com/image/thumb/PurpleSource221/v4/ef/2a/8b/ef2a8b44-fa9c-83b5-ec6a-b548a3c6b803/1_iOS_5.5.jpg/392x696bb.jpg"
+  ],
+  "ipadScreenshots": [
+    "https://is1-ssl.mzstatic.com/image/thumb/PurpleSource221/v4/b2/12/12/b21212a8-9d4d-12e2-d9c8-4b668cf66587/10.5__Following_tab.png/360x480bb.jpg",
+    "https://is1-ssl.mzstatic.com/image/thumb/PurpleSource211/v4/86/89/b8/8689b8a4-503f-3254-0a10-1a5097953382/10.5__Home.png/360x480bb.jpg"
+  ],
+  "appletvScreenshots": [],
+  "supportedDevices": [
+    "iPhone5s-iPhone5s",
+    "iPadAir-iPadAir"
+  ],
+  "country": "US",
+  "source": "primary search",
+  "similarityScore": 0.3333333333333333
+}
