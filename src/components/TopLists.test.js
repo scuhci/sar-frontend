@@ -206,3 +206,29 @@ describe("Top Charts loading dialog and result heading", () => {
         expect(headingText).toBe("2 Results for Top Free Puzzle Games Apps in United States");
     });
 });
+
+describe("App Store device change", () => {
+    test("drops a category the new device's collection does not offer", async () => {
+        await renderTopLists("App Store");
+        await pick("Category*", "Books");
+
+        // Books is not offered for Top Mac Apps
+        await pick("Device*", "Mac");
+        expect(shown("Collection*")).toBe("Top Mac Apps");
+        expect(shown("Category*")).toBe("");
+
+        fireEvent.click(screen.getByRole("button", { name: "Search" }));
+        expect(lastRequest()).toMatch(/^\/ios\/toplists\?collection=topmacapps&category=&/);
+    });
+
+    test("resets the category on every device change, like a collection change", async () => {
+        await renderTopLists("App Store");
+        await pick("Category*", "Books");
+
+        await pick("Device*", "iPad");
+        fireEvent.click(screen.getByRole("button", { name: "Search" }));
+        expect(lastRequest()).toBe(
+            "/ios/toplists?collection=topfreeipadapplications&category=&categoryName=&country=US&includePermissions=false",
+        );
+    });
+});

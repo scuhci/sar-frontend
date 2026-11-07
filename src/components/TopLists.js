@@ -209,6 +209,7 @@ const TopLists = ({ flipState }) => {
         if (event.target) {
             setDevice(event.target.value);
             setCollection(defaultIosCollectionByDevice[event.target.value]);
+            setCategory("");
         }
     };
 
