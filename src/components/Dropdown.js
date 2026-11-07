@@ -1,8 +1,7 @@
 import * as React from 'react';
 import PropTypes from 'prop-types';
 import { Autocomplete as BaseAutocomplete, TextField } from '@mui/material';
-import { styled } from '@mui/system';
-import { gplayCountries, iosCountries } from "../constants/countryCodes";
+import { gplayCountries } from "../constants/countryCodes";
 
 export default function Dropdown({ handler }) {
   const defaultOption = { name: 'United States', code: "US" };
@@ -64,16 +63,3 @@ const Autocomplete = React.forwardRef(function CustomAutocomplete(props, ref) {
 Autocomplete.propTypes = {
   options: PropTypes.array.isRequired,
 };
-
-const StyledAutocomplete = styled(BaseAutocomplete)`
-  font-family: 'IBM Plex Sans', sans-serif;
-  font-size: 0.875rem;
-  box-sizing: border-box;
-  padding: 8px 12px;
-  border-radius: 8px;
-  text-align: left;
-  line-height: 1.5;
-  background: #fff;
-  border: 1px solid #ccc;
-  color: #000;
-`;

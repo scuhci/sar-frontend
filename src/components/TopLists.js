@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { useLocation, useNavigate } from "react-router-dom";
+import { useLocation } from "react-router-dom";
 import "../css/TopList.css";
 import "../css/SearchBar.css";
 import { Select, FormControl, MenuItem, InputLabel, Typography, Button } from "@mui/material";
@@ -27,7 +27,7 @@ import {
     iosCategories_toppaidipadapplications,
     iosCategories_topgrossingipadapplications,
 } from "../constants/topListCategories";
-import { gplayCountries, iosCountries } from "../constants/countryCodes";
+import { gplayCountries } from "../constants/countryCodes";
 import axios from "axios";
 import { columns, playStoreColumns, appStoreColumns } from "../constants/columns";
 import { permissionColumns } from "../constants/permissionColumns";

@@ -1,4 +1,4 @@
-import React, { useEffect } from "react";
+import React from "react";
 import TopLists from "../components/TopLists";
 import Footer from "../components/Footer";
 import MobileScreen from "../components/MobileScreen";
@@ -6,7 +6,7 @@ import { UAParser } from 'ua-parser-js';
 import "../css/Home.css";
 import Citation from "../components/Citation";
 
-import { Typography, Box, Tabs, Tab, Link } from "@mui/material";
+import { Typography, Box, Tabs, Tab } from "@mui/material";
 import { Chip } from "@mui/joy";
 import { Android, Apple } from "@mui/icons-material";
 
