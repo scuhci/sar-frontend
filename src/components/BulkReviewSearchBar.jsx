@@ -121,19 +121,20 @@ const BulkReviewSearchBar = ({ flipState, activeStep, setActiveStep }) => {
     };
 
     const handleSearchSubmit = async () => {
-        // Validate search query
-        // Split the query into individual app IDs
-        const appIds = searchQuery.split(",").map((id) => id.trim());
+        // Split the query into individual app IDs, ignoring empty entries (e.g. a trailing comma) and repeats
+        const appIds = [...new Set(searchQuery.split(",").map((id) => id.trim()).filter((id) => id !== ""))];
         // Check if there are any app IDs
         if (appIds.length === 0) {
-            setSearchQueryErrorMessage(searchQuery);
+            setSearchQueryErrorMessage("Please enter at least one app ID.");
             return;
         }
-        // Validate each app ID
-        const appIdRegex = /^[a-zA-Z][a-zA-Z0-9]*(\.[a-zA-Z][a-zA-Z0-9]*)+$/;
+        // Validate each app ID: dot-separated segments of letters, digits, underscores and hyphens, covering Play
+        // package names (com.ea.game.pvz2_row) and App Store bundle IDs (com.my-company.app, org.3dsystems.app).
+        // Bare numeric App Store IDs are rejected: both backends look apps up by package/bundle ID only.
+        const appIdRegex = /^[A-Za-z_][\w-]*(\.[\w-]+)+$/;
         for (let appId of appIds) {
             if (!appIdRegex.test(appId)) {
-                setSearchQueryErrorMessage(`Invalid package name provided. Following package were invalid: ${appId}`);
+                setSearchQueryErrorMessage(`Invalid app ID: ${appId}. App IDs look like com.example.app.`);
                 return;
             }
         }

@@ -390,3 +390,26 @@ describe("FTB-07: Cancel and store switching", () => {
         expect(screen.queryByRole("button", { name: "Scrape and Download Reviews" })).toBeNull();
     });
 });
+
+describe("FTB-09: app ID validation", () => {
+    const queriesSent = () => requested("/search").map((url) => new URL("http://x" + url).searchParams.get("query"));
+
+    test("accepts real Play package names and App Store bundle IDs", async () => {
+        renderFor("App Store");
+        await searchFor("com.ea.game.pvz2_row, com.my-company.app, org.3dsystems.app");
+        expect(queriesSent()).toEqual(["com.ea.game.pvz2_row", "com.my-company.app", "org.3dsystems.app"]);
+    });
+
+    test("ignores a trailing comma and repeated IDs", async () => {
+        renderFor();
+        await searchFor("com.example.one, com.example.one, ");
+        expect(queriesSent()).toEqual(["com.example.one"]);
+    });
+
+    test.each(["284882215", "not a package", "com..app", "single"])("rejects %p before sending a request", async (id) => {
+        renderFor();
+        submit(`com.example.one, ${id}`);
+        expect(await screen.findByText(new RegExp(`Invalid app ID: ${id.replace(/\./g, "\\.")}`))).toBeInTheDocument();
+        expect(axios.get).not.toHaveBeenCalled();
+    });
+});
