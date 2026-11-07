@@ -82,6 +82,8 @@ let JSZip = require("jszip");
 
 const TopLists = ({ flipState }) => {
     const { selectedScraper } = useScraper();
+    // Apple has a storefront in only some of the countries Google Play serves
+    const countries = selectedScraper === "Play Store" ? gplayCountries : iosCountries;
     const [collection, setCollection] = useState("TOP_FREE");
     const [device, setDevice] = useState("IOS");
     const [category, setCategory] = useState("");
@@ -279,7 +281,7 @@ const TopLists = ({ flipState }) => {
                 setFullQuery([
                     getNameByCode(gplayCollections, collection),
                     getNameByCode(gplayCategoriesByCollection[collection] ?? gplayCategories, category),  // ✅ Use filtered
-                    getNameByCode(gplayCountries, country),
+                    getNameByCode(countries, country),
                 ]);
             setDownloadQuery(collection.concat(category, country));
         } else {
@@ -289,7 +291,7 @@ const TopLists = ({ flipState }) => {
                     collection,
                 ),
                 getNameByCode(iosCategoriesByCollection[collection] ?? iosCategories, category),
-                getNameByCode(gplayCountries, country),
+                getNameByCode(countries, country),
             ]);
             setDownloadQuery(
                 collection.concat(
@@ -380,7 +382,7 @@ const TopLists = ({ flipState }) => {
                         label="country"
                         onChange={handleCountryChange}
                     >
-                        {(selectedScraper === "Play Store" ? gplayCountries : gplayCountries).map(
+                        {countries.map(
                             ({ code, name }, index) => (
                                 <MenuItem key={index} value={code}>
                                     {name}
@@ -494,7 +496,7 @@ const TopLists = ({ flipState }) => {
             <LoadingTopLists
                 open={isLoading}
                 onCancel={handleCancel}
-                country={getNameByCode(gplayCountries, country)}
+                country={getNameByCode(countries, country)}
                 collection={getNameByCode(gplayCollections, collection)}
                 category={getNameByCode(gplayCategoriesByCollection[collection] ?? gplayCategories, category)}
             />

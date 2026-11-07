@@ -5,6 +5,7 @@ import axios from "axios";
 import TopLists from "./TopLists";
 import ExampleTopCharts from "./ExampleTopCharts";
 import { ScraperProvider, useScraper } from "./SelectedScraperProvider";
+import { gplayCountries, iosCountries } from "../constants/countryCodes";
 
 jest.mock("axios");
 
@@ -125,5 +126,31 @@ describe("Home 'Fetch Top Charts' buttons", () => {
 
         expect(screen.queryByRole("combobox", { name: "Device*" })).toBeNull();
         expect(shown("Collection*")).toBe("Top Paid");
+    });
+});
+
+describe("Top Charts country select", () => {
+    test("App Store offers only countries with an Apple storefront", async () => {
+        await renderTopLists("App Store");
+
+        const names = optionNames("Country*");
+        expect(names).toEqual(iosCountries.map(({ name }) => name));
+        expect(names).toContain("Japan");
+        expect(names).not.toContain("Afghanistan");
+    });
+
+    test("Play Store still offers every Google Play country", async () => {
+        await renderTopLists("Play Store");
+
+        expect(optionNames("Country*")).toEqual(gplayCountries.map(({ name }) => name));
+    });
+
+    test("App Store search sends and labels the chosen storefront", async () => {
+        await renderTopLists("App Store");
+        await pick("Country*", "Japan");
+
+        fireEvent.click(screen.getByRole("button", { name: "Search" }));
+        expect(lastRequest()).toMatch(/^\/ios\/toplists\?.*&country=JP&/);
+        expect((await screen.findByRole("dialog")).textContent).toMatch(/in Japan\.\.\./);
     });
 });
