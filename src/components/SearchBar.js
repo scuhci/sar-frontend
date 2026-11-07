@@ -8,7 +8,6 @@ import ExampleSearches from "./ExampleSearches";
 import ExampleTopCharts from "./ExampleTopCharts";
 import { appStoreColumns, columns, playStoreColumns } from "../constants/columns";
 import { permissionColumns } from "../constants/permissionColumns";
-import { gplayCountries } from "../constants/countryCodes";
 import Link from "@mui/material/Link";
 import { useScraper } from "../components/SelectedScraperProvider";
 

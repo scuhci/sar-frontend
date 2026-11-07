@@ -2,8 +2,7 @@
   "name": "sar-frontend",
   "version": "1.1.0",
   "private": true,
-  "proxy": "https://54.215.190.5",
-    "dependencies": {
+  "dependencies": {
     "@emotion/react": "^11.11.4",
     "@emotion/styled": "^11.11.5",
     "@mui/icons-material": "^5.14.1",
@@ -14,9 +13,8 @@
     "@testing-library/react": "^13.4.0",
     "@testing-library/user-event": "^13.5.0",
     "axios": "^1.4.0",
-    "express-useragent": "^1.0.15",
+    "http-proxy-middleware": "^2.0.11",
     "jszip": "^3.10.1",
-    "nodemailer": "^7.0.3",
     "react": "^18.2.0",
     "react-dom": "^18.2.0",
     "react-router-dom": "^6.20.0",
@@ -27,6 +25,7 @@
   "scripts": {
     "start": "react-scripts start",
     "build": "react-scripts build",
+    "build:ci": "CI=true react-scripts build",
     "test": "react-scripts test",
     "eject": "react-scripts eject"
   },
