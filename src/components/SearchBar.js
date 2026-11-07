@@ -133,8 +133,8 @@ const SearchBar = ({ flipState }) => {
         axios
             .get(
                 selectedScraper === "Play Store"
-                    ? `/api/search?query=${term}&includePermissions=${includePermissions}&countryCode=${country}&time=${timeISOString}`
-                    : `/ios/search?query=${term}&countryCode=${country}&time=${timeISOString}`, // Change to URL for app store scraper
+                    ? `/api/search?query=${encodeURIComponent(term)}&includePermissions=${includePermissions}&countryCode=${country}&time=${timeISOString}`
+                    : `/ios/search?query=${encodeURIComponent(term)}&countryCode=${country}&time=${timeISOString}`, // Change to URL for app store scraper
                 {
                     signal: newAbortController.signal,
                 },
@@ -189,8 +189,8 @@ const SearchBar = ({ flipState }) => {
         try {
             const response = await axios.get(
                 selectedScraper === "Play Store"
-                    ? `/api/download-csv?query=${term}&includePermissions=${searchPermissions}&countryCode=${searchCountry}`
-                    : `/ios/download-csv?query=${term}&countryCode=${searchCountry}`, // Change to URL for app store scraper
+                    ? `/api/download-csv?query=${encodeURIComponent(term)}&includePermissions=${searchPermissions}&countryCode=${searchCountry}`
+                    : `/ios/download-csv?query=${encodeURIComponent(term)}&countryCode=${searchCountry}`, // Change to URL for app store scraper
                 {
                     responseType: "blob", //handling the binary data
                     headers: {
@@ -201,8 +201,8 @@ const SearchBar = ({ flipState }) => {
 
             const relog_response = await axios.get(
                 selectedScraper === "Play Store"
-                    ? `/api/download-relog?query=${term}&includePermissions=${searchPermissions}&totalCount=${totalCount}&countryCode=${searchCountry}&store=${"Google Play Store"}`
-                    : `/ios/download-relog?query=${term}&totalCount=${totalCount}&countryCode=${searchCountry}&store=${"iOS App Store"}`, // Change to URL for app store scraper
+                    ? `/api/download-relog?query=${encodeURIComponent(term)}&includePermissions=${searchPermissions}&totalCount=${totalCount}&countryCode=${searchCountry}&store=${"Google Play Store"}`
+                    : `/ios/download-relog?query=${encodeURIComponent(term)}&totalCount=${totalCount}&countryCode=${searchCountry}&store=${"iOS App Store"}`, // Change to URL for app store scraper
                 {
                     responseType: "blob", //handling the binary data
                     headers: {

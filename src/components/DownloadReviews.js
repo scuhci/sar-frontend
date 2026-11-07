@@ -30,8 +30,8 @@ const DownloadReviews = (appId, countryCode) => {
       setScrapeFailed(false);
       const response = await axios.get(
         selectedScraper === "Play Store"
-          ? `/api/reviews?appId=${appId}&countryCode=${countryCode}`
-          : `/ios/reviews?appId=${appId}&countryCode=${countryCode}`,
+          ? `/api/reviews?appId=${encodeURIComponent(appId)}&countryCode=${countryCode}`
+          : `/ios/reviews?appId=${encodeURIComponent(appId)}&countryCode=${countryCode}`,
         {
           signal: newAbortController.signal,
           responseType: "blob", //handling the binary data
@@ -43,8 +43,8 @@ const DownloadReviews = (appId, countryCode) => {
 
       const relog_response = await axios.get(
         selectedScraper === "Play Store"
-          ? `/api/download-reviews-relog?appId=${appId}&countryCode=${countryCode}&store=${"Google Play Store"}&sorting=${"RECENT"}`
-          : `/ios/download-reviews-relog?appId=${appId}&countryCode=${countryCode}&store=${"iOS App Store"}&sorting=${"RECENT"}`,
+          ? `/api/download-reviews-relog?appId=${encodeURIComponent(appId)}&countryCode=${countryCode}&store=${"Google Play Store"}&sorting=${"RECENT"}`
+          : `/ios/download-reviews-relog?appId=${encodeURIComponent(appId)}&countryCode=${countryCode}&store=${"iOS App Store"}&sorting=${"RECENT"}`,
         {
           signal: newAbortController.signal,
           responseType: "blob", //handling the binary data
