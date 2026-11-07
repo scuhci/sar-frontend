@@ -276,3 +276,51 @@ describe("FTB-05: no sort control the backends ignore", () => {
         expect(requested("/reviews")).toEqual(["/api/reviews?appId=com.example.one&countryCode=US"]);
     });
 });
+
+describe("FTB-06: reproducibility log and per-store review cap", () => {
+    test("App Store step 2 uses the 500-per-app cap", async () => {
+        mockBackend({ search: (appId) => [app(appId, { reviews: 2000 })] });
+        renderFor("App Store");
+        await searchFor("com.openai.chat");
+        expect(screen.getByText(/Total 500 Reviews/)).toBeInTheDocument();
+        expect(screen.getByText(/scraping limited to 500 per app/)).toBeInTheDocument();
+    });
+
+    test("Play Store step 2 keeps the 10,000-per-app cap", async () => {
+        mockBackend({ search: (appId) => [app(appId, { reviews: 20000 })] });
+        renderFor("Play Store");
+        await searchFor("com.facebook.katana");
+        expect(screen.getByText(/Total 10000 Reviews/)).toBeInTheDocument();
+        expect(screen.getByText(/scraping limited to 10,000 per app/)).toBeInTheDocument();
+    });
+
+    test("the zip holds one reproducibility log covering every downloaded app", async () => {
+        renderFor("App Store");
+        await searchFor("com.google.ios.youtube, com.google.OPA");
+        clickDownload();
+        await waitFor(() => expect(window.URL.createObjectURL).toHaveBeenCalled());
+        const relogUrls = requested("/download-reviews-relog");
+        expect(relogUrls).toHaveLength(2);
+        expect(relogUrls[0]).toBe(
+            "/ios/download-reviews-relog?appId=com.google.ios.youtube&countryCode=US&store=iOS App Store&sorting=RECENT"
+        );
+        const relog = zipEntry(/_reproducibility_log\.txt$/);
+        expect(relog).toBeDefined();
+        expect(relog.blob).toContain("appId: com.google.ios.youtube");
+        expect(relog.blob).toContain("appId: com.google.OPA");
+    });
+
+    test("a failed log request still downloads the reviews", async () => {
+        mockBackend({
+            relog: () => {
+                throw new Error("500");
+            },
+        });
+        renderFor();
+        await searchFor("com.example.one");
+        clickDownload();
+        await waitFor(() => expect(window.URL.createObjectURL).toHaveBeenCalled());
+        expect(await csvLines()).toHaveLength(3);
+        expect(zipEntry(/_reproducibility_log\.txt$/).blob).toContain("could not be generated");
+    });
+});

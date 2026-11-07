@@ -220,8 +220,12 @@ const BulkReviewSearchBar = ({ flipState, activeStep, setActiveStep }) => {
         setApps([]);
     }, [selectedScraper]);
 
-    // Get total number of reviews to be scraped using limit of 10,000 reviews per app
-    const totalReviewCount = rows.reduce((sum, row) => (sum += Math.min(row.reviewsCount, 10000)), 0);
+    // Per-app review cap enforced by each backend (Play Store 10,000, App Store 500)
+    const maxReviewsPerApp = selectedScraper === "Play Store" ? 10000 : 500;
+    const maxReviewsPerAppLabel = maxReviewsPerApp.toLocaleString("en-US");
+
+    // Get total number of reviews to be scraped using the per-app cap for the selected store
+    const totalReviewCount = rows.reduce((sum, row) => (sum += Math.min(row.reviewsCount, maxReviewsPerApp)), 0);
 
     const handleDownloadReviews = async () => {
         const date = new Date();
@@ -232,6 +236,7 @@ const BulkReviewSearchBar = ({ flipState, activeStep, setActiveStep }) => {
         const filename_zip = `${filename}.zip`;
         const zip = new JSZip();
         const filename_csv = `${filename}.csv`;
+        const filename_relog = `${filename}_reproducibility_log.txt`;
 
         if (abortController) {
             abortController.abort();
@@ -245,6 +250,7 @@ const BulkReviewSearchBar = ({ flipState, activeStep, setActiveStep }) => {
         setIsLoading(true);
         const reviewSearchResults = [];
         const failed = [];
+        const relogs = [];
 
         for (let appId of selectedAppIds) {
             setCurrentlySearching(appId);
@@ -268,6 +274,21 @@ const BulkReviewSearchBar = ({ flipState, activeStep, setActiveStep }) => {
                     console.error("Error fetching reviews:", error);
                     failed.push(appId);
                 }
+                continue;
+            }
+            try {
+                // Reproducibility log for this app; the backend records the review count during the reviews request
+                const relogResponse = await axios.get(
+                    selectedScraper === "Play Store"
+                        ? `/api/download-reviews-relog?appId=${appId}&countryCode=${country}&store=Google Play Store&sorting=RECENT`
+                        : `/ios/download-reviews-relog?appId=${appId}&countryCode=${country}&store=iOS App Store&sorting=RECENT`,
+                    { signal: newAbortController.signal, responseType: "blob" }
+                );
+                relogs.push(await relogResponse.data.text());
+            } catch (error) {
+                // A missing log should not cost the user the reviews
+                console.error("Error fetching reproducibility log:", error);
+                relogs.push(`appId: ${appId}\nThe reproducibility log for this app could not be generated.`);
             }
         }
         setFailedReviewAppIds(failed);
@@ -276,6 +297,7 @@ const BulkReviewSearchBar = ({ flipState, activeStep, setActiveStep }) => {
             return;
         }
         zip.file(filename_csv, await combineCSVBlobs(reviewSearchResults));
+        zip.file(filename_relog, relogs.join("\n\n"));
         zip.generateAsync({ type: "blob" }).then(function (zipFile) {
             // Create a link element, set the href to the blob URL, and trigger a download
             const url = window.URL.createObjectURL(zipFile);
@@ -395,8 +417,8 @@ const BulkReviewSearchBar = ({ flipState, activeStep, setActiveStep }) => {
                     >
                         <div style={{ textAlign: "left" }}>
                             <span style={{ fontWeight: "bold" }}>Please note:</span> You can scrape for up to 20 apps
-                            per query with a limit of {selectedScraper === "Play Store" ? "10,000" : "500"} reviews per
-                            app. For scraping beyond these limits, please refer to our user guide.
+                            per query with a limit of {maxReviewsPerAppLabel} reviews per app. For scraping beyond these
+                            limits, please refer to our user guide.
                         </div>
                     </div>
                 </>
@@ -486,7 +508,7 @@ const BulkReviewSearchBar = ({ flipState, activeStep, setActiveStep }) => {
                     >
                         <div>
                             <span style={{ fontWeight: "bold" }}>Total {totalReviewCount} Reviews: </span>
-                            (Newest first; scraping limited to 10,000 per app)
+                            (Newest first; scraping limited to {maxReviewsPerAppLabel} per app)
                         </div>
                         <div>
                             <Button onClick={() => setActiveStep((prevActiveStep) => prevActiveStep - 1)}>Back</Button>
