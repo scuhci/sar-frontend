@@ -7,9 +7,6 @@ import { DataGrid } from "@mui/x-data-grid";
 import {
     gplayCategories,
     gplayCollections,
-    gplayCategories_topfree,
-    gplayCategories_toppaid,
-    gplayCategories_topgrossing,
     iosCategories,
     iosCollections,
     iosDevices,
@@ -61,17 +58,28 @@ const iosCategoriesByCollection = {
     topgrossingipadapplications: iosCategories_topgrossingipadapplications,
 };
 
-const gplayCategoriesByCollection = {
-    TOP_FREE: gplayCategories_topfree,
-    TOP_PAID: gplayCategories_toppaid,
-    GROSSING: gplayCategories_topgrossing,
-}
+// Device ("MAC" | "IOS" | "IPAD") an App Store collection belongs to, or undefined for Play collections.
+const getIosDeviceForCollection = (collectionCode) =>
+    iosCollections.find((item) => item.collections.some(({ code }) => code === collectionCode))?.device;
+
+// "Top Free Social Apps" on the Play Store. App Store collection names already end in "Apps"
+// ("Top Free iOS Apps"), so fold the category in ("Top Free iOS Games Apps") instead of repeating it.
+const describeApps = (collectionName, categoryName) =>
+    [(collectionName ?? "").trim().replace(/ Apps$/, ""), categoryName, "Apps"].filter(Boolean).join(" ");
+
+const defaultIosCollectionByDevice = {
+    MAC: "topmacapps",
+    IOS: "topfreeapplications",
+    IPAD: "topfreeipadapplications",
+};
 
 // zip
 let JSZip = require("jszip");
 
 const TopLists = ({ flipState }) => {
     const { selectedScraper } = useScraper();
+    // Apple has a storefront in only some of the countries Google Play serves
+    const countries = selectedScraper === "Play Store" ? gplayCountries : iosCountries;
     const [collection, setCollection] = useState("TOP_FREE");
     const [device, setDevice] = useState("IOS");
     const [category, setCategory] = useState("");
@@ -105,20 +113,13 @@ const TopLists = ({ flipState }) => {
     }, [selectedScraper]);
 
     useEffect(() => {
-        if (selectedScraper === "App Store") {
-            if (device === "MAC") {
-                setCollection("topmacapps");
-            } else if (device === "IOS") {
-                setCollection("topfreeapplications");
-            } else if (device === "IPAD") {
-                setCollection("topfreeipadapplications");
-            }
-        }
-    }, [device, selectedScraper]);
-
-    useEffect(() => {
         if (location.state && location.state.collectionState) {
             setCollection(location.state.collectionState);
+            // Keep the device in step with an App Store collection handed in from Home
+            const collectionDevice = getIosDeviceForCollection(location.state.collectionState);
+            if (collectionDevice) {
+                setDevice(collectionDevice);
+            }
         }
     }, [location.state]);
 
@@ -198,6 +199,8 @@ const TopLists = ({ flipState }) => {
     const handleDeviceChange = (event) => {
         if (event.target) {
             setDevice(event.target.value);
+            setCollection(defaultIosCollectionByDevice[event.target.value]);
+            setCategory("");
         }
     };
 
@@ -210,12 +213,6 @@ const TopLists = ({ flipState }) => {
 
     const handlePermissionChange = () => {
         setIncludePermissions(!includePermissions);
-    };
-
-    const handleKeyDown = (event) => {
-        if (event.key === "Enter") {
-            handleTopListQuery();
-        }
     };
 
     const getNameByCode = (list, code) => {
@@ -274,8 +271,8 @@ const TopLists = ({ flipState }) => {
         if (selectedScraper === "Play Store") {
                 setFullQuery([
                     getNameByCode(gplayCollections, collection),
-                    getNameByCode(gplayCategoriesByCollection[collection] ?? gplayCategories, category),  // ✅ Use filtered
-                    getNameByCode(gplayCountries, country),
+                    getNameByCode(gplayCategories, category),
+                    getNameByCode(countries, country),
                 ]);
             setDownloadQuery(collection.concat(category, country));
         } else {
@@ -285,7 +282,7 @@ const TopLists = ({ flipState }) => {
                     collection,
                 ),
                 getNameByCode(iosCategoriesByCollection[collection] ?? iosCategories, category),
-                getNameByCode(gplayCountries, country),
+                getNameByCode(countries, country),
             ]);
             setDownloadQuery(
                 collection.concat(
@@ -376,7 +373,7 @@ const TopLists = ({ flipState }) => {
                         label="country"
                         onChange={handleCountryChange}
                     >
-                        {(selectedScraper === "Play Store" ? gplayCountries : gplayCountries).map(
+                        {countries.map(
                             ({ code, name }, index) => (
                                 <MenuItem key={index} value={code}>
                                     {name}
@@ -441,7 +438,7 @@ const TopLists = ({ flipState }) => {
                         onChange={handleCategoryChange}
                     >
                         {(selectedScraper === "Play Store"
-                            ? (gplayCategoriesByCollection[collection] ?? gplayCategories)
+                            ? gplayCategories
                             : (iosCategoriesByCollection[collection] ?? iosCategories)
                         ).map(({ code, name }, index) => (
                             <MenuItem key={index} value={code}>
@@ -455,7 +452,6 @@ const TopLists = ({ flipState }) => {
                     variant="contained"
                     color="primary"
                     onClick={handleTopListQuery}
-                    onKeyDown={handleKeyDown}
                 >
                     Search
                 </Button>
@@ -490,9 +486,8 @@ const TopLists = ({ flipState }) => {
             <LoadingTopLists
                 open={isLoading}
                 onCancel={handleCancel}
-                country={getNameByCode(gplayCountries, country)}
-                collection={getNameByCode(gplayCollections, collection)}
-                category={getNameByCode(gplayCategoriesByCollection[collection] ?? gplayCategories, category)}
+                country={fullQuery[2]}
+                apps={describeApps(fullQuery[0], fullQuery[1])}
             />
             {showTable &&
                 (totalCount > 0 ? (
@@ -500,11 +495,11 @@ const TopLists = ({ flipState }) => {
                         <div className="search-result-text">
                             {totalCount === 1 ? (
                                 <Typography variant="h5">
-                                    {totalCount} Result for {fullQuery[0]} {fullQuery[1]} Apps in {fullQuery[2]}
+                                    {totalCount} Result for {describeApps(fullQuery[0], fullQuery[1])} in {fullQuery[2]}
                                 </Typography>
                             ) : (
                                 <Typography variant="h5">
-                                    {totalCount} Results for {fullQuery[0]} {fullQuery[1]} Apps in {fullQuery[2]}
+                                    {totalCount} Results for {describeApps(fullQuery[0], fullQuery[1])} in {fullQuery[2]}
                                 </Typography>
                             )}
                         </div>

@@ -3,17 +3,28 @@ import PropTypes from 'prop-types';
 import { Autocomplete as BaseAutocomplete, TextField } from '@mui/material';
 import { styled } from '@mui/system';
 import { gplayCountries, iosCountries } from "../constants/countryCodes";
+import { useScraper } from "./SelectedScraperProvider";
+
+const defaultOption = { name: 'United States', code: "US" };
 
 export default function Dropdown({ handler }) {
-  const defaultOption = { name: 'United States', code: "US" };
+  const { selectedScraper } = useScraper();
+  const options = selectedScraper === "App Store" ? iosOptions : gplayOptions;
   const [value, setValue] = React.useState(defaultOption);
   const [isEditing, setIsEditing] = React.useState(false);
+
+  // Switching stores can leave a country selected that the new store does not offer
+  React.useEffect(() => {
+    if (value && !options.some((option) => option.code === value.code)) {
+      setValue(defaultOption);
+    }
+  }, [options, value]);
 
   React.useEffect(() => {
     if (!isEditing) {
       handler(value?.code || defaultOption.code);
     }
-  }, [value, handler, defaultOption.code, isEditing]);
+  }, [value, handler, isEditing]);
 
   const handleChange = (event, newValue) => {
     if (!isEditing) {
@@ -53,9 +64,11 @@ export default function Dropdown({ handler }) {
   );
 }
 
-const options = gplayCountries.map((country) => {
+const toOptions = (countries) => countries.map((country) => {
   return { name: country.name, code: country.code };
 });
+const gplayOptions = toOptions(gplayCountries);
+const iosOptions = toOptions(iosCountries);
 
 const Autocomplete = React.forwardRef(function CustomAutocomplete(props, ref) {
   return <BaseAutocomplete {...props} ref={ref} />;
