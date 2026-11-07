@@ -48,8 +48,8 @@ function Loading({
           {"\t"}1. <strong>Keyword search results</strong> - Results from
           searching for this keyword in{" "}
           {selectedScraper === "Play Store"
-            ? "Google Play (Google Play returns a max of 30 results)"
-            : "the Apple App Store (App Store returns a max of 30 results?)"}
+            ? "Google Play (Google Play returns up to 20 results)"
+            : "the Apple App Store (the App Store returns up to 50 results)"}
           <br></br>
           {"\t"}2. <strong>Similar app links</strong> - Links (if any) to
           “Similar Apps/Games” shown on the app profile page for each of the

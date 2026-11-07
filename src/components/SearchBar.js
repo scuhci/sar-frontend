@@ -1,11 +1,12 @@
 import React, { useEffect, useState } from "react";
-import { TextField, Button, Typography } from "@mui/material";
+import { TextField, Button, Typography, Snackbar, Alert } from "@mui/material";
 import { DataGrid } from "@mui/x-data-grid";
 import axios from "axios";
 import "../css/SearchBar.css";
 import Loading from "./Loading";
 import ExampleSearches from "./ExampleSearches";
 import ExampleTopCharts from "./ExampleTopCharts";
+import NoResults from "./NoResults";
 import { appStoreColumns, columns, playStoreColumns } from "../constants/columns";
 import { permissionColumns } from "../constants/permissionColumns";
 import { gplayCountries } from "../constants/countryCodes";
@@ -26,11 +27,24 @@ import Dropdown from "./Dropdown";
 // zip
 let JSZip = require("jszip");
 
+// A short reason for a failed search: the backend's own message when it sent one.
+const searchErrorReason = (error) => {
+    if (!error.response) return "Could not reach the server.";
+    if (error.response.status === 504) return "The search took too long.";
+    const message = error.response.data && error.response.data.error;
+    if (typeof message === "string" && message.trim()) return message.trim();
+    return `The server returned status ${error.response.status}.`;
+};
+
 const SearchBar = ({ flipState }) => {
     const { selectedScraper } = useScraper();
     const [searchQuery, setSearchQuery] = useState("");
     const [resultsText, setResultsText] = useState("");
-    const [fixedSearchQuery, setFixedSearchQuery] = useState("");
+    // The exact parameters of the search whose results are on screen; the download uses these
+    // (not the live dropdown/checkbox values) so the ZIP matches the table.
+    const [lastSearch, setLastSearch] = useState(null);
+    const [downloadError, setDownloadError] = useState(false);
+    const [searchError, setSearchError] = useState("");
     const [searchResults, setSearchResults] = useState([]);
     const [isLoading, setIsLoading] = useState(false);
     const [totalCount, setTotalCount] = useState(0);
@@ -114,20 +128,23 @@ const SearchBar = ({ flipState }) => {
         const timeISOString = newTime.toISOString();
         setAbortController(newAbortController);
         setIsLoading(true);
-        setFixedSearchQuery(term);
+        setSearchError("");
         setQueryTime(timeISOString);
         axios
             .get(
                 selectedScraper === "Play Store"
-                    ? `/api/search?query=${term}&includePermissions=${includePermissions}&countryCode=${country}&time=${timeISOString}`
-                    : `/ios/search?query=${term}&countryCode=${country}&time=${timeISOString}`, // Change to URL for app store scraper
+                    ? `/api/search?query=${encodeURIComponent(term)}&includePermissions=${includePermissions}&countryCode=${country}&time=${timeISOString}`
+                    : `/ios/search?query=${encodeURIComponent(term)}&countryCode=${country}&time=${timeISOString}`, // Change to URL for app store scraper
                 {
                     signal: newAbortController.signal,
                 },
             )
             .then((response) => {
                 flipState();
+                // A new result set replaces whatever the previous download complained about.
+                setDownloadError(false);
                 setDisplayPermissions(includePermissions);
+                setLastSearch({ term, country, includePermissions });
                 setSearchResults(response.data.results);
                 // Only set results text after getting search results
                 setResultsText(term);
@@ -139,6 +156,10 @@ const SearchBar = ({ flipState }) => {
                     console.log("Request canceled:", error.message);
                 } else {
                     console.error("Error fetching search results:", error);
+                    setSearchError(
+                        `Search for "${term}" failed: ${searchErrorReason(error)} ` +
+                            "No apps may match this term, or the store may be busy. Try another term or try again later.",
+                    );
                 }
                 setIsLoading(false);
             });
@@ -156,16 +177,20 @@ const SearchBar = ({ flipState }) => {
         }
     };
 
-    const handleChange = () => {
-        setIncludePermissions(!includePermissions);
+    const handleChange = (event) => {
+        setIncludePermissions(event.target.checked);
     };
 
     const handleDownloadAllResults = async () => {
+        if (!lastSearch) return;
+        // Clear any stale "download failed" alert before this attempt starts.
+        setDownloadError(false);
+        const { term, country: searchCountry, includePermissions: searchPermissions } = lastSearch;
         try {
             const response = await axios.get(
                 selectedScraper === "Play Store"
-                    ? `/api/download-csv?query=${fixedSearchQuery}&includePermissions=${includePermissions}&countryCode=${country}`
-                    : `/ios/download-csv?query=${fixedSearchQuery}&countryCode=${country}`, // Change to URL for app store scraper
+                    ? `/api/download-csv?query=${encodeURIComponent(term)}&includePermissions=${searchPermissions}&countryCode=${searchCountry}`
+                    : `/ios/download-csv?query=${encodeURIComponent(term)}&countryCode=${searchCountry}`, // Change to URL for app store scraper
                 {
                     responseType: "blob", //handling the binary data
                     headers: {
@@ -176,8 +201,8 @@ const SearchBar = ({ flipState }) => {
 
             const relog_response = await axios.get(
                 selectedScraper === "Play Store"
-                    ? `/api/download-relog?query=${fixedSearchQuery}&includePermissions=${includePermissions}&totalCount=${totalCount}&countryCode=${country}&store=${"Google Play Store"}`
-                    : `/ios/download-relog?query=${fixedSearchQuery}&totalCount=${totalCount}&countryCode=${country}&store=${"iOS App Store"}`, // Change to URL for app store scraper
+                    ? `/api/download-relog?query=${encodeURIComponent(term)}&includePermissions=${searchPermissions}&totalCount=${totalCount}&countryCode=${searchCountry}&store=${"Google Play Store"}`
+                    : `/ios/download-relog?query=${encodeURIComponent(term)}&totalCount=${totalCount}&countryCode=${searchCountry}&store=${"iOS App Store"}`, // Change to URL for app store scraper
                 {
                     responseType: "blob", //handling the binary data
                     headers: {
@@ -225,6 +250,7 @@ const SearchBar = ({ flipState }) => {
             });
         } catch (error) {
             console.error("Error fetching or downloading the file:", error);
+            setDownloadError(true);
         }
     };
 
@@ -235,6 +261,9 @@ const SearchBar = ({ flipState }) => {
 
     useEffect(() => {
         setSearchResults([]);
+        setDownloadError(false);
+        setResultsText("");
+        setSearchError("");
     }, [selectedScraper]);
 
     return (
@@ -271,7 +300,7 @@ const SearchBar = ({ flipState }) => {
                                         control={
                                             <Checkbox
                                                 size="small"
-                                                // includePermissions={includePermissions}
+                                                checked={includePermissions}
                                                 onChange={handleChange}
                                             />
                                         }
@@ -302,6 +331,11 @@ const SearchBar = ({ flipState }) => {
                 time={queryTime} // this + other combos will be used as a unique identifier for queries
                 selectedScraper={selectedScraper}
             />
+            {searchError && (
+                <Alert severity="error" className="search-error" onClose={() => setSearchError("")}>
+                    {searchError}
+                </Alert>
+            )}
             {searchResults.length > 0 ? (
                 <>
                     <div className="search-result-text">
@@ -337,8 +371,20 @@ const SearchBar = ({ flipState }) => {
                                 Download ({totalCount} Results + Reproducibility Log as ZIP)
                             </Button>
                         </div>
+                        <Snackbar
+                            open={downloadError}
+                            autoHideDuration={6000}
+                            onClose={() => setDownloadError(false)}
+                            anchorOrigin={{ vertical: "bottom", horizontal: "center" }}
+                        >
+                            <Alert severity="error" onClose={() => setDownloadError(false)}>
+                                The download failed. Please try the search again, then download.
+                            </Alert>
+                        </Snackbar>
                     </div>
                 </>
+            ) : resultsText ? (
+                !isLoading && <NoResults />
             ) : (
                 !isLoading && (
                     <div className="example-searches-container">

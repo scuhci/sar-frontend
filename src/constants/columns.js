@@ -98,6 +98,7 @@ const booleanFields = ["available", "offersIAP", "adSupported", "downloadable"];
 // Helper function for creating renderCell attribute
 // For fields "review" and "icon", returns their respective renderCell functions
 // For boolean fields, returns the function (params) => params.value.toString()
+// For list fields (App Store genreIds, languages, screenshots, ...), joins the values
 // For non-boolean fields, returns the function (params) => params.value ?? "-"
 const renderCell = (fieldName) => {
   // Case 1: field is "review"
@@ -107,8 +108,10 @@ const renderCell = (fieldName) => {
   // Case 3: field is a boolean field
   if (booleanFields.includes(fieldName))
     return (params) => params.value.toString();
-  // Case 4: field is a non-boolean field
-  return (params) => params.value ?? "-";
+  // Case 4: field is a list field
+  // Case 5: field is a non-boolean field
+  return (params) =>
+    Array.isArray(params.value) ? params.value.join(", ") : params.value ?? "-";
 };
 
 const narrowWidthFields = ["icon"];
@@ -201,21 +204,22 @@ export const columns = fieldNames.map((fieldName) => ({
 export const playStoreColumns = columns;
 
 // Include new and modified fields for appStoreColumns
-// New fields, with associated field names and the index where it should be added
+// New fields, keyed by the field name the iOS backend returns for each app,
+// with the header name to display and the index where it should be added
 const newFieldNames = {
   currentVersionReviews: { name: "Current Version Reviews", index: 5 },
-  appSizeInBytes: { name: "App Size (in Bytes)", index: 6 },
-  appScreenshots: { name: "App Screenshots", index: 7 },
-  appIpadScreenshots: { name: "iPad Screenshots", index: 8 },
+  size: { name: "App Size (in Bytes)", index: 6 },
+  screenshots: { name: "App Screenshots", index: 7 },
+  ipadScreenshots: { name: "iPad Screenshots", index: 8 },
   appletvScreenshots: { name: "Apple TV Screenshots", index: 9 },
-  lastUpdated: { name: "Date Last Updated", index: 10 },
-  supportedLanguages: { name: "Supported Languages", index: 13 },
-  currentVersionAvgRating: {
+  updated: { name: "Date Last Updated", index: 10 },
+  languages: { name: "Supported Languages", index: 13 },
+  currentVersionScore: {
     name: "Current Version Average Rating",
     index: 18,
   },
-  developerAppStorePageURL: { name: "Developer URL", index: 28 },
-  supportedDevicesList: { name: "Supported Devices", index: 34 },
+  developerUrl: { name: "Developer URL", index: 26 },
+  supportedDevices: { name: "Supported Devices", index: 30 },
 };
 
 // Helper function for creating renderHeader attribute for new columns
@@ -230,6 +234,8 @@ const removedFieldNames = [
   "originalPrice",
   "discountEndDate",
   "downloadable",
+  "maxInstalls",
+  "ratings",
   "available",
   "offersIAP",
   "IAPRange",
@@ -240,15 +246,18 @@ const removedFieldNames = [
 ];
 
 // List of fields that are renamed in 'App Store' scraper
-// Key is the 'Play Store' version, value is the renamed 'App Store' version
+// Key is the 'Play Store' version, value is the field name the iOS backend
+// returns for it and the header name to display
 const renamedFieldNames = {
-  androidVersion: "iOS Version",
-  genreId: "genreIDs",
+  summary: { field: "description", header: "Description" },
+  androidVersion: { field: "requiredOsVersion", header: "iOS Version" },
+  genreId: { field: "genreIds", header: "genreIDs" },
+  recentChanges: { field: "releaseNotes", header: "Current Version Changes" },
 };
 
 // Helper function for creating renderHeader attribute for renamed columns
 const renderRenamedHeader = (fieldName) => {
-  return () => <strong>{renamedFieldNames[fieldName]}</strong>;
+  return () => <strong>{renamedFieldNames[fieldName].header}</strong>;
 };
 
 const appStoreColumns = playStoreColumns
@@ -257,7 +266,7 @@ const appStoreColumns = playStoreColumns
     if (column.field in renamedFieldNames) {
       return {
         ...column,
-        field: renamedFieldNames[column.field],
+        field: renamedFieldNames[column.field].field,
         renderHeader: renderRenamedHeader(column.field),
       };
     }
@@ -266,9 +275,9 @@ const appStoreColumns = playStoreColumns
 
 // Add fields in newFieldNames at specified indices
 Object.keys(newFieldNames).forEach((field) => {
-  const { name, index } = newFieldNames[field];
+  const { index } = newFieldNames[field];
   const newColumn = {
-    field: name,
+    field,
     renderHeader: renderNewHeader(field),
     renderCell: renderCell(field),
     minWidth: 200, // Set new columns to 200 by default, adjust after testing if this is too much or too little
@@ -277,7 +286,7 @@ Object.keys(newFieldNames).forEach((field) => {
   if (index < appStoreColumns.length) {
     appStoreColumns.splice(index, 0, newColumn); // Insert at the specified index
   } else {
-    appStoreColumns[index] = newColumn; // Add at the end if index exceeds current length
+    appStoreColumns.push(newColumn); // Add at the end if index exceeds current length
   }
 });
 

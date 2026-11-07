@@ -37,13 +37,11 @@ const NotifyMe = ({ country, query, permissions, queryTime }) => {
       } else {
         setInvalidEmail(false);
 
-        const response = await axios.post(
-          `/api/email?email=${email}&queryId=${pushQuery}`,
-          {
-            email: email,
-            queryId: pushQuery, // unique ID for the specific query
-          }
-        );
+        // Keep the address out of the URL so it doesn't end up in access logs or history
+        const response = await axios.post("/api/email", {
+          email: email,
+          queryId: pushQuery, // unique ID for the specific query
+        });
         console.log(response);
         setEmailNotifySuccess(true);
         // console.log(response);

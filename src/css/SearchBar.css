@@ -41,6 +41,13 @@
     gap: 10px;
 }
 
+.search-error {
+    width: 100%;
+    max-width: 1000px;
+    box-sizing: border-box;
+    margin-bottom: 10px;
+}
+
 .search-result-text {
     width: 100%;
     max-width: 1000px;
