@@ -67,6 +67,16 @@ const gplayCategoriesByCollection = {
     GROSSING: gplayCategories_topgrossing,
 }
 
+// Device ("MAC" | "IOS" | "IPAD") an App Store collection belongs to, or undefined for Play collections.
+const getIosDeviceForCollection = (collectionCode) =>
+    iosCollections.find((item) => item.collections.some(({ code }) => code === collectionCode))?.device;
+
+const defaultIosCollectionByDevice = {
+    MAC: "topmacapps",
+    IOS: "topfreeapplications",
+    IPAD: "topfreeipadapplications",
+};
+
 // zip
 let JSZip = require("jszip");
 
@@ -105,20 +115,13 @@ const TopLists = ({ flipState }) => {
     }, [selectedScraper]);
 
     useEffect(() => {
-        if (selectedScraper === "App Store") {
-            if (device === "MAC") {
-                setCollection("topmacapps");
-            } else if (device === "IOS") {
-                setCollection("topfreeapplications");
-            } else if (device === "IPAD") {
-                setCollection("topfreeipadapplications");
-            }
-        }
-    }, [device, selectedScraper]);
-
-    useEffect(() => {
         if (location.state && location.state.collectionState) {
             setCollection(location.state.collectionState);
+            // Keep the device in step with an App Store collection handed in from Home
+            const collectionDevice = getIosDeviceForCollection(location.state.collectionState);
+            if (collectionDevice) {
+                setDevice(collectionDevice);
+            }
         }
     }, [location.state]);
 
@@ -198,6 +201,7 @@ const TopLists = ({ flipState }) => {
     const handleDeviceChange = (event) => {
         if (event.target) {
             setDevice(event.target.value);
+            setCollection(defaultIosCollectionByDevice[event.target.value]);
         }
     };
 
