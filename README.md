@@ -44,12 +44,27 @@ This project was made with love at the [Santa Clara University HCI Lab](https://
 ### **We strongly advise accessing our tool via our [website](http://smar-tool.org/) for the best user experience!** 
 *Experienced developers who wish to try the SMAR tool on their local machine: read on.*
 
-1. Clone down the `sar-frontend` and `SAR-backend` repositories to your local machine.
+1. Clone the `sar-frontend` and [`SAR-backend`](https://github.com/scuhci/SAR-backend/) repositories to your local machine.
 
-2. To use our stable, deployed branch: `git checkout production` in the frontend repository.  You will need to open 2 backend terminals, 1 with `git checkout gplay-backend` and 1 with `git checkout ios-backend`. By default, the production frontend connects directly to the live SMAR backend. If you would like to run the backends locally, you will need to modify backend calls to go to your local machine rather than the live backend. A guide for this will be provided soon!
+2. In this repository, `git checkout production`. The backend repository holds two servers on separate branches, so make two checkouts of it: one on `gplay-production` (Google Play backend, port 5001) and one on `ios-production` (App Store backend, port 5002).
 
-4. To start `sar-backend` : Run `node index.js`
-   
-5. To start `sar-ios-backend`: Run `node index.js`
+3. Install dependencies with `npm ci` in each checkout. `package-lock.json` is committed so everyone (and the server) gets the same dependency tree. If you add or upgrade a package, commit the `package-lock.json` change together with `package.json`.
 
-6. To start `sar-frontend` : Run `npm-start`
+4. To start the Google Play backend: run `node index.js` in the `gplay-production` checkout.
+
+5. To start the App Store backend: run `node index.js` in the `ios-production` checkout.
+
+6. To start `sar-frontend`: run `npm start`. By default the dev server forwards `/api` and `/ios` requests to the `"proxy"` address in `package.json`, which is the live server.
+
+## Building and Deploying
+
+`npm run build` writes the static site to `build/` (gitignored). With `CI=true` set, Create React App treats ESLint warnings as errors, so keep the code warning-free.
+
+What the repositories show about the live site:
+
+- Releases have gone out by merging `production` into `main` through a pull request; the live site tracks `main`.
+- nginx serves the site from `/home/ubuntu/smar/sar-frontend/build`. The deploy workflow on the `cicd-test` branch (`.github/workflows/aws.yml`, not merged into `production`) copies the source to `/home/ubuntu/smar/sar-frontend` on the server and runs `npm ci` and `npm run build` there. `npm ci` requires the committed `package-lock.json`.
+- The browser calls relative paths only: `/api/...` for the Google Play backend and `/ios/...` for the App Store backend. `smar.nginx.conf` in `SAR-backend` routes them to `127.0.0.1:5001` and `127.0.0.1:5002` and strips the prefix.
+- `public/index.html` holds the Content-Security-Policy. If you add a script, image or API origin, allow it there or the browser will block it.
+
+Not recorded in the repositories (confirm with whoever has server access): the exact deploy steps used today and whether they build from `main` or `production`, the Node.js version on the server, the nginx config actually in use (the copy in `SAR-backend` listens on port 8080), and how TLS and the backend processes are managed.
