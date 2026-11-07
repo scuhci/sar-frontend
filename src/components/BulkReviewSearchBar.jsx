@@ -2,18 +2,13 @@ import { useState, useEffect } from "react";
 import {
     Alert,
     Avatar,
-    Box,
     Button,
     Chip,
     Dialog,
     DialogActions,
     DialogContent,
     DialogContentText,
-    FormControl,
-    InputLabel,
     LinearProgress,
-    MenuItem,
-    Select,
     TextField,
     Typography,
 } from "@mui/material";
@@ -101,9 +96,6 @@ async function combineCSVBlobs(reviewResults) {
     return new Blob(["\ufeff", [header, ...dataRows].join("\n"), "\n"], { type: "text/csv;charset=utf-8" });
 }
 
-// Options for sorting reviews
-const sortOptions = ["Recency", "Rating", "Helpfulness"];
-
 const BulkReviewSearchBar = ({ flipState, activeStep, setActiveStep }) => {
     const { selectedScraper } = useScraper();
     const [abortController, setAbortController] = useState(null);
@@ -118,7 +110,6 @@ const BulkReviewSearchBar = ({ flipState, activeStep, setActiveStep }) => {
     const [isLoading, setIsLoading] = useState(false);
     const [currentlySearching, setCurrentlySearching] = useState("");
     const [country, setCountry] = useState("US");
-    const [sortValue, setSortValue] = useState(sortOptions[0]);
 
     const handleCountryChange = (newCountry) => {
         setCountry(newCountry);
@@ -261,8 +252,8 @@ const BulkReviewSearchBar = ({ flipState, activeStep, setActiveStep }) => {
                 // Get reviews
                 const reviewResponse = await axios.get(
                     selectedScraper === "Play Store"
-                        ? `/api/reviews?appId=${appId}&countryCode=${country}&sortBy=${sortValue}`
-                        : `/ios/reviews?appId=${appId}&countryCode=${country}&sortBy=${sortValue}`, // Change to URL for app store scraper
+                        ? `/api/reviews?appId=${appId}&countryCode=${country}`
+                        : `/ios/reviews?appId=${appId}&countryCode=${country}`,
                     {
                         signal: newAbortController.signal,
                         responseType: "blob", //handling the binary data
@@ -466,41 +457,11 @@ const BulkReviewSearchBar = ({ flipState, activeStep, setActiveStep }) => {
                             downloaded file. Please try again.
                         </Alert>
                     )}
-                    <div
-                        style={{
-                            display: "flex",
-                            justifyContent: "space-between",
-                            marginBottom: 24,
-                        }}
-                    >
-                        <div style={{ textAlign: "left" }}>
-                            <Typography variant="h5">{rows.length} apps selected</Typography>
-                            <Typography variant="body2">
-                                Select how you'd like the reviews sorted (by rating, newest, or grossing), then click
-                                below to download your CSV file.
-                            </Typography>
-                        </div>
-
-                        <Box sx={{ minWidth: 120 }}>
-                            <FormControl fullWidth>
-                                <InputLabel id="sort-reviews-label">Sort Reviews By</InputLabel>
-                                <Select
-                                    labelId="sort-reviews-label"
-                                    id="sort-reviews"
-                                    value={sortValue}
-                                    onChange={(event) => {
-                                        setSortValue(event.target.value);
-                                    }}
-                                    label="Sort Reviews By"
-                                >
-                                    {sortOptions.map((option, id) => (
-                                        <MenuItem key={id} value={option}>
-                                            {option}
-                                        </MenuItem>
-                                    ))}
-                                </Select>
-                            </FormControl>
-                        </Box>
+                    <div style={{ textAlign: "left", marginBottom: 24 }}>
+                        <Typography variant="h5">{rows.length} apps selected</Typography>
+                        <Typography variant="body2">
+                            Reviews are collected newest first. Click below to download your CSV file.
+                        </Typography>
                     </div>
                     <DataGrid
                         rows={rows}
@@ -525,7 +486,7 @@ const BulkReviewSearchBar = ({ flipState, activeStep, setActiveStep }) => {
                     >
                         <div>
                             <span style={{ fontWeight: "bold" }}>Total {totalReviewCount} Reviews: </span>
-                            (Sort by {sortValue}; Scraping limited to 10,000 per app)
+                            (Newest first; scraping limited to 10,000 per app)
                         </div>
                         <div>
                             <Button onClick={() => setActiveStep((prevActiveStep) => prevActiveStep - 1)}>Back</Button>

@@ -259,3 +259,20 @@ describe("FTB-08: an app with no reviews does not set the CSV header", () => {
         expect(await csvLines()).toEqual([`"appId","dateScraped"`]);
     });
 });
+
+describe("FTB-05: no sort control the backends ignore", () => {
+    test("step 2 states the real order and offers no sort dropdown", async () => {
+        renderFor();
+        await searchFor("com.example.one");
+        expect(screen.queryByLabelText("Sort Reviews By")).toBeNull();
+        expect(screen.getByText(/Reviews are collected newest first/)).toBeInTheDocument();
+    });
+
+    test("the reviews request carries no sortBy parameter", async () => {
+        renderFor();
+        await searchFor("com.example.one");
+        clickDownload();
+        await waitFor(() => expect(window.URL.createObjectURL).toHaveBeenCalled());
+        expect(requested("/reviews")).toEqual(["/api/reviews?appId=com.example.one&countryCode=US"]);
+    });
+});
