@@ -424,6 +424,25 @@ describe("FTB-07: Cancel and store switching", () => {
         expect(window.URL.createObjectURL).not.toHaveBeenCalled();
     });
 
+    test("Cancel during the review fetch still reports the apps that failed before it", async () => {
+        mockBackend({
+            reviews: (appId, config) => {
+                if (appId === "com.example.one") throw new Error("503");
+                return pendingUntilAborted(config);
+            },
+        });
+        renderFor();
+        await searchFor("com.example.one, com.example.two");
+        clickDownload();
+        await waitFor(() => expect(requested("/reviews")).toHaveLength(2));
+        fireEvent.click(await screen.findByRole("button", { name: "Cancel" }));
+        await waitFor(() => expect(screen.queryByRole("dialog")).toBeNull());
+        expect(await screen.findByRole("alert")).toHaveTextContent(
+            /Reviews could not be fetched for com\.example\.one,/
+        );
+        expect(window.URL.createObjectURL).not.toHaveBeenCalled();
+    });
+
     test("switching store on step 2 returns to the search step", async () => {
         localStorage.setItem("selectedScraper", JSON.stringify("Play Store"));
         render(<SwitchHarness />);

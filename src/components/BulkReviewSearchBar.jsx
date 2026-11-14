@@ -328,9 +328,10 @@ const BulkReviewSearchBar = ({ flipState, activeStep, setActiveStep }) => {
                 relogs.push(`appId: ${appId}\nThe reproducibility log for this app could not be generated.`);
             }
         }
+        // Report failures even for a cancelled run, and replace the list from an earlier run
+        setFailedReviewAppIds(failed);
         // The run was cancelled or the page was left: don't hand over a partial file
         if (newAbortController.signal.aborted) return;
-        setFailedReviewAppIds(failed);
         // Nothing to download
         if (reviewSearchResults.length === 0) {
             setIsLoading(false);
