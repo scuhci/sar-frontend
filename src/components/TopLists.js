@@ -95,11 +95,16 @@ const TopLists = ({ flipState }) => {
     const [isLoading, setIsLoading] = useState(false);
     const [totalCount, setTotalCount] = useState(0);
     const [abortController, setAbortController] = useState(null);
-    const [displayPermissions, setDisplayPermissions] = useState(false);
     const [showTable, setShowTable] = useState(false);
     const [includePermissions, setIncludePermissions] = useState(false);
-    const [downloadQuery, setDownloadQuery] = useState("TOP_FREEUS");
-    const [fullQuery, setFullQuery] = useState(["Top Free"]);
+    // The search the chart on screen came from; the heading, download, relog and row actions read this, not the live form.
+    const [shownQuery, setShownQuery] = useState({
+        labels: ["Top Free"],
+        downloadQuery: "TOP_FREEUS",
+        country: "US",
+        deviceName: "",
+        includePermissions: false,
+    });
 
     const location = useLocation();
     //const navigate = useNavigate();
@@ -116,6 +121,7 @@ const TopLists = ({ flipState }) => {
             setCountry("US");
             setDevice("IOS");
         }
+        setIncludePermissions(false);
         setShowTable(false);
     }, [selectedScraper]);
 
@@ -139,11 +145,11 @@ const TopLists = ({ flipState }) => {
     }, [location.state, selectedScraper]);
 
     const rows =
-        displayPermissions && selectedScraper === "Play Store"
+        shownQuery.includePermissions && selectedScraper === "Play Store"
             ? searchResults.map((application) => ({
                   ...application,
                   reviewsCount: application.reviews,
-                  reviews: [application.reviews, application.appId, country],
+                  reviews: [application.reviews, application.appId, shownQuery.country],
 
                   // PERMISSIONS
                   // All truncated to two(ish) most relevant words.'
@@ -189,7 +195,7 @@ const TopLists = ({ flipState }) => {
             : searchResults.map((application) => ({
                   ...application,
                   reviewsCount: application.reviews,
-                  reviews: [application.reviews, application.appId, country],
+                  reviews: [application.reviews, application.appId, shownQuery.country],
               }));
 
     const handleCategoryChange = (event) => {
@@ -240,7 +246,41 @@ const TopLists = ({ flipState }) => {
         return entry ? (entry.code === "" ? "" : entry.csvName) : null;
     };
 
+    const currentQuery = () => {
+        if (selectedScraper === "Play Store") {
+            return {
+                labels: [
+                    getNameByCode(gplayCollections, collection),
+                    getNameByCode(gplayCategories, category),
+                    getNameByCode(countries, country),
+                ],
+                downloadQuery: collection.concat(category, country),
+                country,
+                deviceName: getNameByCode(iosDevices, device),
+                includePermissions,
+            };
+        }
+        return {
+            labels: [
+                getNameByCode(
+                    iosCollections.filter((item) => item.device === device).flatMap((item) => item.collections),
+                    collection,
+                ),
+                getNameByCode(iosCategoriesByCollection[collection] ?? iosCategories, category),
+                getNameByCode(countries, country),
+            ],
+            downloadQuery: collection.concat(
+                getIosCategoryByCode(iosCategoriesByCollection[collection] ?? iosCategories, category),
+                country,
+            ),
+            country,
+            deviceName: getNameByCode(iosDevices, device),
+            includePermissions,
+        };
+    };
+
     const handleTopListQuery = () => {
+        const sent = currentQuery();
         if (abortController) {
             abortController.abort();
         }
@@ -263,7 +303,7 @@ const TopLists = ({ flipState }) => {
             )
             .then((response) => {
                 flipState();
-                setDisplayPermissions(includePermissions);
+                setShownQuery(sent);
                 setShowTable(true);
                 setSearchResults(response.data.results);
                 setTotalCount(response.data.totalCount);
@@ -281,39 +321,15 @@ const TopLists = ({ flipState }) => {
                 setSearchResults([]);
                 setTotalCount(0);
                 setIsLoading(false);
-                console.log(downloadQuery);
             });
-        if (selectedScraper === "Play Store") {
-                setFullQuery([
-                    getNameByCode(gplayCollections, collection),
-                    getNameByCode(gplayCategories, category),
-                    getNameByCode(countries, country),
-                ]);
-            setDownloadQuery(collection.concat(category, country));
-        } else {
-            setFullQuery([
-                getNameByCode(
-                    iosCollections.filter((item) => item.device === device).flatMap((item) => item.collections),
-                    collection,
-                ),
-                getNameByCode(iosCategoriesByCollection[collection] ?? iosCategories, category),
-                getNameByCode(countries, country),
-            ]);
-            setDownloadQuery(
-                collection.concat(
-                    getIosCategoryByCode(iosCategoriesByCollection[collection] ?? iosCategories, category),
-                    country,
-                ),
-            );
-        }
     };
 
     const handleDownloadAllResults = async () => {
         try {
             const response = await axios.get(
                 selectedScraper === "Play Store"
-                    ? `/api/download-top-csv?query=${downloadQuery}&includePermissions=${includePermissions}`
-                    : `/ios/download-top-csv?query=${downloadQuery}&includePermissions=${includePermissions}`,
+                    ? `/api/download-top-csv?query=${shownQuery.downloadQuery}&includePermissions=${shownQuery.includePermissions}`
+                    : `/ios/download-top-csv?query=${shownQuery.downloadQuery}&includePermissions=${shownQuery.includePermissions}`,
                 {
                     responseType: "blob", //handling the binary data
                     headers: {
@@ -324,13 +340,10 @@ const TopLists = ({ flipState }) => {
 
             const relog_response = await axios.get(
                 selectedScraper === "Play Store"
-                    ? `/api/download-top-relog?collection=${fullQuery[0]}&category=${fullQuery[1]}&country=${fullQuery[2]}&includePermissions=${includePermissions}&totalCount=${totalCount}`
-                    : `/ios/download-top-relog?collection=${fullQuery[0]}&category=${fullQuery[1]}&country=${
-                          fullQuery[2]
-                      }&device=${getNameByCode(
-                          iosDevices,
-                          device,
-                      )}&includePermissions=${includePermissions}&totalCount=${totalCount}`,
+                    ? `/api/download-top-relog?collection=${shownQuery.labels[0]}&category=${shownQuery.labels[1]}&country=${shownQuery.labels[2]}&includePermissions=${shownQuery.includePermissions}&totalCount=${totalCount}`
+                    : `/ios/download-top-relog?collection=${shownQuery.labels[0]}&category=${shownQuery.labels[1]}&country=${
+                          shownQuery.labels[2]
+                      }&device=${shownQuery.deviceName}&includePermissions=${shownQuery.includePermissions}&totalCount=${totalCount}`,
                 {
                     responseType: "blob", //handling the binary data
                     headers: {
@@ -375,6 +388,8 @@ const TopLists = ({ flipState }) => {
             console.error("Error fetching or downloading the file:", error);
         }
     };
+
+    const pending = currentQuery();
 
     return (
         <div className="toplist-container">
@@ -501,8 +516,8 @@ const TopLists = ({ flipState }) => {
             <LoadingTopLists
                 open={isLoading}
                 onCancel={handleCancel}
-                country={fullQuery[2]}
-                apps={describeApps(fullQuery[0], fullQuery[1])}
+                country={pending.labels[2]}
+                apps={describeApps(pending.labels[0], pending.labels[1])}
             />
             {showTable &&
                 (totalCount > 0 ? (
@@ -510,11 +525,11 @@ const TopLists = ({ flipState }) => {
                         <div className="search-result-text">
                             {totalCount === 1 ? (
                                 <Typography variant="h5">
-                                    {totalCount} Result for {describeApps(fullQuery[0], fullQuery[1])} in {fullQuery[2]}
+                                    {totalCount} Result for {describeApps(shownQuery.labels[0], shownQuery.labels[1])} in {shownQuery.labels[2]}
                                 </Typography>
                             ) : (
                                 <Typography variant="h5">
-                                    {totalCount} Results for {describeApps(fullQuery[0], fullQuery[1])} in {fullQuery[2]}
+                                    {totalCount} Results for {describeApps(shownQuery.labels[0], shownQuery.labels[1])} in {shownQuery.labels[2]}
                                 </Typography>
                             )}
                         </div>
@@ -524,7 +539,7 @@ const TopLists = ({ flipState }) => {
                                 rows={rows}
                                 columns={
                                     selectedScraper === "Play Store"
-                                        ? displayPermissions
+                                        ? shownQuery.includePermissions
                                             ? Array.prototype.concat(columns, permissionColumns)
                                             : playStoreColumns
                                         : appStoreColumns
