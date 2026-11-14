@@ -67,6 +67,13 @@ const getIosDeviceForCollection = (collectionCode) =>
 const describeApps = (collectionName, categoryName) =>
     [(collectionName ?? "").trim().replace(/ Apps$/, ""), categoryName, "Apps"].filter(Boolean).join(" ");
 
+// Top Mac Apps, Top Paid Mac Apps and Top Grossing Mac Apps have no "No Category" chart, so those
+// collections start on their first category instead of an empty one the store cannot serve.
+const defaultCategoryFor = (collectionCode) => {
+    const categories = iosCategoriesByCollection[collectionCode] ?? iosCategories;
+    return categories.some(({ code }) => code === "") ? "" : categories[0].code;
+};
+
 const defaultIosCollectionByDevice = {
     MAC: "topmacapps",
     IOS: "topfreeapplications",
@@ -119,6 +126,7 @@ const TopLists = ({ flipState }) => {
             const collectionDevice = getIosDeviceForCollection(location.state.collectionState);
             if (collectionDevice) {
                 setDevice(collectionDevice);
+                setCategory(defaultCategoryFor(location.state.collectionState));
             }
         }
     }, [location.state]);
@@ -186,7 +194,7 @@ const TopLists = ({ flipState }) => {
     const handleCollectionChange = (event) => {
         if (event.target) {
             setCollection(event.target.value);
-            setCategory("");
+            setCategory(defaultCategoryFor(event.target.value));
         }
     };
 
@@ -200,7 +208,7 @@ const TopLists = ({ flipState }) => {
         if (event.target) {
             setDevice(event.target.value);
             setCollection(defaultIosCollectionByDevice[event.target.value]);
-            setCategory("");
+            setCategory(defaultCategoryFor(defaultIosCollectionByDevice[event.target.value]));
         }
     };
 

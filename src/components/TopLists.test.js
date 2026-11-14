@@ -214,13 +214,37 @@ describe("App Store device change", () => {
         await renderTopLists("App Store");
         await pick("Category*", "Books");
 
-        // Books is not offered for Top Mac Apps
+        // Books is not offered for Top Mac Apps, and that chart has no "No Category" entry either
         await pick("Device*", "Mac");
         expect(shown("Collection*")).toBe("Top Mac Apps");
-        expect(shown("Category*")).toBe("");
+        expect(shown("Category*")).toBe("Games");
 
         fireEvent.click(screen.getByRole("button", { name: "Search" }));
-        expect(lastRequest()).toMatch(/^\/ios\/toplists\?collection=topmacapps&category=&/);
+        expect(lastRequest()).toBe(
+            "/ios/toplists?collection=topmacapps&category=6014&categoryName=GAMES&country=US&includePermissions=false",
+        );
+    });
+
+    test.each(["Top Mac Apps", "Top Paid Mac Apps", "Top Grossing Mac Apps"])(
+        "%s never sends a null category name",
+        async (collectionName) => {
+            await renderTopLists("App Store");
+            await pick("Device*", "Mac");
+            await pick("Collection*", collectionName);
+
+            expect(shown("Category*")).not.toBe("");
+            expect(optionNames("Category*")).toContain(shown("Category*"));
+            fireEvent.click(screen.getByRole("button", { name: "Search" }));
+            expect(lastRequest()).not.toContain("categoryName=null");
+        },
+    );
+
+    test("a Mac collection handed in through router state starts on a category it offers", async () => {
+        await renderTopLists("App Store", { collectionState: "toppaidmacapps", selectedScraper: "App Store" });
+
+        expect(shown("Collection*")).toBe("Top Paid Mac Apps");
+        fireEvent.click(screen.getByRole("button", { name: "Search" }));
+        expect(lastRequest()).not.toContain("categoryName=null");
     });
 
     test("resets the category on every device change, like a collection change", async () => {
