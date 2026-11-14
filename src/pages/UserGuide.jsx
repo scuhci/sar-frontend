@@ -114,10 +114,12 @@ const UserGuide = () => {
         createData('dateScraped', 'Timestamp, date from when this review data was scraped')
     ]
 
-    const MetadataTable = ({ rows, label }) => {
+    // The table's accessible name is keyed by its rows array.
+    const tableNames = new Map([[appRows_PlayStore, "App metadata fields (Play Store)"], [reviewRows_PlayStore, "Review metadata fields (Play Store)"], [appRows_AppStore, "App metadata fields (App Store)"], [reviewRows_AppStore, "Review metadata fields (App Store)"]]);
+    const MetadataTable = ({ rows }) => {
         return (
             <TableContainer component={Paper}>
-                <Table sx={{ minWidth: 250 }} aria-label={label}>
+                <Table sx={{ minWidth: 250 }} aria-label={tableNames.get(rows)}>
                     <TableHead>
                         <TableRow>
                             <TableCell><b>Field</b></TableCell>
@@ -404,11 +406,11 @@ const UserGuide = () => {
                             <Typography variant="h5" className="section-sub-header" id="App_Metadata">App Metadata (Play Store)</Typography>
                             <br />
 
-                            <MetadataTable rows={appRows_PlayStore} label="App metadata fields (Play Store)" />
+                            <MetadataTable rows={appRows_PlayStore} />
                             <br /><br />
 
                             <Typography variant="h5" className="section-sub-header" id="Review_Metadata">Review Metadata (Play Store)</Typography>
-                            <MetadataTable rows={reviewRows_PlayStore} label="Review metadata fields (Play Store)" />
+                            <MetadataTable rows={reviewRows_PlayStore} />
                         </div>
                     )}
 
@@ -417,11 +419,11 @@ const UserGuide = () => {
                             <Typography variant="h5" className="section-sub-header" id="App_Metadata">App Metadata (App Store)</Typography>
                             <br />
 
-                            <MetadataTable rows={appRows_AppStore} label="App metadata fields (App Store)" />
+                            <MetadataTable rows={appRows_AppStore} />
                             <br /><br />
 
                             <Typography variant="h5" className="section-sub-header" id="Review_Metadata">Review Metadata (App Store)</Typography>
-                            <MetadataTable rows={reviewRows_AppStore} label="Review metadata fields (App Store)" />
+                            <MetadataTable rows={reviewRows_AppStore} />
                         </div>
                     )}
 
