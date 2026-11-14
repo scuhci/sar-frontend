@@ -13,8 +13,10 @@ const baseProps = {
 test("Play Store loading dialog states the 20 primary results the backend requests", () => {
   render(<Loading {...baseProps} selectedScraper="Play Store" />);
   const copy = screen.getByText(/Keyword search results/).closest("p").textContent;
-  expect(copy).toMatch(/Google Play returns up to 20 results/);
+  expect(copy).toMatch(/SMAR requests up to 20 results/);
   expect(copy).not.toMatch(/max of 30/);
+  expect(copy).toContain("related to <app title>");
+  expect(copy).not.toMatch(/Similar Apps\/Games/);
 });
 
 test("Play Store loading dialog offers email notification", () => {
@@ -26,9 +28,11 @@ test("Play Store loading dialog offers email notification", () => {
 test("App Store loading dialog states the 50 primary results the backend requests", () => {
   render(<Loading {...baseProps} selectedScraper="App Store" />);
   const copy = screen.getByText(/Keyword search results/).closest("p").textContent;
-  expect(copy).toMatch(/App Store returns up to 50 results/);
+  expect(copy).toMatch(/SMAR requests up to 50 results/);
   expect(copy).not.toMatch(/max of 30/);
   expect(copy).not.toMatch(/results\?/);
+  expect(copy).toMatch(/App Store lists as similar/);
+  expect(copy).not.toMatch(/related to|Google Play|Similar Apps\/Games/);
 });
 
 test("App Store loading dialog does not offer email notification", () => {

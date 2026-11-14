@@ -48,12 +48,13 @@ function Loading({
           {"\t"}1. <strong>Keyword search results</strong> - Results from
           searching for this keyword in{" "}
           {selectedScraper === "Play Store"
-            ? "Google Play (Google Play returns up to 20 results)"
-            : "the Apple App Store (the App Store returns up to 50 results)"}
+            ? "Google Play (SMAR requests up to 20 results)"
+            : "the Apple App Store (SMAR requests up to 50 results)"}
           <br></br>
-          {"\t"}2. <strong>Similar app links</strong> - Links (if any) to
-          “Similar Apps/Games” shown on the app profile page for each of the
-          keyword search results
+          {"\t"}2. <strong>Similar app links</strong> -{" "}
+          {selectedScraper === "Play Store"
+            ? <>Results of a second Google Play search for {"“related to <app title>”"} for each of the keyword search results</>
+            : "Apps that the App Store lists as similar to each of the keyword search results"}
           <br></br>
           <br></br>
           For more info, see the{" "}
