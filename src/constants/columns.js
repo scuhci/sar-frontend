@@ -85,7 +85,7 @@ const renderScrapeReviewButton = (params) => {
       </div>
     );
   }
-  return DownloadReviews(params.value[1], params.value[2]);
+  return <DownloadReviews appId={params.value[1]} countryCode={params.value[2]} />;
 };
 
 // Function to render avatar for icon column

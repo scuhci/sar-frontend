@@ -7,7 +7,7 @@ import { useScraper } from "../components/SelectedScraperProvider";
 
 let JSZip = require("jszip");
 
-const DownloadReviews = (appId, countryCode) => {
+const DownloadReviews = ({ appId, countryCode }) => {
   const { selectedScraper } = useScraper();
   const [isLoading, setIsLoading] = useState(false);
   const [abortController, setAbortController] = useState(null);

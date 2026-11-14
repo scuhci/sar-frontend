@@ -123,8 +123,7 @@ test("download-csv and download-relog requests carry the full search term", asyn
 });
 
 test("per-app reviews and reviews-relog requests carry the full app ID", async () => {
-    // columns.js calls DownloadReviews(appId, country) as a plain function inside renderCell.
-    const Cell = () => DownloadReviews(APP_ID, "US");
+    const Cell = () => <DownloadReviews appId={APP_ID} countryCode="US" />;
     respond = (config) => (config.url.includes("/api/reviews") ? ok(config, "a,b\n") : pending());
     render(
         <ScraperProvider>

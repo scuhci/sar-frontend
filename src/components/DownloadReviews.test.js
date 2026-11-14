@@ -22,8 +22,8 @@ window.getComputedStyle = (element, pseudo) => {
     }
 };
 
-// DownloadReviews is called as a function from a DataGrid renderCell, so wrap it the same way here.
-const Cell = () => DownloadReviews("com.x", "US");
+// Render DownloadReviews as a component with its required app and country props.
+const Cell = () => <DownloadReviews appId="com.x" countryCode="US" />;
 const Gate = ({ children }) => {
     const { selectedScraper } = useScraper();
     return selectedScraper ? children : null;
