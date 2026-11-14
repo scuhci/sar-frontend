@@ -391,19 +391,21 @@ describe("FTB-07: Cancel and store switching", () => {
     };
 
     test("Cancel during the search stops the remaining searches and stays on step 1", async () => {
-        // Each search answers after 100 ms unless its request is aborted first
+        // The first search stays open until the test answers it or its request is aborted
+        let answerFirstSearch;
+        const firstSearch = new Promise((resolve) => {
+            answerFirstSearch = resolve;
+        });
         mockBackend({
             search: (appId, config) =>
-                Promise.race([
-                    pendingUntilAborted(config),
-                    new Promise((resolve) => setTimeout(() => resolve([app(appId)]), 100)),
-                ]),
+                appId === "com.example.one" ? Promise.race([pendingUntilAborted(config), firstSearch]) : [app(appId)],
         });
         renderFor();
         submit("com.example.one, com.example.two, com.example.three");
         fireEvent.click(await screen.findByRole("button", { name: "Cancel" }));
+        answerFirstSearch([app("com.example.one")]);
         await waitFor(() => expect(screen.queryByRole("dialog")).toBeNull());
-        await new Promise((resolve) => setTimeout(resolve, 500));
+        await new Promise((resolve) => setTimeout(resolve, 0));
         expect(requested("/search")).toHaveLength(1);
         expect(screen.getByTestId("step")).toHaveTextContent("0");
     });
