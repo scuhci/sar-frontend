@@ -2,7 +2,8 @@
  * Consent-gated Google Analytics (GA4).
  *
  * gtag.js is only loaded after the visitor allows analytics in the consent
- * banner or on the /privacy page. Until then nothing is requested from Google.
+ * banner or on the /privacy page. No Google Analytics request is made until
+ * the visitor allows it.
  * The choice is kept in localStorage under CONSENT_STORAGE_KEY.
  */
 
@@ -33,6 +34,36 @@ export function getAnalyticsConsent() {
 function isGtagLoaded() {
   return Boolean(document.querySelector(`script[src="${GTAG_SRC}"]`));
 }
+
+/** Expire Google Analytics cookies for the current host and its parent domains. */
+export function clearAnalyticsCookies() {
+  try {
+    const cookieNames = document.cookie
+      .split(";")
+      .map((cookie) => cookie.trim().split("=")[0])
+      .filter((name) => /^_ga(_|$)/.test(name));
+    const hostname = window.location.hostname;
+    const labels = hostname.split(".");
+    const domains = [hostname, `.${hostname}`];
+
+    for (let index = 1; index <= labels.length - 2; index += 1) {
+      const parentDomain = labels.slice(index).join(".");
+      domains.push(parentDomain, `.${parentDomain}`);
+    }
+
+    cookieNames.forEach((name) => {
+      document.cookie = `${name}=; expires=Thu, 01 Jan 1970 00:00:00 GMT; path=/`;
+      domains.forEach((domain) => {
+        document.cookie = `${name}=; expires=Thu, 01 Jan 1970 00:00:00 GMT; path=/; domain=${domain}`;
+      });
+    });
+  } catch (e) {
+    // Cookie access can be blocked; consent changes must still apply.
+  }
+}
+
+// Indirection so tests can stub the reload (jsdom does not implement it).
+export const pageReloader = { reload: () => window.location.reload() };
 
 // Google's documented opt-out switch: while true, gtag.js sends nothing.
 function setGaDisabled(disabled) {
@@ -65,6 +96,9 @@ export function initAnalytics() {
   if (getAnalyticsConsent() === CONSENT_GRANTED) {
     gtag("consent", "update", { analytics_storage: "granted" });
     loadGtag();
+  } else if (getAnalyticsConsent() === CONSENT_DENIED) {
+    // Remove cookies left by an earlier visit that had allowed analytics.
+    clearAnalyticsCookies();
   }
 }
 
@@ -76,15 +110,19 @@ export function setAnalyticsConsent(choice) {
   } catch (e) {
     // If storage is unavailable the choice still applies for this page view.
   }
+  const withdrawn = value === CONSENT_DENIED && isGtagLoaded();
   if (value === CONSENT_GRANTED) {
     gtag("consent", "update", { analytics_storage: "granted" });
     loadGtag();
   } else {
-    // If the tag was already loaded this page view, stop it sending anything.
     gtag("consent", "update", { analytics_storage: "denied" });
     setGaDisabled(true);
+    clearAnalyticsCookies();
   }
   window.dispatchEvent(new CustomEvent(CONSENT_EVENT, { detail: value }));
+  // ga-disable does not stop a batch gtag.js has already queued, so when the
+  // tag was running in this page view, reload to drop it along with the tag.
+  if (withdrawn) pageReloader.reload();
   return value;
 }
 

@@ -37,7 +37,9 @@ const SECTIONS = [
       "pages you visit and general information about your browser, device and " +
       "approximate location, and sets Google Analytics cookies. If you decline " +
       "or have not chosen yet, Google Analytics is not loaded. Your choice is " +
-      "saved in this browser and you can change it here at any time.",
+      "saved in this browser and you can change it here at any time. If you " +
+      "decline after having allowed it, the Google Analytics cookies are " +
+      "deleted and the page reloads without Google Analytics.",
   },
 ];
 
