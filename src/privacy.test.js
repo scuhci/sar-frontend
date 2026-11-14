@@ -56,6 +56,11 @@ test("footer links to the privacy notice", () => {
   expect(screen.getByRole("link", { name: /privacy notice/i })).toHaveAttribute("href", "/privacy");
 });
 
+test("footer renders without a router and still links to the privacy notice", () => {
+  render(<Footer />);
+  expect(screen.getByRole("link", { name: /privacy notice/i })).toHaveAttribute("href", "/privacy");
+});
+
 test("/privacy renders the notice and lets the visitor decline analytics", () => {
   render(
     <MemoryRouter initialEntries={["/privacy"]}>

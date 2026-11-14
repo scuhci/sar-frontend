@@ -1,5 +1,4 @@
 import React from "react";
-import { Link } from "react-router-dom";
 import { SMAR_USER_GUIDE_URL } from "../constants/externalLinks";
 import "../css/MobileScreen.css";
 
@@ -137,7 +136,7 @@ const MobileScreen = () => {
         <a href={SMAR_USER_GUIDE_URL}>user guide</a>!
       </div>
       <div className="mobile-info">
-        <Link to="/privacy">Privacy notice</Link>
+        <a href="/privacy">Privacy notice</a>
       </div>
     </div>
   );
