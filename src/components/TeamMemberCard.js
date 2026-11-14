@@ -37,7 +37,8 @@ const TeamMemberCard = ({ name, role, imageUrl, linkedInUrl, bio }) => {
     setExpanded(!expanded);
   };
   // Members without a profile have "#" or nothing here; a link to "#" just reopens this page
-  const hasLinkedIn = /^https?:\/\/\S+$/.test(linkedInUrl || "");
+  const profileUrl = (linkedInUrl || '').trim();
+  const hasLinkedIn = /^https?:\/\/\S+$/.test(profileUrl);
 
 
   return (
@@ -49,7 +50,7 @@ const TeamMemberCard = ({ name, role, imageUrl, linkedInUrl, bio }) => {
             <Typography variant="h6" className="team-name">{name}</Typography>
             <Typography variant="subtitle1" className="team-role">{role}</Typography>
             {hasLinkedIn && (
-            <Link href={linkedInUrl} aria-label={`${name} on LinkedIn`} target="_blank" rel="noopener" className="team-linkedin">
+            <Link href={profileUrl} aria-label={`${name} on LinkedIn`} target="_blank" rel="noopener" className="team-linkedin">
                 LinkedIn
             </Link>
             )}

@@ -7,6 +7,7 @@ import { MemoryRouter } from 'react-router-dom';
 import App from './App';
 import Citation from './components/Citation';
 import NotifyMe from './components/NotifyMe';
+import { teamMembers } from './constants/TeamMembers';
 
 jest.mock('axios');
 
@@ -100,9 +101,21 @@ test('About expanders and LinkedIn links have distinct accessible names', async 
   fireEvent.click(expanders[0]);
   expect(expanders[0].getAttribute('aria-label')).toMatch(/^Show less/);
 
-  const linkedinLinks = screen.getAllByRole('link', { name: / on LinkedIn$/ });
+  const teamGrid = screen.getByText('SMAR Team').nextElementSibling;
+  const linkedinLinks = within(teamGrid).getAllByRole('link', { name: / on LinkedIn$/ });
   const linkedinNames = linkedinLinks.map((link) => link.getAttribute('aria-label'));
+  const expectedLinkedinCount = teamMembers.filter(({ linkedInUrl }) => /^https?:\/\/\S+$/.test((linkedInUrl || '').trim())).length;
+  expect(expectedLinkedinCount).toBe(teamMembers.length - 1);
+  expect(linkedinLinks).toHaveLength(expectedLinkedinCount);
+  // every card on the page except the one "#" placeholder links to a profile
+  expect(screen.getAllByRole('link', { name: / on LinkedIn$/ })).toHaveLength(expanders.length - 1);
   expect(new Set(linkedinNames).size).toBe(linkedinLinks.length);
+  linkedinLinks.forEach((link) => {
+    const href = link.getAttribute('href');
+    expect(href).toBe(href.trim());
+    expect(href).toMatch(/^http/);
+  });
+  expect(screen.getByRole('link', { name: 'Jeshwin Prince on LinkedIn' })).toHaveAttribute('href', 'https://www.linkedin.com/in/jeshwinprince/');
   expect(Array.from(document.querySelectorAll('a')).some((link) => link.getAttribute('href')?.endsWith('#'))).toBe(false);
 });
 
