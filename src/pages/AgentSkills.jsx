@@ -12,6 +12,9 @@ const GITHUB_DOCS_URL = 'https://github.com/scuhci/sar-frontend/tree/production/
 const FEEDBACK_URL = 'https://github.com/scuhci/sar-frontend/issues';
 const PLAYSTORE_SKILL_URL = '/downloads/agent-skills/smar-playstore-agent.skill';
 const APPSTORE_SKILL_URL = '/downloads/agent-skills/smar-appstore-agent.skill';
+// SAR-backend revisions the skills' CSV output was last checked against (agent-skills/verify pins the same ones).
+// Update these, the skills and the downloads together whenever the site's CSV format changes.
+const BENCHMARK = { play: '32d0fecb', appStore: '95783af' };
 
 const versions = [
     {
@@ -68,7 +71,7 @@ const supportRows = [
             'Country selection',
             'Top charts',
             'Reviews and bulk reviews',
-            'CSV output in SMAR format',
+            'CSV output in SMAR\'s format as of the last benchmark',
             'Both Google Play and the App Store (App Store keyword search needs a terminal)',
         ],
     },
@@ -108,15 +111,26 @@ const AgentSkills = () => {
                     <Typography variant="body1" fontSize="20px" className="about-text">
                         Agent Skills let you run SMAR's scraping with your own AI agent. They were built and
                         tested with Claude (Claude Code, Claude.ai, and Claude in Chrome) and produce CSV files in
-                        the same format as this site. The data values come from scripts that cross-check each
+                        the format this site used when the skills were last benchmarked (see the note below). The data values come from scripts that cross-check each
                         value; they are never typed by the AI. Anything that cannot be verified is left blank and
                         flagged. The SMAR website remains the main way to use SMAR; the skills are an alternative
                         for people who already use an AI agent, or who want to go beyond the site's limits.
                     </Typography>
 
+                    <Alert severity="warning" sx={{ marginTop: 3 }}>
+                        <strong>CSV format.</strong> The skills were last benchmarked against SMAR backend
+                        revisions <code>{BENCHMARK.play}</code> (Google Play) and <code>{BENCHMARK.appStore}</code> (App
+                        Store). If this site's CSV columns or formatting have changed since then, files from the
+                        skills and files from the site can differ until the skills are updated, so compare the
+                        header rows before combining them. App Store review files written by the skill include
+                        a <code>userUrl</code> column with a link to each reviewer's App Store profile; remove
+                        that column if you do not need it.
+                    </Alert>
+
                     <Typography variant="h5" sx={sectionSx}>Two versions</Typography>
                     <Typography variant="body1" className="about-text">
-                        There are two versions of the skills. Both produce CSV files in SMAR's format.
+                        There are two versions of the skills. Both produce CSV files in SMAR's format as of the
+                        last benchmark.
                     </Typography>
                     <Stack direction={{ xs: 'column', md: 'row' }} spacing={2} useFlexGap sx={{ marginTop: 2, alignItems: 'stretch' }}>
                         {versions.map((v) => (
