@@ -4,6 +4,7 @@ import "../css/TopList.css";
 import "../css/SearchBar.css";
 import { Select, FormControl, MenuItem, InputLabel, Typography, Button } from "@mui/material";
 import { DataGrid } from "@mui/x-data-grid";
+import { Link as RouterLink } from "react-router-dom";
 import {
     gplayCategories,
     gplayCollections,
@@ -539,8 +540,11 @@ const TopLists = ({ flipState }) => {
                                     onClick={handleDownloadAllResults}
                                     className="download-button"
                                 >
-                                    Download ({totalCount} Results + Reproducibility Log as ZIP)
+                                    Download ({totalCount} Results + Reproducibility Log as ZIP, reviews not included)
                                 </Button>
+                                <Typography variant="body2" color="text.secondary" sx={{ mt: 1 }}>
+                                    This file lists the apps above. It does not include user reviews. To get reviews, use Scrape Reviews on a row, or the <RouterLink to="/bulkreviews">Bulk Reviews page</RouterLink> for several apps.
+                                </Typography>
                             </div>
                         </div>
                     </>
