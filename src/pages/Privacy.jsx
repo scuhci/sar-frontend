@@ -41,6 +41,14 @@ const SECTIONS = [
       "decline after having allowed it, the Google Analytics cookies are " +
       "deleted and the page reloads without Google Analytics.",
   },
+  {
+    title: "Images from other servers",
+    body:
+      "App icons in result tables are loaded directly from Google and Apple " +
+      "servers, and the team photos and user guide from the lab's Amazon S3 " +
+      "storage. Those servers see your IP address when your browser fetches " +
+      "them, whether or not you allow analytics.",
+  },
 ];
 
 const CONSENT_LABELS = {

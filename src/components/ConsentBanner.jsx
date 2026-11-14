@@ -11,8 +11,8 @@ import {
 } from "../analytics";
 
 /**
- * Shown until the visitor accepts or declines Google Analytics. Nothing is
- * sent to Google before they accept.
+ * Shown until the visitor accepts or declines Google Analytics. No Google
+ * Analytics request is made before they accept.
  */
 const ConsentBanner = () => {
   const [consent, setConsent] = useState(getAnalyticsConsent);
