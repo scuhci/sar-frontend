@@ -1,7 +1,8 @@
 import * as React from 'react';
 import PropTypes from 'prop-types';
 import { Autocomplete as BaseAutocomplete, TextField } from '@mui/material';
-import { gplayCountries } from "../constants/countryCodes";
+// eslint-disable-next-line no-unused-vars
+import { gplayCountries, iosCountries } from "../constants/countryCodes";
 
 export default function Dropdown({ handler }) {
   const defaultOption = { name: 'United States', code: "US" };
