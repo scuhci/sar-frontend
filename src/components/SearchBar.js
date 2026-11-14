@@ -399,7 +399,7 @@ const SearchBar = ({ flipState }) => {
                     </div>
                 </>
             ) : resultsText ? (
-                !isLoading && <NoResults />
+                !isLoading && <NoResults fixedSearchQuery={resultsText} />
             ) : (
                 !isLoading && (
                     <div className="example-searches-container">

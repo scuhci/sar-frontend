@@ -246,6 +246,59 @@ test("a search that returns no apps shows the no-results state", async () => {
     expect(screen.queryByRole("alert")).toBeNull();
 });
 
+test("the no-results panel names the term it belongs to", async () => {
+    axios.get.mockResolvedValue({ data: { results: [], totalCount: 0 } });
+    renderSearchBar();
+    await screen.findByLabelText(/Scrape by keyword/);
+
+    search("aaa");
+    await dialogGone();
+
+    expect(await screen.findByRole("heading", { name: 'No Results Found for "aaa"' })).toBeInTheDocument();
+});
+
+test("a later failed search leaves the no-results panel labelled with the earlier term", async () => {
+    axios.get.mockResolvedValueOnce({ data: { results: [], totalCount: 0 } });
+    renderSearchBar();
+    await screen.findByLabelText(/Scrape by keyword/);
+
+    search("aaa");
+    await dialogGone();
+    expect(await screen.findByRole("heading", { name: 'No Results Found for "aaa"' })).toBeInTheDocument();
+
+    axios.get.mockRejectedValueOnce({ message: "Network Error" });
+    search("bbb");
+    await dialogGone();
+
+    expect((await screen.findByRole("alert")).textContent).toContain('"bbb"');
+    expect(screen.getByRole("heading", { name: 'No Results Found for "aaa"' })).toBeInTheDocument();
+    expect(screen.queryByText("No Results Found", { exact: true })).toBeNull();
+});
+
+test("a later cancelled search leaves the no-results panel labelled with the earlier term", async () => {
+    axios.get.mockResolvedValueOnce({ data: { results: [], totalCount: 0 } });
+    renderSearchBar();
+    await screen.findByLabelText(/Scrape by keyword/);
+
+    search("aaa");
+    await dialogGone();
+    expect(await screen.findByRole("heading", { name: 'No Results Found for "aaa"' })).toBeInTheDocument();
+
+    axios.get.mockImplementationOnce(
+        (_url, { signal }) =>
+            new Promise((_resolve, reject) => {
+                signal.addEventListener("abort", () => reject({ __CANCEL__: true, message: "canceled" }));
+            }),
+    );
+    search("bbb");
+    await screen.findByRole("dialog");
+    fireEvent.click(screen.getByRole("button", { name: /Cancel/ }));
+    await dialogGone();
+
+    expect(screen.getByRole("heading", { name: 'No Results Found for "aaa"' })).toBeInTheDocument();
+    expect(screen.queryByRole("alert")).toBeNull();
+});
+
 test("a cancelled search shows no error and a later successful search clears any earlier error", async () => {
     axios.get.mockImplementation(
         (_url, { signal }) =>
