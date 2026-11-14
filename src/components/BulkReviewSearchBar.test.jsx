@@ -643,3 +643,29 @@ describe("Combined CSV line endings", () => {
         expect(await csvText()).toBe(`${expectedLines.join("\n")}\n`);
     });
 });
+
+describe("Back from step 2", () => {
+    test("the chosen country survives Back and is used for the next search and the reviews", async () => {
+        renderFor();
+        const countryBox = screen.getByLabelText("Country");
+        fireEvent.focus(countryBox);
+        fireEvent.change(countryBox, { target: { value: "Japan" } });
+        fireEvent.click(await screen.findByRole("option", { name: "Japan" }));
+        fireEvent.blur(countryBox);
+
+        await searchFor("com.x.app");
+        expect(requested("/search")).toEqual(["/api/search?query=com.x.app&countryCode=JP"]);
+        expect(screen.getByText(/Country: JP/)).toBeInTheDocument();
+
+        fireEvent.click(screen.getByRole("button", { name: "Back" }));
+        await waitFor(() => expect(screen.getByTestId("step")).toHaveTextContent("0"));
+        expect(screen.getByLabelText("Country")).toHaveValue("Japan");
+        expect(screen.getByLabelText(/Enter app IDs/i)).toHaveValue("com.x.app");
+
+        await searchFor("com.x.app");
+        expect(requested("/search")[1]).toBe("/api/search?query=com.x.app&countryCode=JP");
+        clickDownload();
+        await waitFor(() => expect(window.URL.createObjectURL).toHaveBeenCalled());
+        expect(requested("/reviews")).toEqual(["/api/reviews?appId=com.x.app&countryCode=JP"]);
+    });
+});

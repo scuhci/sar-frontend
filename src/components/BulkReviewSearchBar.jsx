@@ -360,8 +360,8 @@ const BulkReviewSearchBar = ({ flipState, activeStep, setActiveStep }) => {
 
     return (
         <div className="search-bar-container">
-            {activeStep === 0 && (
-                <>
+            {/* Keep the form mounted so the country and IDs survive Back from step 2. */}
+            <div style={{ display: activeStep === 0 ? "contents" : "none" }}>
                     <div
                         style={{
                             alignItems: "start",
@@ -466,8 +466,7 @@ const BulkReviewSearchBar = ({ flipState, activeStep, setActiveStep }) => {
                             limits, please refer to our user guide.
                         </div>
                     </div>
-                </>
-            )}
+            </div>
 
             {/** Loading Dialog */}
             <Dialog
@@ -533,7 +532,8 @@ const BulkReviewSearchBar = ({ flipState, activeStep, setActiveStep }) => {
                     <div style={{ textAlign: "left", marginBottom: 24 }}>
                         <Typography variant="h5">{rows.length} apps selected</Typography>
                         <Typography variant="body2">
-                            Reviews are collected newest first. Click below to download your CSV file.
+                            Country: {country}. Reviews are collected newest first. Click below to download your CSV
+                            file.
                         </Typography>
                     </div>
                     <DataGrid
