@@ -1,4 +1,4 @@
-import { useState, useEffect, useRef } from "react";
+import { useState, useEffect, useMemo, useRef } from "react";
 import {
     Alert,
     Avatar,
@@ -210,16 +210,21 @@ const BulkReviewSearchBar = ({ flipState, activeStep, setActiveStep }) => {
         setActiveStep(1);
     };
 
-    const rows = apps.map((app) => ({
-        icon: app.icon,
-        title: app.title,
-        appId: app.appId,
-        reviewsCount: app.reviews,
-        developer: app.developer,
-        score: app.score,
-        url: app.url,
-        category: app.genreId,
-    }));
+    // Memoised so the grid keeps the same rows while the progress dialog re-renders
+    const rows = useMemo(
+        () =>
+            apps.map((app) => ({
+                icon: app.icon,
+                title: app.title,
+                appId: app.appId,
+                reviewsCount: app.reviews,
+                developer: app.developer,
+                score: app.score,
+                url: app.url,
+                category: app.genreId,
+            })),
+        [apps]
+    );
 
     const handleKeyDown = (event) => {
         if (event.key === "Enter") {
