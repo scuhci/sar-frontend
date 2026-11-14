@@ -85,6 +85,7 @@ const booleanFields = ["available", "offersIAP", "adSupported", "downloadable"];
 // For fields "review" and "icon", returns their respective renderCell functions
 // For boolean fields, returns the function (params) => params.value.toString()
 // For list fields (App Store genreIds, languages, screenshots, ...), joins the values
+// (an empty list renders "-", like a missing value)
 // For non-boolean fields, returns the function (params) => params.value ?? "-"
 const renderCell = (fieldName) => {
   // Case 1: field is "review"
@@ -96,8 +97,11 @@ const renderCell = (fieldName) => {
     return (params) => params.value.toString();
   // Case 4: field is a list field
   // Case 5: field is a non-boolean field
-  return (params) =>
-    Array.isArray(params.value) ? params.value.join(", ") : params.value ?? "-";
+  return (params) => {
+    if (Array.isArray(params.value))
+      return params.value.length ? params.value.join(", ") : "-";
+    return params.value ?? "-";
+  };
 };
 
 const narrowWidthFields = ["icon"];

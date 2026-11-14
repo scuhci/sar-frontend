@@ -12,6 +12,8 @@ const headerText = (column) => renderToText(column.renderHeader());
 const cellText = (column, row) =>
   renderToText(column.renderCell({ value: row[column.field], row }));
 
+const isEmptyList = (value) => Array.isArray(value) && value.length === 0;
+
 describe("appStoreColumns", () => {
   const dataColumns = appStoreColumns.filter(
     (column) => !synthesizedFields.includes(column.field)
@@ -32,9 +34,17 @@ describe("appStoreColumns", () => {
   test("renders the result value instead of '-' for every populated column", () => {
     const blank = dataColumns
       .filter((column) => column.field !== "icon")
+      .filter((column) => !isEmptyList(appStoreRow[column.field]))
       .filter((column) => cellText(column, appStoreRow) === "-")
       .map((column) => column.field);
     expect(blank).toEqual([]);
+  });
+
+  test("renders an empty list as '-', the same as a missing value", () => {
+    // Most iPhone-only apps have no Apple TV screenshots
+    const emptyColumns = dataColumns.filter((column) => isEmptyList(appStoreRow[column.field]));
+    expect(emptyColumns.map((column) => column.field)).toContain("appletvScreenshots");
+    emptyColumns.forEach((column) => expect(cellText(column, appStoreRow)).toBe("-"));
   });
 
   test("binds App Store headers to the backend's field names", () => {
