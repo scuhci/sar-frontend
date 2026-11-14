@@ -2,28 +2,29 @@ import React, { createContext, useState, useContext } from "react";
 
 const ScraperContext = createContext();
 
+const readStoredScraper = () => {
+    try {
+        const stored = JSON.parse(localStorage.getItem("selectedScraper"));
+        return stored === "App Store" || stored === "Play Store" ? stored : "Play Store";
+    } catch (error) {
+        return "Play Store";
+    }
+};
+
 export const ScraperProvider = ({ children }) => {
-    const [selectedScraper, setSelectedScraper] = useState(); // "Play Store" | "App Store"
+    const [selectedScraper, setSelectedScraper] = useState(readStoredScraper);
 
     // Sync selectedScraper with localStorage on change
     React.useEffect(() => {
-        if (selectedScraper) {
+        try {
             localStorage.setItem(
                 "selectedScraper",
                 JSON.stringify(selectedScraper)
             );
+        } catch (error) {
+            // storage blocked: keep the choice in memory
         }
     }, [selectedScraper]);
-
-    // Initialize selectedScraper from localStorage on component mount
-    React.useEffect(() => {
-        const storedScraper = localStorage.getItem("selectedScraper");
-        if (storedScraper) {
-            setSelectedScraper(JSON.parse(storedScraper));
-        } else {
-            setSelectedScraper("Play Store"); // Default to "Play Store"
-        }
-    }, []);
 
     return (
         <ScraperContext.Provider
