@@ -2,7 +2,8 @@
 //
 // Mirrors smar.nginx.conf in SAR-backend: /api/* goes to the Google Play
 // backend and /ios/* goes to the App Store backend, with the prefix stripped
-// (the backends serve /search, /reviews, ... at their root).
+// (the backends serve /search, /reviews, ... at their root). Like nginx's
+// `location /api/`, only paths under the prefix match, not /api-foo.
 //
 // Defaults to backends running on this machine. To point at something else,
 // e.g. the deployed server, set the env vars before starting:
@@ -23,15 +24,13 @@ module.exports = function setupProxy(app) {
   const targets = resolveTargets();
   Object.keys(targets).forEach((prefix) => {
     app.use(
-      createProxyMiddleware(prefix, {
+      createProxyMiddleware(`${prefix}/`, {
         target: targets[prefix],
         changeOrigin: true,
-        pathRewrite: { [`^${prefix}`]: "" },
+        pathRewrite: { [`^${prefix}/`]: "/" },
       })
     );
   });
 };
 
 module.exports.resolveTargets = resolveTargets;
-module.exports.DEFAULT_PLAY_API = DEFAULT_PLAY_API;
-module.exports.DEFAULT_IOS_API = DEFAULT_IOS_API;
