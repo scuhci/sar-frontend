@@ -123,6 +123,23 @@ describe("Home 'Fetch Top Charts' buttons", () => {
         expect(shown("Collection*")).toBe("Top Free iPad Apps");
     });
 
+    test("an App Store collection left in router state is ignored on the Play Store", async () => {
+        await renderTopLists("Play Store", { collectionState: "toppaidapplications", selectedScraper: "App Store" });
+
+        expect(shown("Collection*")).toBe("Top Free");
+        fireEvent.click(screen.getByRole("button", { name: "Search" }));
+        expect(lastRequest()).toMatch(/^\/api\/toplists\?collection=TOP_FREE&/);
+    });
+
+    test("a Play Store collection left in router state is ignored on the App Store", async () => {
+        await renderTopLists("App Store", { collectionState: "TOP_PAID", selectedScraper: "Play Store" });
+
+        expect(shown("Device*")).toBe("iOS");
+        expect(shown("Collection*")).toBe("Top Free iOS Apps");
+        fireEvent.click(screen.getByRole("button", { name: "Search" }));
+        expect(lastRequest()).toMatch(/^\/ios\/toplists\?collection=topfreeapplications&/);
+    });
+
     test("Play Store buttons are unchanged", async () => {
         await renderTopLists("Play Store", { collectionState: "TOP_PAID", selectedScraper: "Play Store" });
 

@@ -120,16 +120,23 @@ const TopLists = ({ flipState }) => {
     }, [selectedScraper]);
 
     useEffect(() => {
-        if (location.state && location.state.collectionState) {
-            setCollection(location.state.collectionState);
+        const handedIn = location.state && location.state.collectionState;
+        if (!handedIn) return;
+        // Router state outlives a store switch (Back/Forward), so only take a collection the selected store has
+        if (selectedScraper === "Play Store") {
+            if (gplayCollections.some(({ code }) => code === handedIn)) {
+                setCollection(handedIn);
+            }
+        } else if (selectedScraper === "App Store") {
             // Keep the device in step with an App Store collection handed in from Home
-            const collectionDevice = getIosDeviceForCollection(location.state.collectionState);
+            const collectionDevice = getIosDeviceForCollection(handedIn);
             if (collectionDevice) {
+                setCollection(handedIn);
                 setDevice(collectionDevice);
-                setCategory(defaultCategoryFor(location.state.collectionState));
+                setCategory(defaultCategoryFor(handedIn));
             }
         }
-    }, [location.state]);
+    }, [location.state, selectedScraper]);
 
     const rows =
         displayPermissions && selectedScraper === "Play Store"
