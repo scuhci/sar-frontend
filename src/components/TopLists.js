@@ -2,7 +2,7 @@ import React, { useState, useEffect } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
 import "../css/TopList.css";
 import "../css/SearchBar.css";
-import { Select, FormControl, MenuItem, InputLabel, Typography, Button } from "@mui/material";
+import { Select, FormControl, MenuItem, InputLabel, Typography, Button, Alert } from "@mui/material";
 import { DataGrid } from "@mui/x-data-grid";
 import {
     gplayCategories,
@@ -80,6 +80,14 @@ const defaultIosCollectionByDevice = {
     IPAD: "topfreeipadapplications",
 };
 
+// A short reason for a failed request: the backend's own message when it sent one.
+const requestErrorReason = (status, message) => {
+    if (!status) return "Could not reach the server.";
+    if (status === 504) return "The request took too long.";
+    if (typeof message === "string" && message.trim()) return message.trim();
+    return `The server returned status ${status}.`;
+};
+
 // zip
 let JSZip = require("jszip");
 
@@ -96,6 +104,8 @@ const TopLists = ({ flipState }) => {
     const [totalCount, setTotalCount] = useState(0);
     const [abortController, setAbortController] = useState(null);
     const [showTable, setShowTable] = useState(false);
+    const [chartError, setChartError] = useState("");
+    const [downloadError, setDownloadError] = useState("");
     const [includePermissions, setIncludePermissions] = useState(false);
     // The search the chart on screen came from; the heading, download, relog and row actions read this, not the live form.
     const [shownQuery, setShownQuery] = useState({
@@ -123,6 +133,8 @@ const TopLists = ({ flipState }) => {
         }
         setIncludePermissions(false);
         setShowTable(false);
+        setChartError("");
+        setDownloadError("");
     }, [selectedScraper]);
 
     useEffect(() => {
@@ -288,6 +300,7 @@ const TopLists = ({ flipState }) => {
         setAbortController(newAbortController);
 
         setIsLoading(true);
+        setChartError("");
 
         axios
             .get(
@@ -303,6 +316,7 @@ const TopLists = ({ flipState }) => {
             )
             .then((response) => {
                 flipState();
+                setDownloadError("");
                 setShownQuery(sent);
                 setShowTable(true);
                 setSearchResults(response.data.results);
@@ -314,9 +328,15 @@ const TopLists = ({ flipState }) => {
                     console.log("Request canceled:", error.message);
                 } else {
                     flipState();
-                    setShowTable(true);
+                    setShowTable(false);
                     setSearchResults([]);
                     setTotalCount(0);
+                    setChartError(
+                        `Top Charts request failed: ${requestErrorReason(
+                            error.response?.status,
+                            error.response?.data?.error,
+                        )} No chart was returned, so this is not an empty chart. Please try again.`,
+                    );
                     console.error("Error fetching top lists:", error);
                 }
                 setIsLoading(false);
@@ -324,6 +344,7 @@ const TopLists = ({ flipState }) => {
     };
 
     const handleDownloadAllResults = async () => {
+        setDownloadError("");
         try {
             const response = await axios.get(
                 selectedScraper === "Play Store"
@@ -384,6 +405,20 @@ const TopLists = ({ flipState }) => {
                 window.URL.revokeObjectURL(url);
             });
         } catch (error) {
+            let message = "";
+            try {
+                const data = error.response?.data;
+                const text = data && typeof data.text === "function" ? await data.text() : null;
+                message = (text ? JSON.parse(text) : data)?.error ?? "";
+            } catch {
+                message = "";
+            }
+            setDownloadError(
+                `Download failed: ${requestErrorReason(
+                    error.response?.status,
+                    message,
+                )} Search this chart again, then download.`,
+            );
             console.error("Error fetching or downloading the file:", error);
         }
     };
@@ -518,6 +553,11 @@ const TopLists = ({ flipState }) => {
                 country={pending.labels[2]}
                 apps={describeApps(pending.labels[0], pending.labels[1])}
             />
+            {chartError && (
+                <Alert severity="error" onClose={() => setChartError("")}>
+                    {chartError}
+                </Alert>
+            )}
             {showTable &&
                 (totalCount > 0 ? (
                     <>
@@ -566,6 +606,11 @@ const TopLists = ({ flipState }) => {
                                     Download ({totalCount} Results + Reproducibility Log as ZIP)
                                 </Button>
                             </div>
+                            {downloadError && (
+                                <Alert severity="error" onClose={() => setDownloadError("")}>
+                                    {downloadError}
+                                </Alert>
+                            )}
                         </div>
                     </>
                 ) : (
