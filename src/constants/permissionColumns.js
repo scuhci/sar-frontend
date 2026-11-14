@@ -1,6 +1,7 @@
 import React from "react";
 import CheckIcon from "@mui/icons-material/Check";
 import CloseIcon from "@mui/icons-material/Close";
+import HelpOutlineIcon from "@mui/icons-material/HelpOutline";
 import { Tooltip } from "@mui/material";
 
 // Helper function for creating renderHeader attribute for permissions columns
@@ -12,9 +13,17 @@ const renderPermissionHeader = (headerText) => {
   );
 };
 
-// Helper function to render permissions as checks (true) or crosses (false)
+// Helper function to render permissions as checks (true), crosses (false), or a question mark when the lookup failed (null)
 const renderPermissionsCell = (params) =>
-  params.value ? <CheckIcon color="success" /> : <CloseIcon color="error" />;
+  params.value == null ? (
+    <Tooltip title="Permission lookup failed">
+      <HelpOutlineIcon color="disabled" />
+    </Tooltip>
+  ) : params.value ? (
+    <CheckIcon color="success" />
+  ) : (
+    <CloseIcon color="error" />
+  );
 
 // Map of permission field names to corresponding header names
 // Used in renderPermissionHeader to generate renderHeader function
