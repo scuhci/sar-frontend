@@ -426,14 +426,15 @@ const BulkReviewSearchBar = ({ flipState, activeStep, setActiveStep }) => {
             >
                 <div className="loading-backdrop" open={isLoading}></div>
                 <DialogContent>
-                    <DialogContentText sx={{ fontWeight: "bold", pb: 2 }}>
+                    <DialogContentText id="loading-dialog-title" sx={{ fontWeight: "bold", pb: 2 }}>
                         Scraping data {searchQuery ? ` for "${searchQuery}"` : ""}...
                     </DialogContentText>
-                    <DialogContentText sx={{ pb: 2 }}>
+                    <DialogContentText role="status" sx={{ pb: 2 }}>
                         Currently scraping data for {currentlySearching}
                     </DialogContentText>
                     {/** Determinate Version */}
                     <LinearProgress
+                        aria-labelledby="loading-dialog-title"
                         variant="determinate"
                         value={((appIds.indexOf(currentlySearching) + 1) / appIds.length) * 100}
                     />

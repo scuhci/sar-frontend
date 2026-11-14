@@ -12,8 +12,10 @@ import { Android, Apple } from "@mui/icons-material";
 
 // import { useLocation, useNavigate } from "react-router-dom";
 import { useScraper } from "../components/SelectedScraperProvider";
+import usePageTitle from "../hooks/usePageTitle";
 
 const TopCharts = ({ flipState }) => {
+    usePageTitle("Top Charts | SMAR");
     // const [selectedScraper, setSelectedScraper] = React.useState("Play Store");
     const { selectedScraper, setSelectedScraper } = useScraper();
 
@@ -35,14 +37,14 @@ const TopCharts = ({ flipState }) => {
     return !isMobileDevice ? (
         <>
             <div className="app-container">
-                <div className="content">
+                <main className="content">
                     <Box sx={{ borderBottom: 1, borderColor: "divider",marginTop : 7}}>
                         <Tabs
                             value={selectedScraper ?? "Play Store"}
                             onChange={(_event, newValue) =>
                                 setSelectedScraper(newValue)
                             }
-                            aria-label="basic tabs example"
+                            aria-label="App store"
                         >
                             <Tab
                                 icon={<Android />}
@@ -59,11 +61,10 @@ const TopCharts = ({ flipState }) => {
                         </Tabs>
                     </Box>
                     <div className="home-container">
-                        <Typography variant="h3" className="home-header">
+                        <Typography variant="h3" component="h1" className="home-header">
                             Systematic Mobile Application Reviews - Top Charts
                             <Chip
                                 color="success"
-                                onClick={function () {}}
                                 size="sm"
                                 variant="outlined"
                             >
@@ -81,7 +82,7 @@ const TopCharts = ({ flipState }) => {
                         </Typography>
                     </div>
                     <TopLists flipState={flipState} selectedScraper={selectedScraper} />
-                </div>
+                </main>
                 <Citation />
                 <Footer/>
                 <br/>

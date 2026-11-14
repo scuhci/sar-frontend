@@ -36,6 +36,8 @@ const TeamMemberCard = ({ name, role, imageUrl, linkedInUrl, bio }) => {
   const handleExpandClick = () => {
     setExpanded(!expanded);
   };
+  // Members without a profile have "#" or nothing here; a link to "#" just reopens this page
+  const hasLinkedIn = /^https?:\/\/\S+$/.test(linkedInUrl || "");
 
 
   return (
@@ -46,9 +48,11 @@ const TeamMemberCard = ({ name, role, imageUrl, linkedInUrl, bio }) => {
             <div className="team-info">
             <Typography variant="h6" className="team-name">{name}</Typography>
             <Typography variant="subtitle1" className="team-role">{role}</Typography>
-            <Link href={linkedInUrl} target="_blank" rel="noopener" className="team-linkedin">
+            {hasLinkedIn && (
+            <Link href={linkedInUrl} aria-label={`${name} on LinkedIn`} target="_blank" rel="noopener" className="team-linkedin">
                 LinkedIn
             </Link>
+            )}
             </div>
         </CardContent>
         <CardActions>
@@ -56,7 +60,7 @@ const TeamMemberCard = ({ name, role, imageUrl, linkedInUrl, bio }) => {
             expand={expanded}
             onClick={handleExpandClick}
             aria-expanded={expanded}
-            aria-label="show more"
+            aria-label={`${expanded ? 'Show less' : 'Show more'} about ${name}`}
           >
             <ExpandMoreIcon />
           </ExpandMore>

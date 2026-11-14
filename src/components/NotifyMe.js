@@ -58,6 +58,8 @@ const NotifyMe = ({ country, query, permissions, queryTime }) => {
       {!emailNotifySuccess && (
         <div className="notificationWrapper">
           <input
+            type="email"
+            aria-label="Email address"
             placeholder="Email Address"
             className="emailField"
             value={email}

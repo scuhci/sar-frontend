@@ -7,6 +7,7 @@ import {
 import { Download, GitHub } from '@mui/icons-material';
 import Footer from '../components/Footer';
 import "../css/About.css";
+import usePageTitle from '../hooks/usePageTitle';
 
 const GITHUB_DOCS_URL = 'https://github.com/scuhci/sar-frontend/tree/production/agent-skills';
 const FEEDBACK_URL = 'https://github.com/scuhci/sar-frontend/issues';
@@ -97,11 +98,12 @@ const supportRows = [
 const sectionSx = { marginTop: 4, marginBottom: 2 };
 
 const AgentSkills = () => {
+    usePageTitle('Agent Skills | SMAR');
     return (
         <Container sx={{ marginTop: 7 }} maxWidth="md">
             <div className="app-container">
-                <div className="content">
-                    <Typography variant="h3" className="about-header">Agent Skills</Typography>
+                <main className="content">
+                    <Typography variant="h3" component="h1" className="about-header">Agent Skills</Typography>
 
                     <Alert severity="info" sx={{ marginBottom: 3 }}>
                         <strong>Experimental.</strong> Agent Skills are a new, experimental way to use SMAR.
@@ -253,7 +255,7 @@ const AgentSkills = () => {
                         </Link>
                         . Your feedback helps us decide what to support next.
                     </Typography>
-                </div>
+                </main>
                 <Footer />
             </div>
             <br />

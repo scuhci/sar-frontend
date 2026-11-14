@@ -12,8 +12,10 @@ import Tab from "@mui/material/Tab";
 import { Android, Apple } from "@mui/icons-material";
 import { useScraper } from "../components/SelectedScraperProvider";
 import Footer from "../components/Footer";
+import usePageTitle from "../hooks/usePageTitle";
 
 const Home = ({ flipState }) => {
+    usePageTitle("SMAR - Systematic Mobile Application Reviews");
     // State for choosing Play Store / iOS App Store
     // const [selectedScraper, setSelectedScraper] = React.useState("Play Store");
     const { selectedScraper, setSelectedScraper } = useScraper();
@@ -26,7 +28,7 @@ const Home = ({ flipState }) => {
     return !isMobileDevice ? (
         <>
             <div className="app-container">
-                <div className="content">
+                <main className="content">
                     {/** Tabs to select Play Store / iOS App Store */}
                     <Box sx={{ borderBottom: 1, borderColor: "divider", marginTop: 7 }}>
                         <Tabs
@@ -34,7 +36,7 @@ const Home = ({ flipState }) => {
                             onChange={(_event, newValue) =>
                                 setSelectedScraper(newValue)
                             }
-                            aria-label="basic tabs example"
+                            aria-label="App store"
                         >
                             <Tab
                                 icon={<Android />}
@@ -51,11 +53,10 @@ const Home = ({ flipState }) => {
                         </Tabs>
                     </Box>
                     <div className="home-container">
-                        <Typography variant="h3" className="home-header">
+                        <Typography variant="h3" component="h1" className="home-header">
                             Systematic Mobile Application Reviews
                             <Chip
                                 color="success"
-                                onClick={function () { }}
                                 size="sm"
                                 variant="outlined"
                             >
@@ -73,7 +74,7 @@ const Home = ({ flipState }) => {
                         </Typography>
                     </div>
                     <SearchBar flipState={flipState} />
-                </div>
+                </main>
                 <Citation />
                 <Footer />
                 <br />

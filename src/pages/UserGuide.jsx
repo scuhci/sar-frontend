@@ -4,7 +4,9 @@ import { Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Paper
 import Footer from '../components/Footer';
 import "../css/UserGuide.css";
 import { Android, Apple, ChevronLeft, ChevronRight } from '@mui/icons-material';
+import usePageTitle from '../hooks/usePageTitle';
 const UserGuide = () => {
+    usePageTitle('User Guide | SMAR');
     const [sidebarOpen, setSidebarOpen] = React.useState(true);
     const [selectedStore, setSelectedStore] = React.useState('PS')
     const handleChange = (event, newStore) => {
@@ -112,10 +114,10 @@ const UserGuide = () => {
         createData('dateScraped', 'Timestamp, date from when this review data was scraped')
     ]
 
-    const MetadataTable = ({ rows }) => {
+    const MetadataTable = ({ rows, label }) => {
         return (
             <TableContainer component={Paper}>
-                <Table sx={{ minWidth: 250 }} aria-label="simple table">
+                <Table sx={{ minWidth: 250 }} aria-label={label}>
                     <TableHead>
                         <TableRow>
                             <TableCell><b>Field</b></TableCell>
@@ -148,8 +150,8 @@ const UserGuide = () => {
 
         <Container sx={{ marginTop: 7 }} maxWidth="lg">
             <div className="app-container">
-                <div className="content">
-                    <Typography variant="h4" className="main-header">User Guide</Typography>
+                <main className="content">
+                    <Typography variant="h4" component="h1" className="main-header">User Guide</Typography>
 
                     <div className="user-guide-layout">
                         <div className="user-guide-toc-cluster">
@@ -252,7 +254,7 @@ const UserGuide = () => {
                     </Typography>
 
                     <Box display="flex" justifyContent="center" alignItems="center">
-                        <img src={require('../res/SMAR_Steps.png')} className="inline-image-nb" alt="SMAR steps" />
+                        <img src={require('../res/SMAR_Steps.png')} className="inline-image-nb" alt="Diagram of the steps in a SMAR study" />
                     </Box>
 
                     <Typography variant="h5" className="section-sub-header" id="Why_SMAR">Why would I want to conduct an SMAR?</Typography>
@@ -294,7 +296,7 @@ const UserGuide = () => {
                         begin the search process.
                     </Typography>
                     <Box display="flex" justifyContent="center" alignItems="center">
-                        <img src={require('../res/SMAR_Home_Screen.png')} className="inline-image" alt="SMAR steps" />
+                        <img src={require('../res/SMAR_Home_Screen.png')} className="inline-image" alt="Keyword search home screen" />
                     </Box>
                     <br /><br />
                     <Typography variant="body1" className="main-text">
@@ -302,7 +304,7 @@ const UserGuide = () => {
                         a few minutes to complete.
                     </Typography>
                     <Box display="flex" justifyContent="center" alignItems="center">
-                        <img src={require('../res/SMAR_Searching_Dialog.png')} className="inline-image" alt="SMAR steps" />
+                        <img src={require('../res/SMAR_Searching_Dialog.png')} className="inline-image" alt="Keyword search progress dialog" />
                     </Box>
                     <br /><br />
 
@@ -317,7 +319,7 @@ const UserGuide = () => {
                         found in the section 'SMAR Metadata Breakdown'.
                     </Typography>
                     <Box display="flex" justifyContent="center" alignItems="center">
-                        <img src={require('../res/SMAR_Results_Screen.png')} className="inline-image" alt="SMAR steps" />
+                        <img src={require('../res/SMAR_Results_Screen.png')} className="inline-image" alt="Keyword search results screen" />
                     </Box>
                     <br /><br />
                     <Typography variant="body1" className="main-text">
@@ -332,7 +334,7 @@ const UserGuide = () => {
                         the header navigation buttons (2).
                     </Typography>
                     <Box display="flex" justifyContent="center" alignItems="center">
-                        <img src={require('../res/SMAR_Home_Screen_TL.png')} className="inline-image" alt="SMAR home screen" />
+                        <img src={require('../res/SMAR_Home_Screen_TL.png')} className="inline-image" alt="Top Lists navigation home screen" />
                     </Box>
                     <br /><br />
 
@@ -343,7 +345,7 @@ const UserGuide = () => {
                             camera access) in addition to other app metadata.</i> Click on the 'Scrape Data' button (5) to begin the search process.
                     </Typography>
                     <Box display="flex" justifyContent="center" alignItems="center">
-                        <img src={require('../res/SMAR_TL.png')} className="inline-image" alt="SMAR top lists" />
+                        <img src={require('../res/SMAR_TL.png')} className="inline-image" alt="Top Lists selection screen" />
                     </Box>
                     <br /><br />
 
@@ -352,7 +354,7 @@ const UserGuide = () => {
                         country* ”. This will take a few seconds to complete.
                     </Typography>
                     <Box display="flex" justifyContent="center" alignItems="center">
-                        <img src={require('../res/SMAR_Searching_Dialog_TL.png')} className="inline-image" alt="SMAR steps" />
+                        <img src={require('../res/SMAR_Searching_Dialog_TL.png')} className="inline-image" alt="Top Lists scraping progress dialog" />
                     </Box>
                     <br /><br />
 
@@ -369,7 +371,7 @@ const UserGuide = () => {
                         found in the next section 'SMAR Metadata Breakdown'.
                     </Typography>
                     <Box display="flex" justifyContent="center" alignItems="center">
-                        <img src={require('../res/SMAR_Results_Screen_TL.png')} className="inline-image" alt="SMAR steps" />
+                        <img src={require('../res/SMAR_Results_Screen_TL.png')} className="inline-image" alt="Top Lists results screen" />
                     </Box>
                     <br /><br />
 
@@ -402,11 +404,11 @@ const UserGuide = () => {
                             <Typography variant="h5" className="section-sub-header" id="App_Metadata">App Metadata (Play Store)</Typography>
                             <br />
 
-                            <MetadataTable rows={appRows_PlayStore} />
+                            <MetadataTable rows={appRows_PlayStore} label="App metadata fields (Play Store)" />
                             <br /><br />
 
                             <Typography variant="h5" className="section-sub-header" id="Review_Metadata">Review Metadata (Play Store)</Typography>
-                            <MetadataTable rows={reviewRows_PlayStore} />
+                            <MetadataTable rows={reviewRows_PlayStore} label="Review metadata fields (Play Store)" />
                         </div>
                     )}
 
@@ -415,11 +417,11 @@ const UserGuide = () => {
                             <Typography variant="h5" className="section-sub-header" id="App_Metadata">App Metadata (App Store)</Typography>
                             <br />
 
-                            <MetadataTable rows={appRows_AppStore} />
+                            <MetadataTable rows={appRows_AppStore} label="App metadata fields (App Store)" />
                             <br /><br />
 
                             <Typography variant="h5" className="section-sub-header" id="Review_Metadata">Review Metadata (App Store)</Typography>
-                            <MetadataTable rows={reviewRows_AppStore} />
+                            <MetadataTable rows={reviewRows_AppStore} label="Review metadata fields (App Store)" />
                         </div>
                     )}
 
@@ -466,7 +468,7 @@ const UserGuide = () => {
                     </Typography>
                         </div>
                     </div>
-                </div>
+                </main>
                 <Footer />
             </div>
             <br />
