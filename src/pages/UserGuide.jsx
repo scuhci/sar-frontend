@@ -46,6 +46,7 @@ const UserGuide = () => {
         createData('originalReleaseDate', 'App’s initial release date'),
         createData('currentAppVersion', 'Current app version'),
         createData('currentVersionChanges', 'Release notes from latest app update'),
+        createData('permissionsFetchFailed', "Only present when 'Include permissions in scrape' is checked. true when the app's permissions could not be retrieved; its permission columns are then left empty."),
         createData('dateScraped', 'Timestamp, date from when this app data was scraped')
     ]
     const reviewRows_PlayStore = [
@@ -67,6 +68,7 @@ const UserGuide = () => {
         createData('appId', 'App bundle identifier'),
         createData('appName', 'Name of the app'),
         createData('url', 'App page URL (App Store)'),
+        createData('description', 'App description on the App Store'),
         createData('icon', 'App image icon URL'),
         createData('genres', 'A comma separated list of genres this app falls within'),
         createData('genreIDs', 'A comma separated list of genre IDs corresponding to the genres this app falls within'),
@@ -96,15 +98,16 @@ const UserGuide = () => {
         createData('appletvScreenshots', 'Screenshot previews of the Apple TV app (if officially supported)'),
         createData('supportedDeviceList', 'A list of various devices that are supported by the app'),
         createData('country', "App Store country code"),
+        createData('collection', 'Top Charts files only: the chart the app was scraped from'),
         createData('scrapedFrom', 'Keyword and app ID search files only; Top Charts files do not have this column. Two possible values: (1) keyword search - the results of searching for the keyword in the Apple App Store. SMAR requests up to 50 results per keyword search. An app ID lookup returns one app, which is also labelled keyword search. (2) similar app links - the apps the App Store lists as similar to each of the keyword search results. This allows researchers to gather a larger number of apps that are related to a specific keyword. Regardless of how many times an app is found it is only shown once in the CSV (duplicates are removed).'),
         createData('dateScraped', 'Timestamp, date from when this app data was scraped'),
     ]
 
     const reviewRows_AppStore = [
         createData('reviewID', "Review's unique ID registered with the App Store"),
-        createData('userUrl', "Link to the reviewer's App Store profile"),
         createData('versionWhenReviewed', "App's version number at the time when the current review was published"),
         createData('rating', 'App rating as given by review'),
+        createData('reviewTitle', 'Title the reviewer gave the review'),
         createData('reviewText', 'Actual review text'),
         createData('reviewURL', "Review's App Store URL"),
 
@@ -433,7 +436,8 @@ const UserGuide = () => {
                             <br />
                             <Typography variant="body1" className="main-text" id="Permission_Columns">
                                 When 'Include permissions in scrape' is checked, the file also has one column per app permission
-                                (for example 'take pictures and videos'), holding true or false for each app.
+                                (for example 'take pictures and videos'), holding true or false for each app. The cells are left empty for an
+                                app whose permissions could not be retrieved (see permissionsFetchFailed).
                             </Typography>
                             <br /><br />
 

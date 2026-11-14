@@ -9,22 +9,22 @@ const PLAY_APP_CSV = [
     "originalPrice", "discountEndDate", "downloadable", "inAppPurchases", "inAppPurchasesPriceRange",
     "androidMinVersion", "developerEmail", "developerWebsite", "developerAddress", "privacyPolicyURL",
     "genreId", "contentRating", "inAppAdvertisements", "originalReleaseDate", "currentAppVersion",
-    "currentVersionChanges", "dateScraped",
+    "currentVersionChanges", "permissionsFetchFailed", "dateScraped",
 ];
 const PLAY_REVIEWS_CSV = [
     "reviewID", "dateReviewed", "rating", "reviewURL", "reviewText", "developerReplyDate",
     "developerReplyText", "versionWhenReviewed", "helpfulVotes", "country", "dateScraped",
 ];
 const APP_STORE_APP_CSV = [
-    "id", "appId", "appName", "url", "icon", "genres", "genreIDs", "primaryGenre", "primaryGenreId",
+    "id", "appId", "appName", "url", "description", "icon", "genres", "genreIDs", "primaryGenre", "primaryGenreId",
     "contentRating", "supportedLanguages", "appSizeInBytes", "requiredOsVersion", "originalReleaseDate",
     "lastUpdated", "releaseNotes", "currentAppVersion", "price", "currency", "developerId", "developer",
     "developerAppStorePageURL", "developerWebsite", "avgRating", "totalReviews", "currentVersionAvgRating",
     "currentVersionReviews", "appScreenshots", "appIpadScreenshots", "appletvScreenshots",
-    "supportedDeviceList", "country", "scrapedFrom", "dateScraped",
+    "supportedDeviceList", "country", "scrapedFrom", "collection", "dateScraped",
 ];
 const APP_STORE_REVIEWS_CSV = [
-    "reviewID", "userUrl", "versionWhenReviewed", "rating", "reviewText", "reviewURL", "dateReviewed",
+    "reviewID", "versionWhenReviewed", "rating", "reviewTitle", "reviewText", "reviewURL", "dateReviewed",
     "country", "dateScraped",
 ];
 
@@ -81,14 +81,15 @@ describe("User Guide describes the data as the backends produce it", () => {
         expect(apps.description).toMatch(/full app description is not included/);
     });
 
-    test("App Store: 50 keyword results, its own text, rating counts, reviewer profile link", () => {
+    test("App Store: 50 keyword results, its own text, rating counts, no reviewer profile link", () => {
         const [apps, reviews] = renderGuide("App Store");
         expect(apps.scrapedFrom).toMatch(/up to 50 results/);
         expect(apps.scrapedFrom).toMatch(/Apple App Store/);
         expect(apps.scrapedFrom).not.toMatch(/Google Play|30 results|September 2024/);
         expect(apps.totalReviews).toMatch(/ratings/);
         expect(apps.currentVersionReviews).toMatch(/ratings/);
-        expect(reviews.userUrl).toMatch(/reviewer's App Store profile/);
+        // The reviewer profile link is no longer written to the reviews file
+        expect(reviews.userUrl).toBeUndefined();
     });
 });
 
