@@ -100,6 +100,8 @@ const BulkReviewSearchBar = ({ flipState, activeStep, setActiveStep }) => {
     const { selectedScraper } = useScraper();
     // Controller for the requests in flight, so Cancel can stop them
     const abortControllerRef = useRef(null);
+    // Leaving the page stops the run, the same as Cancel
+    useEffect(() => () => abortControllerRef.current?.abort(), []);
     const [searchQuery, setSearchQuery] = useState("");
     const [searchQueryErrorMessage, setSearchQueryErrorMessage] = useState("");
     // Apps the search resolved, in the order they were entered
@@ -239,8 +241,10 @@ const BulkReviewSearchBar = ({ flipState, activeStep, setActiveStep }) => {
         setIsLoading(false);
     };
 
-    // The selected apps belong to one store, so switching store goes back to the search step
+    // The selected apps belong to one store, so switching store stops any run and goes back to the search step
     useEffect(() => {
+        abortControllerRef.current?.abort();
+        setIsLoading(false);
         setApps([]);
         setActiveStep(0);
     }, [selectedScraper, setActiveStep]);
@@ -315,9 +319,11 @@ const BulkReviewSearchBar = ({ flipState, activeStep, setActiveStep }) => {
                 relogs.push(`appId: ${appId}\nThe reproducibility log for this app could not be generated.`);
             }
         }
+        // The run was cancelled or the page was left: don't hand over a partial file
+        if (newAbortController.signal.aborted) return;
         setFailedReviewAppIds(failed);
-        // Nothing to download, or the user pressed Cancel (don't hand them a partial file)
-        if (reviewSearchResults.length === 0 || newAbortController.signal.aborted) {
+        // Nothing to download
+        if (reviewSearchResults.length === 0) {
             setIsLoading(false);
             return;
         }

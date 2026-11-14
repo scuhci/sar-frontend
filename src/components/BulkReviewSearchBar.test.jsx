@@ -336,6 +336,22 @@ describe("FTB-07: Cancel and store switching", () => {
             );
         });
 
+    const { useScraper } = jest.requireActual("./SelectedScraperProvider");
+    const StoreSwitch = () => {
+        const { setSelectedScraper } = useScraper();
+        return <button onClick={() => setSelectedScraper("App Store")}>switch store</button>;
+    };
+    const SwitchHarness = () => {
+        const [activeStep, setActiveStep] = React.useState(0);
+        return (
+            <ScraperProvider>
+                <StoreSwitch />
+                <div data-testid="step">{activeStep}</div>
+                <BulkReviewSearchBar flipState={() => {}} activeStep={activeStep} setActiveStep={setActiveStep} />
+            </ScraperProvider>
+        );
+    };
+
     test("Cancel during the search stops the remaining searches and stays on step 1", async () => {
         // Each search answers after 100 ms unless its request is aborted first
         mockBackend({
@@ -369,27 +385,52 @@ describe("FTB-07: Cancel and store switching", () => {
     });
 
     test("switching store on step 2 returns to the search step", async () => {
-        const { useScraper } = jest.requireActual("./SelectedScraperProvider");
-        const StoreSwitch = () => {
-            const { setSelectedScraper } = useScraper();
-            return <button onClick={() => setSelectedScraper("App Store")}>switch store</button>;
-        };
-        const SwitchHarness = () => {
-            const [activeStep, setActiveStep] = React.useState(0);
-            return (
-                <ScraperProvider>
-                    <StoreSwitch />
-                    <div data-testid="step">{activeStep}</div>
-                    <BulkReviewSearchBar flipState={() => {}} activeStep={activeStep} setActiveStep={setActiveStep} />
-                </ScraperProvider>
-            );
-        };
         localStorage.setItem("selectedScraper", JSON.stringify("Play Store"));
         render(<SwitchHarness />);
         await searchFor("com.example.one");
         fireEvent.click(screen.getByRole("button", { name: "switch store" }));
         await waitFor(() => expect(screen.getByTestId("step")).toHaveTextContent("0"));
         expect(screen.queryByRole("button", { name: "Scrape and Download Reviews" })).toBeNull();
+    });
+
+    test("leaving the page during the download stops the remaining requests and the zip", async () => {
+        let resolveFirstReview;
+        const firstReview = new Promise((resolve) => {
+            resolveFirstReview = resolve;
+        });
+        mockBackend({
+            reviews: (appId, config) =>
+                appId === "com.example.one"
+                    ? Promise.race([pendingUntilAborted(config), firstReview])
+                    : reviewsCsv(appId),
+        });
+        const view = renderFor();
+        await searchFor("com.example.one, com.example.two, com.example.three");
+        clickDownload();
+        await waitFor(() => expect(requested("/reviews")).toHaveLength(1));
+        const firstReviewCall = axios.get.mock.calls.find((call) => call[0].startsWith("/api/reviews"));
+        view.unmount();
+        resolveFirstReview(reviewsCsv("com.example.one"));
+        await new Promise((resolve) => setTimeout(resolve, 50));
+        expect(firstReviewCall[1].signal.aborted).toBe(true);
+        expect(requested("/reviews")).toHaveLength(1);
+        expect(requested("/download-reviews-relog")).toHaveLength(0);
+        expect(window.URL.createObjectURL).not.toHaveBeenCalled();
+    });
+
+    test("switching store during the download stops it", async () => {
+        mockBackend({ reviews: (_appId, config) => pendingUntilAborted(config) });
+        localStorage.setItem("selectedScraper", JSON.stringify("Play Store"));
+        render(<SwitchHarness />);
+        await searchFor("com.example.one, com.example.two, com.example.three");
+        clickDownload();
+        await waitFor(() => expect(requested("/reviews")).toHaveLength(1));
+        fireEvent.click(screen.getByRole("button", { name: "switch store", hidden: true }));
+        await waitFor(() => expect(screen.getByTestId("step")).toHaveTextContent("0"));
+        await new Promise((resolve) => setTimeout(resolve, 50));
+        expect(requested("/reviews")).toHaveLength(1);
+        expect(window.URL.createObjectURL).not.toHaveBeenCalled();
+        await waitFor(() => expect(screen.queryByRole("dialog")).toBeNull());
     });
 });
 
