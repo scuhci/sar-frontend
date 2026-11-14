@@ -1,11 +1,11 @@
-import { render, screen, fireEvent, within } from "@testing-library/react";
+import { render, screen, fireEvent, within, cleanup } from "@testing-library/react";
 import UserGuide from "./UserGuide";
 
 // Header rows of the CSV files the backends write. The guide's field tables are the only schema
 // documentation researchers have, so every name must match a CSV column exactly (including case).
 const PLAY_APP_CSV = [
-    "appName", "appId", "url", "icon", "developer", "developerId", "currency", "price", "description",
-    "avgRating", "country", "scrapedFrom", "approximateInstalls", "totalRatings", "totalReviews",
+    "rank", "appName", "appId", "url", "icon", "developer", "developerId", "currency", "price", "description",
+    "avgRating", "country", "collection", "category", "scrapedFrom", "approximateInstalls", "totalRatings", "totalReviews",
     "originalPrice", "discountEndDate", "downloadable", "inAppPurchases", "inAppPurchasesPriceRange",
     "androidMinVersion", "developerEmail", "developerWebsite", "developerAddress", "privacyPolicyURL",
     "genreId", "contentRating", "inAppAdvertisements", "originalReleaseDate", "currentAppVersion",
@@ -63,6 +63,19 @@ describe("User Guide field tables match the CSV columns", () => {
         expect(sorted(Object.keys(reviews))).toEqual(sorted(APP_STORE_REVIEWS_CSV));
     });
 
+    test("Top Charts columns: rank, collection and category are marked chart-only and country is not search-only", () => {
+        const [playStoreApps] = renderGuide("Play Store");
+        expect(playStoreApps.country).not.toMatch(/Top Charts files do not have this column/);
+        expect(playStoreApps.collection).toMatch(/^Top Charts files only/);
+        expect(playStoreApps.rank).toMatch(/^Top Charts files only/);
+        expect(playStoreApps.category).toMatch(/^Top Charts files only/);
+
+        cleanup();
+        const [appStoreApps] = renderGuide("App Store");
+        expect(appStoreApps.country).not.toMatch(/Top Charts files do not have this column/);
+        expect(appStoreApps.collection).toMatch(/^Top Charts files only/);
+    });
+
     test("the permission columns are mentioned for the Play Store", () => {
         renderGuide("Play Store");
         expect(screen.getByText(/one column per app permission/)).toBeInTheDocument();
@@ -88,7 +101,6 @@ describe("User Guide describes the data as the backends produce it", () => {
         expect(apps.scrapedFrom).not.toMatch(/Google Play|30 results|September 2024/);
         expect(apps.totalReviews).toMatch(/ratings/);
         expect(apps.currentVersionReviews).toMatch(/ratings/);
-        expect(apps.country).toMatch(/search files only; Top Charts files do not have this column/);
         // The reviewer profile link is no longer written to the reviews file
         expect(reviews.userUrl).toBeUndefined();
     });
