@@ -35,11 +35,11 @@ US runs. For important results, check with the full skills.
 
 | Version | Skill | Download | Repo copy |
 |---|---|---|---|
-| Full | `smar-playstore-agent` 3.1.0 | [smar-tool.org/agent-skills/smar-playstore-agent.skill](https://smar-tool.org/agent-skills/smar-playstore-agent.skill) | [`public/agent-skills/smar-playstore-agent.skill`](../public/agent-skills/smar-playstore-agent.skill) |
-| Full | `smar-appstore-agent` 2.1.0 | [smar-tool.org/agent-skills/smar-appstore-agent.skill](https://smar-tool.org/agent-skills/smar-appstore-agent.skill) | [`public/agent-skills/smar-appstore-agent.skill`](../public/agent-skills/smar-appstore-agent.skill) |
-| Chrome-only | `smar-playstore-keyword-search` | [smar-tool.org/agent-skills/chrome-only/smar-playstore-keyword-search.skill](https://smar-tool.org/agent-skills/chrome-only/smar-playstore-keyword-search.skill) | [`public/agent-skills/chrome-only/smar-playstore-keyword-search.skill`](../public/agent-skills/chrome-only/smar-playstore-keyword-search.skill) |
-| Chrome-only | `smar-playstore-top-charts` | [smar-tool.org/agent-skills/chrome-only/smar-playstore-top-charts.skill](https://smar-tool.org/agent-skills/chrome-only/smar-playstore-top-charts.skill) | [`public/agent-skills/chrome-only/smar-playstore-top-charts.skill`](../public/agent-skills/chrome-only/smar-playstore-top-charts.skill) |
-| Chrome-only | `smar-playstore-bulk-reviews` | [smar-tool.org/agent-skills/chrome-only/smar-playstore-bulk-reviews.skill](https://smar-tool.org/agent-skills/chrome-only/smar-playstore-bulk-reviews.skill) | [`public/agent-skills/chrome-only/smar-playstore-bulk-reviews.skill`](../public/agent-skills/chrome-only/smar-playstore-bulk-reviews.skill) |
+| Full | `smar-playstore-agent` 3.1.0 | [smar-tool.org/downloads/agent-skills/smar-playstore-agent.skill](https://smar-tool.org/downloads/agent-skills/smar-playstore-agent.skill) | [`public/downloads/agent-skills/smar-playstore-agent.skill`](../public/downloads/agent-skills/smar-playstore-agent.skill) |
+| Full | `smar-appstore-agent` 2.1.0 | [smar-tool.org/downloads/agent-skills/smar-appstore-agent.skill](https://smar-tool.org/downloads/agent-skills/smar-appstore-agent.skill) | [`public/downloads/agent-skills/smar-appstore-agent.skill`](../public/downloads/agent-skills/smar-appstore-agent.skill) |
+| Chrome-only | `smar-playstore-keyword-search` | [smar-tool.org/downloads/agent-skills/chrome-only/smar-playstore-keyword-search.skill](https://smar-tool.org/downloads/agent-skills/chrome-only/smar-playstore-keyword-search.skill) | [`public/downloads/agent-skills/chrome-only/smar-playstore-keyword-search.skill`](../public/downloads/agent-skills/chrome-only/smar-playstore-keyword-search.skill) |
+| Chrome-only | `smar-playstore-top-charts` | [smar-tool.org/downloads/agent-skills/chrome-only/smar-playstore-top-charts.skill](https://smar-tool.org/downloads/agent-skills/chrome-only/smar-playstore-top-charts.skill) | [`public/downloads/agent-skills/chrome-only/smar-playstore-top-charts.skill`](../public/downloads/agent-skills/chrome-only/smar-playstore-top-charts.skill) |
+| Chrome-only | `smar-playstore-bulk-reviews` | [smar-tool.org/downloads/agent-skills/chrome-only/smar-playstore-bulk-reviews.skill](https://smar-tool.org/downloads/agent-skills/chrome-only/smar-playstore-bulk-reviews.skill) | [`public/downloads/agent-skills/chrome-only/smar-playstore-bulk-reviews.skill`](../public/downloads/agent-skills/chrome-only/smar-playstore-bulk-reviews.skill) |
 
 The rest of this page describes the **full skills**.
 
@@ -50,8 +50,8 @@ SMAR-format CSVs:
 
 | Skill | Store | Version | Download |
 |---|---|---|---|
-| `smar-playstore-agent` | Google Play | 3.1.0 | [smar-tool.org/agent-skills/smar-playstore-agent.skill](https://smar-tool.org/agent-skills/smar-playstore-agent.skill) ([repo copy](../public/agent-skills/smar-playstore-agent.skill)) |
-| `smar-appstore-agent` | Apple App Store | 2.1.0 | [smar-tool.org/agent-skills/smar-appstore-agent.skill](https://smar-tool.org/agent-skills/smar-appstore-agent.skill) ([repo copy](../public/agent-skills/smar-appstore-agent.skill)) |
+| `smar-playstore-agent` | Google Play | 3.1.0 | [smar-tool.org/downloads/agent-skills/smar-playstore-agent.skill](https://smar-tool.org/downloads/agent-skills/smar-playstore-agent.skill) ([repo copy](../public/downloads/agent-skills/smar-playstore-agent.skill)) |
+| `smar-appstore-agent` | Apple App Store | 2.1.0 | [smar-tool.org/downloads/agent-skills/smar-appstore-agent.skill](https://smar-tool.org/downloads/agent-skills/smar-appstore-agent.skill) ([repo copy](../public/downloads/agent-skills/smar-appstore-agent.skill)) |
 
 They were built and tested with Claude (Claude Code, Claude.ai and Claude in Chrome).
 

@@ -10,8 +10,8 @@ import "../css/About.css";
 
 const GITHUB_DOCS_URL = 'https://github.com/scuhci/sar-frontend/tree/production/agent-skills';
 const FEEDBACK_URL = 'https://github.com/scuhci/sar-frontend/issues';
-const PLAYSTORE_SKILL_URL = '/agent-skills/smar-playstore-agent.skill';
-const APPSTORE_SKILL_URL = '/agent-skills/smar-appstore-agent.skill';
+const PLAYSTORE_SKILL_URL = '/downloads/agent-skills/smar-playstore-agent.skill';
+const APPSTORE_SKILL_URL = '/downloads/agent-skills/smar-appstore-agent.skill';
 
 const versions = [
     {
@@ -40,9 +40,9 @@ const versions = [
         ],
         bestFor: 'quick exploratory pulls and users without a terminal. We recommend checking important results with the full skills.',
         downloads: [
-            { label: 'Keyword search', href: '/agent-skills/chrome-only/smar-playstore-keyword-search.skill' },
-            { label: 'Top charts', href: '/agent-skills/chrome-only/smar-playstore-top-charts.skill' },
-            { label: 'Bulk reviews', href: '/agent-skills/chrome-only/smar-playstore-bulk-reviews.skill' },
+            { label: 'Keyword search', href: '/downloads/agent-skills/chrome-only/smar-playstore-keyword-search.skill' },
+            { label: 'Top charts', href: '/downloads/agent-skills/chrome-only/smar-playstore-top-charts.skill' },
+            { label: 'Bulk reviews', href: '/downloads/agent-skills/chrome-only/smar-playstore-bulk-reviews.skill' },
         ],
     },
 ];
