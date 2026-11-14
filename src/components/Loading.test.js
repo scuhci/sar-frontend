@@ -17,10 +17,23 @@ test("Play Store loading dialog states the 20 primary results the backend reques
   expect(copy).not.toMatch(/max of 30/);
 });
 
+test("Play Store loading dialog offers email notification", () => {
+  render(<Loading {...baseProps} selectedScraper="Play Store" />);
+  expect(screen.getByText(/Drop an email/)).toBeInTheDocument();
+  expect(screen.getByPlaceholderText("Email Address")).toBeInTheDocument();
+});
+
 test("App Store loading dialog states the 50 primary results the backend requests", () => {
   render(<Loading {...baseProps} selectedScraper="App Store" />);
   const copy = screen.getByText(/Keyword search results/).closest("p").textContent;
   expect(copy).toMatch(/App Store returns up to 50 results/);
   expect(copy).not.toMatch(/max of 30/);
   expect(copy).not.toMatch(/results\?/);
+});
+
+test("App Store loading dialog does not offer email notification", () => {
+  render(<Loading {...baseProps} selectedScraper="App Store" />);
+  expect(screen.queryByText(/Drop an email/)).toBeNull();
+  expect(screen.queryByPlaceholderText("Email Address")).toBeNull();
+  expect(screen.getByRole("button", { name: "Cancel" })).toBeInTheDocument();
 });
