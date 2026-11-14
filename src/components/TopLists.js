@@ -227,8 +227,8 @@ const TopLists = ({ flipState }) => {
 
     const handleCancel = (_event, reason) => {
         if (reason && reason === "backdropClick") return;
+        // Only the pending request is dropped; a chart already on screen stays
         abortController.abort();
-        setShowTable(false);
         setIsLoading(false);
     };
 
@@ -311,15 +311,14 @@ const TopLists = ({ flipState }) => {
             })
             .catch((error) => {
                 if (axios.isCancel(error)) {
-                    setShowTable(false);
                     console.log("Request canceled:", error.message);
                 } else {
                     flipState();
                     setShowTable(true);
+                    setSearchResults([]);
+                    setTotalCount(0);
                     console.error("Error fetching top lists:", error);
                 }
-                setSearchResults([]);
-                setTotalCount(0);
                 setIsLoading(false);
             });
     };

@@ -86,9 +86,12 @@ const searchAndWait = async () => {
     await screen.findByText(/Result[s]? for/);
     await waitFor(() => expect(screen.queryByRole("dialog")).toBeNull());
 };
+// The ZIP is built after the requests return; wait for it so nothing runs after the test ends.
+const zipSaved = () => waitFor(() => expect(window.URL.revokeObjectURL).toHaveBeenCalled());
 const downloadAndWait = async () => {
     fireEvent.click(screen.getByRole("button", { name: /Download \(/ }));
     await waitFor(() => expect(axios.get).toHaveBeenCalledTimes(3));
+    await zipSaved();
 };
 const tickPermissions = () => fireEvent.click(screen.getByLabelText("Include permissions in scrape"));
 
@@ -193,4 +196,67 @@ test("loading dialog names the current selection while a search is pending", asy
 
     expect((await screen.findByRole("dialog")).textContent).toContain("in Japan...");
     await act(async () => resolveSearch({ data: { totalCount: 1, results: [{ ...fakeApp }] } }));
+});
+
+describe("cancelling a second search", () => {
+    // First request resolves with a chart; later ones stay pending until aborted, like real axios.
+    const searchThenLeaveNextPending = async () => {
+        await renderTopLists();
+        await searchAndWait();
+        axios.isCancel = jest.fn((error) => error && error.name === "CanceledError");
+        axios.get.mockImplementation((url, config) =>
+            url.includes("toplists")
+                ? new Promise((_resolve, reject) => {
+                      config.signal.addEventListener("abort", () =>
+                          reject(Object.assign(new Error("canceled"), { name: "CanceledError" })),
+                      );
+                  })
+                : Promise.resolve({ data: "x", headers: {} }),
+        );
+    };
+
+    const chartOnScreen = () => ({
+        heading: screen.queryByText(/Result[s]? for/)?.textContent ?? null,
+        row: screen.queryByTestId("row-app-id")?.textContent ?? null,
+        download: screen.queryByRole("button", { name: /Download \(/ }) !== null,
+    });
+
+    test("the Cancel button keeps the chart already on screen", async () => {
+        await searchThenLeaveNextPending();
+        const before = chartOnScreen();
+        expect(before.heading).toBe("1 Result for Top Free Apps in United States");
+
+        fireEvent.click(screen.getByRole("button", { name: "Search" }));
+        fireEvent.click(within(await screen.findByRole("dialog")).getByRole("button", { name: "Cancel" }));
+        await waitFor(() => expect(screen.queryByRole("dialog")).toBeNull());
+
+        expect(chartOnScreen()).toEqual(before);
+    });
+
+    test("Escape keeps the chart already on screen", async () => {
+        await searchThenLeaveNextPending();
+        const before = chartOnScreen();
+
+        fireEvent.click(screen.getByRole("button", { name: "Search" }));
+        fireEvent.keyDown(await screen.findByRole("dialog"), { key: "Escape" });
+        await waitFor(() => expect(screen.queryByRole("dialog")).toBeNull());
+
+        expect(chartOnScreen()).toEqual(before);
+    });
+
+    test("a cancelled search for another country leaves the chart labelled and downloadable as before", async () => {
+        await searchThenLeaveNextPending();
+        await pick("Country*", "Japan");
+
+        fireEvent.click(screen.getByRole("button", { name: "Search" }));
+        fireEvent.click(within(await screen.findByRole("dialog")).getByRole("button", { name: "Cancel" }));
+        await waitFor(() => expect(screen.queryByRole("dialog")).toBeNull());
+
+        expect(chartOnScreen().heading).toBe("1 Result for Top Free Apps in United States");
+        fireEvent.click(screen.getByRole("button", { name: /Download \(/ }));
+        await waitFor(() =>
+            expect(requestUrls()).toContain("/api/download-top-csv?query=TOP_FREEUS&includePermissions=false"),
+        );
+        await zipSaved();
+    });
 });
