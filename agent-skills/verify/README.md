@@ -36,6 +36,10 @@ agent-skills/verify/verify_appstore.sh reviews org.meditofoundation     # review
    checks out the commit the skill was validated against (Play: `32d0fecb`, google-play-scraper 9.2.0; App Store:
    branch `ios-production` at `95783af`, app-store-scraper 0.18.0). Dependencies are installed at pinned versions so
    the ground truth cannot drift. Any setup problem stops with `[verify] ERROR: ...` and exit code 2.
+   Because the commit is pinned, a clean report shows the skill matches that SAR-backend revision, not whatever
+   smar-tool.org runs today. When the deployed backend changes its CSV output, set `SMAR_REF` to the new commit
+   (in `verify.sh` and `verify_appstore.sh`), run the kit again and update the skills' `--smar-compat` writers,
+   schema pages and `.skill` downloads from what it reports.
 2. **Paired run.** SMAR's pipeline and the skill (first in `--smar-compat` mode, then default mode) start together.
 3. **Noise run.** SMAR runs a second time, because the stores answer slightly differently from minute to minute.
    This shows how much two SMAR runs differ from each other.

@@ -3,6 +3,10 @@
 Ground truth: SMAR's iOS server, SAR-backend branch ios-production at `95783af` (sar-backend 1.1.0) with
 app-store-scraper 0.18.0 and `utilities/jsonToCsv.js`; the website is sar-frontend revision 3a2b10e. Evidence
 ids in brackets are verified findings in `eval/appstore/workflow_result.json`; `EA` = `eval/appstore`.
+"SMAR's bytes", "SMAR writes" and `--smar-compat` on this page all mean that commit, not necessarily the live site:
+if `utilities/jsonToCsv.js` or the controllers change there (columns such as `userUrl`, `reviewTitle` or
+`description`, quoting, the `dateScraped` format), a compat file no longer matches what smar-tool.org writes until
+the skill is updated and re-verified.
 
 ## 1. Headers (what the first line of each file is)
 Every header name is quoted. `dateScraped` is the last column in every layout.
