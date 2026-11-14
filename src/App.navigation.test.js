@@ -1,5 +1,6 @@
 import React from "react";
 import { render, screen, fireEvent } from "@testing-library/react";
+import userEvent from "@testing-library/user-event";
 import { unstable_HistoryRouter as HistoryRouter } from "react-router-dom";
 import { createMemoryHistory } from "@remix-run/router";
 import App from "./App";
@@ -44,8 +45,36 @@ afterEach(() => {
     window.location = realLocation;
 });
 
-const homeNav = () => screen.getByRole("button", { name: "Keyword & App ID Search" });
-const topChartsNav = () => screen.getByRole("button", { name: "Top Charts" });
+const homeNav = () => screen.getByRole("link", { name: "Keyword & App ID Search" });
+const topChartsNav = () => screen.getByRole("link", { name: "Top Charts" });
+
+test("each nav item is a single link with no nested button", () => {
+    setup("/about");
+
+    expect(document.querySelectorAll("header a button").length).toBe(0);
+    expect(document.querySelectorAll("header a[href], header button").length).toBe(7);
+});
+
+test("Enter on the focused nav link clears a finished search like a click does", () => {
+    setup("/");
+    fireEvent.click(screen.getByText("fake keyword search"));
+    homeNav().focus();
+
+    userEvent.keyboard("{enter}");
+
+    expect(reload).toHaveBeenCalledTimes(1);
+    expect(history.location.pathname).toBe("/");
+});
+
+test("Enter on a nav link before any search does not reload", () => {
+    setup("/toplists");
+    homeNav().focus();
+
+    userEvent.keyboard("{enter}");
+
+    expect(reload).not.toHaveBeenCalled();
+    expect(history.location.pathname).toBe("/");
+});
 
 test("Keyword & App ID Search nav button goes home after a Top Charts search", () => {
     setup("/toplists");
