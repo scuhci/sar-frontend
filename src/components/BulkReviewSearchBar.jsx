@@ -76,8 +76,12 @@ async function combineCSVBlobs(reviewResults) {
     let header = null;
     let emptyAppHeader = null;
     const dataRows = [];
+    // The combined file uses one line ending throughout: the backend's (CRLF if any app's CSV has it, else LF)
+    let lineEnding = "\n";
     for (const { appId, csvBlob } of reviewResults) {
-        const [csvHeader, ...rows] = (await csvBlob.text()).split("\n").filter((row) => row.trim() !== "");
+        const text = await csvBlob.text();
+        if (text.includes("\r\n")) lineEnding = "\r\n";
+        const [csvHeader, ...rows] = text.split(/\r?\n/).filter((row) => row.trim() !== "");
         if (csvHeader === undefined) continue;
         // An app with no reviews comes back header-only ("dateScraped"), so take the header from the
         // first app that has reviews; fall back to the empty one only if no app has any
@@ -93,7 +97,9 @@ async function combineCSVBlobs(reviewResults) {
         }
     }
     header = header ?? emptyAppHeader ?? `"appId"`;
-    return new Blob(["\ufeff", [header, ...dataRows].join("\n"), "\n"], { type: "text/csv;charset=utf-8" });
+    return new Blob(["\ufeff", [header, ...dataRows].join(lineEnding), lineEnding], {
+        type: "text/csv;charset=utf-8",
+    });
 }
 
 const BulkReviewSearchBar = ({ flipState, activeStep, setActiveStep }) => {

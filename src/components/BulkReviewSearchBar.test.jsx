@@ -119,10 +119,9 @@ const requested = (path) =>
 
 let zipFiles;
 const zipEntry = (pattern) => zipFiles.find((f) => pattern.test(f.name));
-const csvLines = async () => {
-    const text = await zipEntry(/\.csv$/).blob.text();
-    return text.replace(/^﻿/, "").split("\n").filter((line) => line !== "");
-};
+// Raw CSV text without the BOM, and its non-empty lines
+const csvText = async () => (await zipEntry(/\.csv$/).blob.text()).replace(/^﻿/, "");
+const csvLines = async () => (await csvText()).split(/\r?\n/).filter((line) => line !== "");
 
 beforeEach(() => {
     zipFiles = [];
@@ -569,5 +568,39 @@ describe("Category column", () => {
         renderFor();
         await searchFor("com.instagram.android");
         expect(screen.getByTestId("grid")).toHaveTextContent("| SOCIAL");
+    });
+});
+
+describe("Combined CSV line endings", () => {
+    test("CRLF input from the backend gives CRLF-only output", async () => {
+        mockBackend({ reviews: (appId) => reviewsCsv(appId).replace(/\n/g, "\r\n") });
+        renderFor();
+        await searchFor("com.example.one, com.example.two");
+        clickDownload();
+        await waitFor(() => expect(window.URL.createObjectURL).toHaveBeenCalled());
+
+        const text = await csvText();
+        expect(text.match(/(?<!\r)\n/g)).toBeNull();
+        expect(text).not.toContain("\r\r");
+        expect(text.match(/\r\n/g)).toHaveLength(5);
+        const lines = await csvLines();
+        expect(lines).toHaveLength(5);
+        expect(lines.every((line) => !line.endsWith("\r"))).toBe(true);
+    });
+
+    test("LF input stays LF, as before", async () => {
+        renderFor();
+        await searchFor("com.example.one, com.example.two");
+        clickDownload();
+        await waitFor(() => expect(window.URL.createObjectURL).toHaveBeenCalled());
+
+        const expectedLines = [
+            `"appId",${REVIEWS_HEADER}`,
+            `"com.example.one","r1-com.example.one","5","great, really",Fri Nov 06 2026`,
+            `"com.example.one","r2-com.example.one","1","bad",Fri Nov 06 2026`,
+            `"com.example.two","r1-com.example.two","5","great, really",Fri Nov 06 2026`,
+            `"com.example.two","r2-com.example.two","1","bad",Fri Nov 06 2026`,
+        ];
+        expect(await csvText()).toBe(`${expectedLines.join("\n")}\n`);
     });
 });
