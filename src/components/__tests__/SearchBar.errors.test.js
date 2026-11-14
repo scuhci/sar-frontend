@@ -121,6 +121,77 @@ test("a search the server cannot reach says so", async () => {
     expect((await screen.findByRole("alert")).textContent).toContain("Could not reach the server.");
 });
 
+test("a network error shows only the network retry hint", async () => {
+    axios.get.mockRejectedValue({ message: "Network Error" });
+    renderSearchBar();
+    await screen.findByLabelText(/Scrape by keyword/);
+
+    search("bbb");
+    await dialogGone();
+
+    const alert = await screen.findByRole("alert");
+    expect(alert.textContent.trim()).toBe('Search for "bbb" failed: Could not reach the server. Try again later.');
+    expect(alert.textContent).not.toContain("No apps may match");
+});
+
+test("a 504 error shows only the timeout retry hint", async () => {
+    axios.get.mockRejectedValue({ response: { status: 504 } });
+    renderSearchBar();
+    await screen.findByLabelText(/Scrape by keyword/);
+
+    search("bbb");
+    await dialogGone();
+
+    const alert = await screen.findByRole("alert");
+    expect(alert.textContent.trim()).toBe('Search for "bbb" failed: The search took too long. Try again later.');
+    expect(alert.textContent).not.toContain("No apps may match");
+});
+
+test("a 400 error shows the validation reason without a hint", async () => {
+    axios.get.mockRejectedValue({
+        response: { status: 400, data: { error: "Search query is missing.\n" } },
+    });
+    renderSearchBar();
+    await screen.findByLabelText(/Scrape by keyword/);
+
+    search("bbb");
+    await dialogGone();
+
+    const alert = await screen.findByRole("alert");
+    expect(alert.textContent.trim()).toBe('Search for "bbb" failed: Search query is missing.');
+});
+
+test("a 500 error includes the no apps hint", async () => {
+    axios.get.mockRejectedValue(serverError);
+    renderSearchBar();
+    await screen.findByLabelText(/Scrape by keyword/);
+
+    search("bbb");
+    await dialogGone();
+
+    expect((await screen.findByRole("alert")).textContent).toContain("No apps may match this term");
+});
+
+test("clicking Scrape with an empty field shows a prompt without a request", async () => {
+    renderSearchBar();
+    await screen.findByLabelText(/Scrape by keyword/);
+
+    fireEvent.click(screen.getByRole("button", { name: "Scrape Play Store" }));
+
+    expect(axios.get).not.toHaveBeenCalled();
+    expect((await screen.findByRole("alert")).textContent.trim()).toBe("Enter a keyword or app ID to search.");
+});
+
+test("pressing Enter with whitespace shows a prompt without a request", async () => {
+    renderSearchBar();
+    await screen.findByLabelText(/Scrape by keyword/);
+
+    search("   ");
+
+    expect(axios.get).not.toHaveBeenCalled();
+    expect((await screen.findByRole("alert")).textContent.trim()).toBe("Enter a keyword or app ID to search.");
+});
+
 test("a search that returns no apps shows the no-results state", async () => {
     axios.get.mockResolvedValue({ data: { results: [], totalCount: 0 } });
     renderSearchBar();

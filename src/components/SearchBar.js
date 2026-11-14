@@ -36,6 +36,14 @@ const searchErrorReason = (error) => {
     return `The server returned status ${error.response.status}.`;
 };
 
+const searchErrorHint = (error) => {
+    if (!error.response || error.response.status === 504) return " Try again later.";
+    if (error.response.status >= 500) {
+        return " No apps may match this term, or the store may be busy. Try another term or try again later.";
+    }
+    return "";
+};
+
 const SearchBar = ({ flipState }) => {
     const { selectedScraper } = useScraper();
     const [searchQuery, setSearchQuery] = useState("");
@@ -119,6 +127,10 @@ const SearchBar = ({ flipState }) => {
     };
 
     const handleSearchSubmit = (term = searchQuery) => {
+        if (typeof term !== "string" || !term.trim()) {
+            setSearchError("Enter a keyword or app ID to search.");
+            return;
+        }
         // If there is an existing search, cancel it before starting a new one
         if (abortController) {
             abortController.abort();
@@ -156,10 +168,7 @@ const SearchBar = ({ flipState }) => {
                     console.log("Request canceled:", error.message);
                 } else {
                     console.error("Error fetching search results:", error);
-                    setSearchError(
-                        `Search for "${term}" failed: ${searchErrorReason(error)} ` +
-                            "No apps may match this term, or the store may be busy. Try another term or try again later.",
-                    );
+                    setSearchError(`Search for "${term}" failed: ${searchErrorReason(error)}${searchErrorHint(error)}`);
                 }
                 setIsLoading(false);
             });
