@@ -309,6 +309,45 @@ describe("FTB-06: reproducibility log and per-store review cap", () => {
         expect(relog).toBeDefined();
         expect(relog.blob).toContain("appId: com.google.ios.youtube");
         expect(relog.blob).toContain("appId: com.google.OPA");
+        const requestUrls = axios.get.mock.calls.map((call) => call[0]);
+        for (const appId of ["com.google.ios.youtube", "com.google.OPA"]) {
+            const reviewsIndex = requestUrls.findIndex((url) => url.includes(`/reviews?appId=${appId}&`));
+            const relogIndex = requestUrls.findIndex((url) => url.includes(`/download-reviews-relog?appId=${appId}&`));
+            expect(reviewsIndex).toBeGreaterThanOrEqual(0);
+            expect(reviewsIndex).toBeLessThan(relogIndex);
+        }
+    });
+
+    test("the log lists the IDs that were requested but left out", async () => {
+        mockBackend({
+            search: (appId) => {
+                if (appId === "com.missing.app") return [];
+                if (appId === "com.down.app") throw new Error("Network Error");
+                return [app(appId)];
+            },
+            reviews: (appId) => {
+                if (appId === "com.example.one") throw new Error("503");
+                return reviewsCsv(appId);
+            },
+        });
+        renderFor("Play Store");
+        await searchFor("com.missing.app, com.down.app, com.example.one, com.example.two, com.example.three");
+        clickDownload();
+        await waitFor(() => expect(window.URL.createObjectURL).toHaveBeenCalled());
+        const log = zipEntry(/_reproducibility_log\.txt$/).blob;
+        expect(log).toContain("appId: com.example.two");
+        expect(log).toContain("appId: com.example.three");
+        expect(log).toMatch(
+            /\n\nRequested but not included in this download:\nNo app found: com\.missing\.app\nApp lookup failed: com\.down\.app\nReviews could not be fetched: com\.example\.one$/
+        );
+    });
+
+    test("the log has no left-out section when everything downloaded", async () => {
+        renderFor("Play Store");
+        await searchFor("com.example.one, com.example.two");
+        clickDownload();
+        await waitFor(() => expect(window.URL.createObjectURL).toHaveBeenCalled());
+        expect(zipEntry(/_reproducibility_log\.txt$/).blob).not.toContain("Requested but not included");
     });
 
     test("a failed log request still downloads the reviews", async () => {

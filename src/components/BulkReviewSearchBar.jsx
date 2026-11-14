@@ -334,6 +334,14 @@ const BulkReviewSearchBar = ({ flipState, activeStep, setActiveStep }) => {
             return;
         }
         zip.file(filename_csv, await combineCSVBlobs(reviewSearchResults));
+        // Record what was asked for but is missing from the CSV, so the zip explains itself
+        if (notFoundAppIds.length > 0 || failedLookupAppIds.length > 0 || failed.length > 0) {
+            const omittedLines = ["Requested but not included in this download:"];
+            if (notFoundAppIds.length > 0) omittedLines.push(`No app found: ${notFoundAppIds.join(", ")}`);
+            if (failedLookupAppIds.length > 0) omittedLines.push(`App lookup failed: ${failedLookupAppIds.join(", ")}`);
+            if (failed.length > 0) omittedLines.push(`Reviews could not be fetched: ${failed.join(", ")}`);
+            relogs.push(omittedLines.join("\n"));
+        }
         zip.file(filename_relog, relogs.join("\n\n"));
         zip.generateAsync({ type: "blob" }).then(function (zipFile) {
             // Create a link element, set the href to the blob URL, and trigger a download
