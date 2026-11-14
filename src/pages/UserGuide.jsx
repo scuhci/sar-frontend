@@ -319,8 +319,8 @@ const UserGuide = () => {
                         <b>3.</b> Once the search has completed, a portion of the page will update with search results. A preview of the first
                         few results will be visible (4) and are horizontally scrollable, while additional results can be viewed using the
                         pagination controls (5). User reviews for applications can be scraped by clicking the corresponding row's 'scrape
-                        reviews' button (6) which will be enabled if the application contains less than 100,000 reviews -- <i>note that for
-                            the App Store, there is a maximum of 500 reviews that can be scraped for a given application.</i> The full list of results,
+                        reviews' button (6) which is enabled when the application has reviews. <i>Scraping returns the
+                            newest reviews, up to 10,000 per application on Google Play and 500 on the App Store.</i> The full list of results,
                         along with a reproducibility log containing SMAR search metadata can be downloaded by clicking the button at the bottom
                         of the page (7). The descriptions regarding each individual metadata field, for both the Play Store and App Store, can be
                         found in the section 'SMAR Metadata Breakdown'.
@@ -371,8 +371,8 @@ const UserGuide = () => {
                         <br /><br />
                         A preview of the first few results will be visible (6) and are horizontally scrollable, while additional results can be
                         viewed using the pagination controls (7). User reviews for applications can be scraped by clicking the corresponding row's
-                        'scrape reviews' button (8) which will be enabled if the application contains less than 100,000 reviews -- <i>note that for
-                            the App Store, there is a maximum of 500 reviews that can be scraped for a given application.</i> The full list of results,
+                        'scrape reviews' button (8) which is enabled when the application has reviews. <i>Scraping returns the
+                            newest reviews, up to 10,000 per application on Google Play and 500 on the App Store.</i> The full list of results,
                         along with a reproducibility log containing SMAR search metadata can be downloaded by clicking the button at the bottom
                         of the page (9). The descriptions regarding each individual metadata field, for both the Play Store and App Store, can be
                         found in the next section 'SMAR Metadata Breakdown'.

@@ -123,6 +123,13 @@ describe("User Guide walkthrough and references", () => {
         expect(text).toMatch(/navigate to the Bulk Reviews page/);
     });
 
+    test("the review limits are the backend caps, not the old 100,000 gate", () => {
+        const { container } = render(<UserGuide />);
+        const text = container.textContent.replace(/\s+/g, " ");
+        expect(text).not.toMatch(/100,000/);
+        expect(text.match(/up to 10,000 per application on Google Play and 500 on the App Store/g)).toHaveLength(2);
+    });
+
     test("the three usage sections are numbered, linked from the contents and their steps count up", () => {
         const { container } = render(<UserGuide />);
         const headings = [...container.querySelectorAll("h5")].map((heading) => heading.textContent);

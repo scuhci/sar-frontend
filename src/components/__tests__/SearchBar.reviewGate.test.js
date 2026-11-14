@@ -73,57 +73,44 @@ beforeEach(() => {
     axios.post.mockReset();
 });
 
-test.each([
-    [4200, 4300],
-    [250000, 4200],
-    [4200, 250000],
-    [4200, 0],
-    [0, 4200],
-])("keeps SearchBar mounted across review gate %i -> %i", async (initialCount, nextCount) => {
-    axios.get.mockResolvedValueOnce({ data: { results: [app(initialCount)], totalCount: 1 } });
-    renderSearchBar();
-    await screen.findByLabelText(/Scrape by keyword/);
+describe.each(["Play Store", "App Store"])("%s", (store) => {
+    beforeEach(() => {
+        localStorage.setItem("selectedScraper", JSON.stringify(store));
+    });
 
-    search("first query");
-    await screen.findByText(/Results for "first query"/);
-    expect(scrapeButton().disabled).toBe(initialCount <= 0 || initialCount >= 100000);
+    test.each([
+        [4200, 4300],
+        [250000, 4200],
+        [4200, 250000],
+        [4200, 0],
+        [0, 4200],
+    ])("keeps the page mounted and the Scrape Reviews button in sync when the same app goes from %i to %i reviews", async (initialCount, nextCount) => {
+        axios.get.mockResolvedValueOnce({ data: { results: [app(initialCount)], totalCount: 1 } });
+        renderSearchBar();
+        await screen.findByLabelText(/Scrape by keyword/);
 
-    axios.get.mockResolvedValueOnce({ data: { results: [app(nextCount)], totalCount: 1 } });
-    search("second query");
-    await waitFor(() => expect(axios.get).toHaveBeenCalledTimes(2));
-    await screen.findByText(/Results for "second query"/);
+        search("first query");
+        await screen.findByText(/Results for "first query"/);
+        expect(scrapeButton().disabled).toBe(initialCount <= 0);
 
-    expect(screen.getByText(/Results for "second query"/)).toBeInTheDocument();
-    expect(input()).toBeInTheDocument();
-    await waitFor(() =>
-        expect(scrapeButton().disabled).toBe(nextCount <= 0 || nextCount >= 100000),
-    );
-});
+        axios.get.mockResolvedValueOnce({ data: { results: [app(nextCount)], totalCount: 1 } });
+        search("second query");
+        await waitFor(() => expect(axios.get).toHaveBeenCalledTimes(2));
+        await screen.findByText(/Results for "second query"/);
 
-test.each([
-    [4200, 4300],
-    [250000, 4200],
-    [4200, 250000],
-    [4200, 0],
-    [0, 4200],
-])("keeps App Store SearchBar mounted across review gate %i -> %i", async (initialCount, nextCount) => {
-    localStorage.setItem("selectedScraper", JSON.stringify("App Store"));
-    axios.get.mockResolvedValueOnce({ data: { results: [app(initialCount)], totalCount: 1 } });
-    renderSearchBar();
-    await screen.findByLabelText(/Scrape by keyword/);
+        expect(screen.getByText(/Results for "second query"/)).toBeInTheDocument();
+        expect(input()).toBeInTheDocument();
+        await waitFor(() => expect(scrapeButton().disabled).toBe(nextCount <= 0));
+    });
 
-    search("first query");
-    await screen.findByText(/Results for "first query"/);
-    expect(scrapeButton().disabled).toBe(initialCount <= 0 || initialCount >= 100000);
+    test("keeps Scrape Reviews enabled for apps with 29684781 reviews", async () => {
+        axios.get.mockResolvedValueOnce({ data: { results: [app(29684781)], totalCount: 1 } });
+        renderSearchBar();
+        await screen.findByLabelText(/Scrape by keyword/);
 
-    axios.get.mockResolvedValueOnce({ data: { results: [app(nextCount)], totalCount: 1 } });
-    search("second query");
-    await waitFor(() => expect(axios.get).toHaveBeenCalledTimes(2));
-    await screen.findByText(/Results for "second query"/);
+        search("popular app");
+        await screen.findByText(/Results for "popular app"/);
 
-    expect(screen.getByText(/Results for "second query"/)).toBeInTheDocument();
-    expect(input()).toBeInTheDocument();
-    await waitFor(() =>
-        expect(scrapeButton().disabled).toBe(nextCount <= 0 || nextCount >= 100000),
-    );
+        expect(scrapeButton().disabled).toBe(false);
+    });
 });

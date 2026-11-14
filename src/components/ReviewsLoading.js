@@ -18,7 +18,7 @@ function ReviewsLoading({ open, onCancel, appId }) {
                 <DialogContentText className="loading-dialog-subtext">
                     This usually takes 1-5 minutes. <br></br>
 
-                    Scrapes all of the user reviews available for this app.
+                    Scrapes the newest reviews for this app (up to 10,000 on Google Play, 500 on the App Store).
                 </DialogContentText>
                 <LinearProgress className="loading-progress-bar"/>
             </DialogContent>
