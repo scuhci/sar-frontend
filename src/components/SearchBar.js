@@ -152,6 +152,12 @@ const SearchBar = ({ flipState }) => {
                 },
             )
             .then((response) => {
+                // A 200 without a results list can be an HTML page from a proxy.
+                if (!response.data || !Array.isArray(response.data.results)) {
+                    setSearchError(`Search for "${term}" failed: The server returned an unexpected response. Try again later.`);
+                    setIsLoading(false);
+                    return;
+                }
                 flipState();
                 // A new result set replaces whatever the previous download complained about.
                 setDownloadError(false);

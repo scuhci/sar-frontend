@@ -147,6 +147,48 @@ test("a 504 error shows only the timeout retry hint", async () => {
     expect(alert.textContent).not.toContain("No apps may match");
 });
 
+test("an HTML response shows an unexpected-response error and keeps the search input", async () => {
+    axios.get.mockResolvedValue({ data: "<!doctype html><html><body>portal</body></html>" });
+    renderSearchBar();
+    await screen.findByLabelText(/Scrape by keyword/);
+
+    search("bbb");
+    await dialogGone();
+
+    const alert = await screen.findByRole("alert");
+    expect(alert.textContent.trim()).toBe('Search for "bbb" failed: The server returned an unexpected response. Try again later.');
+    expect(screen.getByLabelText(/Scrape by keyword/)).toBeInTheDocument();
+});
+
+test("a JSON response without results shows an unexpected-response error", async () => {
+    axios.get.mockResolvedValue({ data: { status: "ok" } });
+    renderSearchBar();
+    await screen.findByLabelText(/Scrape by keyword/);
+
+    search("bbb");
+    await dialogGone();
+
+    const alert = await screen.findByRole("alert");
+    expect(alert.textContent.trim()).toBe('Search for "bbb" failed: The server returned an unexpected response. Try again later.');
+    expect(screen.getByLabelText(/Scrape by keyword/)).toBeInTheDocument();
+});
+
+test("an HTML response keeps the previous results", async () => {
+    axios.get.mockResolvedValueOnce(okSearch).mockResolvedValueOnce({ data: "<!doctype html><html><body>portal</body></html>" });
+    renderSearchBar();
+    await screen.findByLabelText(/Scrape by keyword/);
+
+    search("com.x");
+    await screen.findByText(/Results for "com.x"/);
+    await dialogGone();
+
+    search("zzz");
+    await dialogGone();
+
+    expect((await screen.findByRole("alert")).textContent).toContain('Search for "zzz" failed:');
+    expect(screen.getByText(/Results for "com.x"/)).toBeInTheDocument();
+});
+
 test("a 400 error shows the validation reason without a hint", async () => {
     axios.get.mockRejectedValue({
         response: { status: 400, data: { error: "Search query is missing.\n" } },
