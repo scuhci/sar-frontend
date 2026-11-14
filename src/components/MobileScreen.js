@@ -1,4 +1,5 @@
 import React from "react";
+import { Link } from "react-router-dom";
 import { SMAR_USER_GUIDE_URL } from "../constants/externalLinks";
 import "../css/MobileScreen.css";
 
@@ -134,6 +135,9 @@ const MobileScreen = () => {
       <div className="mobile-info">
         For more information about the SMAR Web Application, check out our{" "}
         <a href={SMAR_USER_GUIDE_URL}>user guide</a>!
+      </div>
+      <div className="mobile-info">
+        <Link to="/privacy">Privacy notice</Link>
       </div>
     </div>
   );

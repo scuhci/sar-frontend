@@ -8,6 +8,14 @@ import { CONSENT_STORAGE_KEY } from "./analytics";
 
 const gtagScript = () =>
   document.querySelector('script[src^="https://www.googletagmanager.com/gtag/js"]');
+const originalUserAgent = window.navigator.userAgent;
+
+afterEach(() => {
+  Object.defineProperty(window.navigator, "userAgent", {
+    value: originalUserAgent,
+    configurable: true,
+  });
+});
 
 beforeEach(() => {
   window.localStorage.clear();
@@ -84,3 +92,25 @@ test("accepting from the banner loads Google Analytics", () => {
   expect(window.localStorage.getItem(CONSENT_STORAGE_KEY)).toBe("granted");
   expect(screen.queryByRole("dialog", { name: /analytics consent/i })).toBeNull();
 });
+
+test.each(["/", "/toplists", "/bulkreviews"])(
+  "%s shows a privacy notice link on mobile after consent",
+  (route) => {
+    Object.defineProperty(window.navigator, "userAgent", {
+      value:
+        "Mozilla/5.0 (iPhone; CPU iPhone OS 17_0 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/17.0 Mobile/15E148 Safari/604.1",
+      configurable: true,
+    });
+
+    render(
+      <MemoryRouter initialEntries={[route]}>
+        <App />
+      </MemoryRouter>
+    );
+
+    expect(screen.getByText("SMAR is Unavailable on Mobile Devices.")).toBeInTheDocument();
+    fireEvent.click(screen.getByRole("button", { name: /allow analytics/i }));
+
+    expect(screen.getByRole("link", { name: /privacy notice/i })).toHaveAttribute("href", "/privacy");
+  }
+);
