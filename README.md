@@ -48,7 +48,7 @@ This project was made with love at the [Santa Clara University HCI Lab](https://
 
 2. In this repository, `git checkout production`. The backend repository holds two servers on separate branches, so make two checkouts of it: one on `gplay-production` (Google Play backend, port 5001) and one on `ios-production` (App Store backend, port 5002).
 
-3. Install dependencies with `npm ci` in each checkout. `package-lock.json` is committed so everyone (and the server) gets the same dependency tree. If you add or upgrade a package, commit the `package-lock.json` change together with `package.json`.
+3. Install dependencies: `npm ci` in this repository and in the `gplay-production` checkout, `npm install` in the `ios-production` checkout (its `package-lock.json` is not committed, so `npm ci` fails there). Where the lockfile is committed, everyone (and the server) gets the same dependency tree; it is `lockfileVersion` 3, which needs npm 7 or newer. If you add or upgrade a package, commit the `package-lock.json` change together with `package.json`.
 
 4. To start the Google Play backend: run `node index.js` in the `gplay-production` checkout (listens on http://localhost:5001).
 
@@ -81,9 +81,9 @@ npm run build:staged
 
 ### What the repositories show about the live site
 
-- Releases have gone out by merging `production` into `main` through a pull request; the live site tracks `main`.
+- Releases are recorded as pull requests between `main` and `production` in both directions: `production` into `main` in April 2026, and `main` into `production` on 2026-05-29, when the two branches had the same content. Neither branch has a deploy workflow, so deploys are manual, and merging into `production` does not by itself change the live site. Which branch is checked out on the server is not recorded (see below).
 - nginx serves the site from `/home/ubuntu/smar/sar-frontend/build`. The deploy workflow on the `cicd-test` branch (`.github/workflows/aws.yml`, not merged into `production`, started by a push to `cicd-test` or by hand) copies the source to `/home/ubuntu/smar/sar-frontend` on the server and runs `npm ci` and `npm run build` there, in the served folder. It deletes the old files first and does not stop on errors, so do not reuse it for production without switching it to the staged build, `set -e`, and a final `curl -f` check of the site. `npm ci` requires the committed `package-lock.json`.
 - The browser calls relative paths only: `/api/...` for the Google Play backend and `/ios/...` for the App Store backend. `smar.nginx.conf` in `SAR-backend` routes them to `127.0.0.1:5001` and `127.0.0.1:5002` and strips the prefix.
 - `public/index.html` holds the Content-Security-Policy. If you add a script, image or API origin, allow it there or the browser will block it.
 
-Not recorded in the repositories (confirm with whoever has server access): the exact deploy steps used today and whether they build from `main` or `production`, the Node.js version on the server, the nginx config actually in use (the copy in `SAR-backend` listens on port 8080), and how TLS and the backend processes are managed.
+Not recorded in the repositories (confirm with whoever has server access): the exact deploy steps used today and whether they build from `main` or `production`, the Node.js and npm versions on the server, the nginx config actually in use (the copy in `SAR-backend` listens on port 8080), and how TLS and the backend processes are managed.
