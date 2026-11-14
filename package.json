@@ -26,6 +26,7 @@
     "start": "react-scripts start",
     "build": "react-scripts build",
     "build:ci": "CI=true react-scripts build",
+    "build:staged": "sh scripts/build-staged.sh",
     "test": "react-scripts test",
     "eject": "react-scripts eject"
   },

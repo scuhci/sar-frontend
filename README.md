@@ -66,12 +66,23 @@ Requests made this way reach the live backends, so keep them to testing.
 
 ## Building and Deploying
 
-`npm run build` writes the static site to `build/` (gitignored). With `CI=true` set, Create React App treats ESLint warnings as errors, so keep the code warning-free.
+`npm run build` writes the static site to `build/` (gitignored). With `CI=true` set, Create React App treats ESLint warnings as errors, so keep the code warning-free; `npm run build:ci` runs that build.
 
-What the repositories show about the live site:
+### Do not build in the folder nginx serves
+
+`react-scripts build` empties `build/` before it compiles. If nginx serves that folder, every page answers 404 until the build finishes, and a build that fails (lint error, `npm ci` failure, out of memory) leaves the site down until someone fixes it by hand. On the server use the staged build instead:
+
+```
+npm ci
+npm run build:staged
+```
+
+`scripts/build-staged.sh` builds into `build.next/`, checks that `index.html` exists, and only then moves `build/` to `build.prev/` and `build.next/` to `build/`. If the build fails, `build/` is left as it was. To roll back, swap `build.prev/` back into `build/`. Before deploying a merge of several branches, run `npm run build:ci` and `CI=true npx react-scripts test --watchAll=false` on the merged tree first: git can merge two branches without a conflict into code that does not compile.
+
+### What the repositories show about the live site
 
 - Releases have gone out by merging `production` into `main` through a pull request; the live site tracks `main`.
-- nginx serves the site from `/home/ubuntu/smar/sar-frontend/build`. The deploy workflow on the `cicd-test` branch (`.github/workflows/aws.yml`, not merged into `production`) copies the source to `/home/ubuntu/smar/sar-frontend` on the server and runs `npm ci` and `npm run build` there. `npm ci` requires the committed `package-lock.json`.
+- nginx serves the site from `/home/ubuntu/smar/sar-frontend/build`. The deploy workflow on the `cicd-test` branch (`.github/workflows/aws.yml`, not merged into `production`, started by a push to `cicd-test` or by hand) copies the source to `/home/ubuntu/smar/sar-frontend` on the server and runs `npm ci` and `npm run build` there, in the served folder. It deletes the old files first and does not stop on errors, so do not reuse it for production without switching it to the staged build, `set -e`, and a final `curl -f` check of the site. `npm ci` requires the committed `package-lock.json`.
 - The browser calls relative paths only: `/api/...` for the Google Play backend and `/ios/...` for the App Store backend. `smar.nginx.conf` in `SAR-backend` routes them to `127.0.0.1:5001` and `127.0.0.1:5002` and strips the prefix.
 - `public/index.html` holds the Content-Security-Policy. If you add a script, image or API origin, allow it there or the browser will block it.
 

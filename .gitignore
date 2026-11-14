@@ -13,6 +13,8 @@
 
 # production
 /build
+/build.next
+/build.prev
 src/constants/urlConstants.js
 
 # misc
