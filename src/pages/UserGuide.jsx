@@ -16,17 +16,17 @@ const UserGuide = () => {
     }
     const appRows_PlayStore = [
         createData('appName', 'Name of the app'),
-        createData('appID', 'App bundle identifier'),
+        createData('appId', 'App bundle identifier'),
         createData('url', 'App page URL (Play Store)'),
         createData('icon', 'App image icon URL'),
         createData('developer', 'App developer'),
-        createData('developerID', 'App developer’s ID as registered with Play Store'),
+        createData('developerId', 'App developer’s ID as registered with Play Store'),
         createData('currency', 'Currency to purchase app'),
         createData('price', 'Purchase cost of app'),
-        createData('description', 'App description on Play Store'),
+        createData('description', 'Short summary (tagline) shown on the app’s Play Store page. The full app description is not included.'),
         createData('avgRating', 'Average app rating (out of 5)'),
-        createData('country', "Play Store country code"),
-        createData('scrapedFrom', 'Two possible values: (1) Keyword search results - the results from searching for a keyword in Google Play. While Google Play previously returned hundreds of results it now returns a maximum of 30 results for a keyword search, as of September 2024. (2) Similar app links - Links (if any) to “Similar Apps/Games” shown on the app profile page for each of the keyword search results. This allows researchers to gather a larger number of apps that are related to a specific keyword. Regardless of how many times an app appears in “Similar Apps/Games” it is only shown once in the CSV (duplicates are removed).'),
+        createData('country', "Play Store country code. Keyword and app ID search files only; Top Charts files do not have this column."),
+        createData('scrapedFrom', 'Keyword and app ID search files only; Top Charts files do not have this column. Two possible values: (1) keyword search - the results of searching for the keyword in Google Play. SMAR requests up to 20 results per keyword search. An app ID lookup returns one app, which is also labelled keyword search. (2) similar app links - for each keyword search result, the results of a second Google Play search for “related to <app title>”. This allows researchers to gather a larger number of apps that are related to a specific keyword. Regardless of how many times an app is found it is only shown once in the CSV (duplicates are removed).'),
         createData('approximateInstalls', 'Approximation of total app downloads/installs'),
         createData('totalRatings', 'Total number of user provided ratings'),
         createData('totalReviews', 'Total number of user provided reviews'),
@@ -40,7 +40,7 @@ const UserGuide = () => {
         createData('developerWebsite', 'App developer’s website'),
         createData('developerAddress', 'App developer’s address'),
         createData('privacyPolicyURL', 'App’s privacy policy URL'),
-        createData('genreID', 'App’s genre'),
+        createData('genreId', 'App’s genre'),
         createData('contentRating', 'App’s content rating as described on Play Store'),
         createData('inAppAdvertisements', 'Whether in app advertisements are supported'),
         createData('originalReleaseDate', 'App’s initial release date'),
@@ -58,11 +58,13 @@ const UserGuide = () => {
         createData('developerReplyText', 'The actual developer reply to the posted review, if it exists'),
         createData('versionWhenReviewed', "App's version number at the time when the current review was published"),
         createData('helpfulVotes', 'Number of people that found this review helpful and upvoted it'),
+        createData('country', 'Play Store country code'),
         createData('dateScraped', 'Timestamp, date from when this review data was scraped')
     ]
 
     const appRows_AppStore = [
-        createData('appID', 'App bundle identifier'),
+        createData('id', 'Numeric App Store ID of the app'),
+        createData('appId', 'App bundle identifier'),
         createData('appName', 'Name of the app'),
         createData('url', 'App page URL (App Store)'),
         createData('icon', 'App image icon URL'),
@@ -81,26 +83,26 @@ const UserGuide = () => {
         createData('currentAppVersion', 'Current app version'),
         createData('price', 'Purchase cost of app'),
         createData('currency', 'Currency to purchase app'),
-        createData('developerID', "App developer's ID as registered with App Store"),
+        createData('developerId', "App developer's ID as registered with App Store"),
         createData('developer', 'App developer'),
         createData('developerAppStorePageURL', "The URL of the developer's page on the App Store"),
         createData('developerWebsite', "App developer's website"),
         createData('avgRating', 'Average app rating (out of 5)'),
-        createData('totalReviews', 'Total number of user provided reviews'),
+        createData('totalReviews', 'Total number of user ratings. This is the rating count the App Store reports; it is not a count of written reviews.'),
         createData('currentVersionAvgRating', 'The average app rating for the most recent (currently released) version'),
-        createData('currentVersionReviews', 'Number of user provided reviews for the most recent (current) version of the app'),
+        createData('currentVersionReviews', 'Number of user ratings for the most recent (current) version of the app, as reported by the App Store'),
         createData('appScreenshots', 'Screenshot previews of the app from its App Store page'),
         createData('appIpadScreenshots', 'Screenshot previews of the iPad app (if officially supported)'),
         createData('appletvScreenshots', 'Screenshot previews of the Apple TV app (if officially supported)'),
         createData('supportedDeviceList', 'A list of various devices that are supported by the app'),
         createData('country', "App Store country code"),
-        createData('scrapedFrom', 'Two possible values: (1) Keyword search results - the results from searching for a keyword in Google Play. While Google Play previously returned hundreds of results it now returns a maximum of 30 results for a keyword search, as of September 2024. (2) Similar app links - Links (if any) to “Similar Apps/Games” shown on the app profile page for each of the keyword search results. This allows researchers to gather a larger number of apps that are related to a specific keyword. Regardless of how many times an app appears in “Similar Apps/Games” it is only shown once in the CSV (duplicates are removed).'),
+        createData('scrapedFrom', 'Keyword and app ID search files only; Top Charts files do not have this column. Two possible values: (1) keyword search - the results of searching for the keyword in the Apple App Store. SMAR requests up to 50 results per keyword search. An app ID lookup returns one app, which is also labelled keyword search. (2) similar app links - the apps the App Store lists as similar to each of the keyword search results. This allows researchers to gather a larger number of apps that are related to a specific keyword. Regardless of how many times an app is found it is only shown once in the CSV (duplicates are removed).'),
         createData('dateScraped', 'Timestamp, date from when this app data was scraped'),
     ]
 
     const reviewRows_AppStore = [
         createData('reviewID', "Review's unique ID registered with the App Store"),
-        createData('userUrl', "Review's App Store URL"),
+        createData('userUrl', "Link to the reviewer's App Store profile"),
         createData('versionWhenReviewed', "App's version number at the time when the current review was published"),
         createData('rating', 'App rating as given by review'),
         createData('reviewText', 'Actual review text'),
@@ -403,6 +405,11 @@ const UserGuide = () => {
                             <br />
 
                             <MetadataTable rows={appRows_PlayStore} />
+                            <br />
+                            <Typography variant="body1" className="main-text" id="Permission_Columns">
+                                When 'Include permissions in scrape' is checked, the file also has one column per app permission
+                                (for example 'take pictures and videos'), holding true or false for each app.
+                            </Typography>
                             <br /><br />
 
                             <Typography variant="h5" className="section-sub-header" id="Review_Metadata">Review Metadata (Play Store)</Typography>
