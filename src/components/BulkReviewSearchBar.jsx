@@ -104,8 +104,9 @@ const BulkReviewSearchBar = ({ flipState, activeStep, setActiveStep }) => {
     const [searchQueryErrorMessage, setSearchQueryErrorMessage] = useState("");
     // Apps the search resolved, in the order they were entered
     const [apps, setApps] = useState([]);
-    // App IDs that could not be found, and app IDs whose reviews could not be fetched
+    // App IDs that could not be found or looked up, and app IDs whose reviews could not be fetched
     const [notFoundAppIds, setNotFoundAppIds] = useState([]);
+    const [failedLookupAppIds, setFailedLookupAppIds] = useState([]);
     const [failedReviewAppIds, setFailedReviewAppIds] = useState([]);
     const [appIds, setAppIds] = useState([]);
     const [isLoading, setIsLoading] = useState(false);
@@ -154,6 +155,7 @@ const BulkReviewSearchBar = ({ flipState, activeStep, setActiveStep }) => {
         setIsLoading(true);
         const foundApps = [];
         const notFound = [];
+        const failedLookups = [];
         for (let appId of appIds) {
             if (newAbortController.signal.aborted) break;
             setCurrentlySearching(appId);
@@ -180,19 +182,29 @@ const BulkReviewSearchBar = ({ flipState, activeStep, setActiveStep }) => {
                     console.log("Request canceled:", error.message);
                 } else {
                     console.error("Error fetching search results:", error);
+                    failedLookups.push(appId);
                 }
-                notFound.push(appId);
             }
         }
         setIsLoading(false);
         // User pressed Cancel: stay on Step 1
         if (newAbortController.signal.aborted) return;
         if (foundApps.length === 0) {
-            setSearchQueryErrorMessage(`No app found for: ${notFound.join(", ")}. Please check the app IDs.`);
+            const errorMessages = [];
+            if (notFound.length > 0) {
+                errorMessages.push(`No app found for: ${notFound.join(", ")}. Please check the app IDs.`);
+            }
+            if (failedLookups.length > 0) {
+                errorMessages.push(
+                    `Could not look up: ${failedLookups.join(", ")}. The server returned an error or did not answer; check the IDs and try again.`
+                );
+            }
+            setSearchQueryErrorMessage(errorMessages.join(" "));
             return;
         }
         setApps(foundApps);
         setNotFoundAppIds(notFound);
+        setFailedLookupAppIds(failedLookups);
         setFailedReviewAppIds([]);
         setActiveStep(1);
     };
@@ -477,6 +489,12 @@ const BulkReviewSearchBar = ({ flipState, activeStep, setActiveStep }) => {
                     {notFoundAppIds.length > 0 && (
                         <Alert severity="warning" sx={{ mb: 2, textAlign: "left" }}>
                             No app found for {notFoundAppIds.join(", ")}. These IDs are left out of the download.
+                        </Alert>
+                    )}
+                    {failedLookupAppIds.length > 0 && (
+                        <Alert severity="error" sx={{ mb: 2, textAlign: "left" }}>
+                            Could not look up {failedLookupAppIds.join(", ")}: the server returned an error or did not
+                            answer. These IDs are left out of the download; go back and search again to include them.
                         </Alert>
                     )}
                     {failedReviewAppIds.length > 0 && (

@@ -168,7 +168,8 @@ describe("FTB-02: rows are attributed by appId, not by position", () => {
         await searchFor("com.bad.app, com.example.two, com.example.three");
 
         expect(screen.getByText("2 apps selected")).toBeInTheDocument();
-        expect(screen.getByRole("alert")).toHaveTextContent(/No app found for com\.bad\.app/);
+        expect(screen.getByRole("alert")).toHaveTextContent(/Could not look up com\.bad\.app/);
+        expect(screen.getByRole("alert")).not.toHaveTextContent("No app found");
 
         clickDownload();
         await waitFor(() => expect(window.URL.createObjectURL).toHaveBeenCalled());
@@ -231,7 +232,8 @@ describe("FTB-02: rows are attributed by appId, not by position", () => {
         });
         renderFor();
         submit("com.bad.app");
-        expect(await screen.findByText(/No app found for: com\.bad\.app/)).toBeInTheDocument();
+        expect(await screen.findByText(/Could not look up: com\.bad\.app/)).toBeInTheDocument();
+        expect(screen.queryByText(/No app found/)).toBeNull();
         expect(screen.getByTestId("step")).toHaveTextContent("0");
     });
 });
@@ -411,5 +413,66 @@ describe("FTB-09: app ID validation", () => {
         submit(`com.example.one, ${id}`);
         expect(await screen.findByText(new RegExp(`Invalid app ID: ${id.replace(/\./g, "\\.")}`))).toBeInTheDocument();
         expect(axios.get).not.toHaveBeenCalled();
+    });
+});
+
+describe("Failed lookups are not reported as missing apps", () => {
+    test("a 502 on one ID is reported as a lookup failure, not as a missing app", async () => {
+        mockBackend({
+            search: (appId) => {
+                if (appId === "com.b.two") {
+                    throw Object.assign(new Error("Request failed with status code 502"), { response: { status: 502 } });
+                }
+                return [app(appId)];
+            },
+        });
+        renderFor();
+        await searchFor("com.a.one, com.b.two");
+
+        expect(screen.getByText("1 apps selected")).toBeInTheDocument();
+        expect(screen.getAllByRole("alert")).toHaveLength(1);
+        expect(screen.getByRole("alert")).toHaveTextContent(/Could not look up com\.b\.two/);
+        expect(screen.queryByText(/No app found/)).toBeNull();
+    });
+
+    test("a network error on every ID keeps the user on step 1 without calling the app missing", async () => {
+        mockBackend({ search: () => { throw new Error("Network Error"); } });
+        renderFor();
+        submit("com.a.one");
+
+        expect(await screen.findByText(/Could not look up: com\.a\.one/)).toBeInTheDocument();
+        expect(screen.queryByText(/No app found/)).toBeNull();
+        expect(screen.getByTestId("step")).toHaveTextContent("0");
+    });
+
+    test("a missing app and a failed lookup are reported separately", async () => {
+        mockBackend({
+            search: (appId) => {
+                if (appId === "com.none.app") return [];
+                if (appId === "com.down.app") throw new Error("Network Error");
+                return [app(appId)];
+            },
+        });
+        renderFor();
+        await searchFor("com.none.app, com.down.app, com.example.two");
+
+        const alerts = screen.getAllByRole("alert");
+        expect(alerts).toHaveLength(2);
+        expect(alerts.find((alert) => /No app found/.test(alert.textContent))).toHaveTextContent(/No app found for com\.none\.app\./);
+        expect(alerts.find((alert) => /Could not look up/.test(alert.textContent))).toHaveTextContent(/Could not look up com\.down\.app/);
+    });
+
+    test("when nothing resolves the step 1 error names both kinds", async () => {
+        mockBackend({
+            search: (appId) => {
+                if (appId === "com.none.app") return [];
+                throw new Error("Network Error");
+            },
+        });
+        renderFor();
+        submit("com.none.app, com.down.app");
+
+        const error = await screen.findByText(/No app found for: com\.none\.app\./);
+        expect(error).toHaveTextContent("Could not look up: com.down.app.");
     });
 });
