@@ -576,6 +576,24 @@ describe("IDs that differ only in letter case", () => {
         expect(lines[1]).not.toBe(lines[2]);
     });
 
+    test("a successful case variant clears the failed lookup", async () => {
+        mockBackend({
+            search: (appId) => {
+                if (appId === "COM.X.app") throw new Error("Network Error");
+                return [app("com.x.app")];
+            },
+        });
+        renderFor("App Store");
+        await searchFor("COM.X.app, com.x.app");
+
+        expect(screen.getByText("1 apps selected")).toBeInTheDocument();
+        expect(screen.queryByRole("alert")).toBeNull();
+
+        clickDownload();
+        await waitFor(() => expect(window.URL.createObjectURL).toHaveBeenCalled());
+        expect(zipEntry(/_reproducibility_log\.txt$/).blob).not.toContain("Requested but not included");
+    });
+
     test("a differently-cased ID keeps the store's spelling", async () => {
         mockBackend({ search: () => [app("com.facebook.Messenger")] });
         renderFor("App Store");
