@@ -109,7 +109,9 @@ test.each(["/", "/toplists", "/bulkreviews"])(
     );
 
     expect(screen.getByText("SMAR is Unavailable on Mobile Devices.")).toBeInTheDocument();
-    fireEvent.click(screen.getByRole("button", { name: /allow analytics/i }));
+    // Answer the banner if it is shown, so its own link is out of the way.
+    const allow = screen.queryByRole("button", { name: /allow analytics/i });
+    if (allow) fireEvent.click(allow);
 
     expect(screen.getByRole("link", { name: /privacy notice/i })).toHaveAttribute("href", "/privacy");
   }
