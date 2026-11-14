@@ -4,6 +4,7 @@ import { MemoryRouter } from "react-router-dom";
 import axios from "axios";
 import SearchBar from "../SearchBar";
 import { ScraperProvider, useScraper } from "../SelectedScraperProvider";
+import appStoreSearchResult from "../../constants/__fixtures__/appStoreSearchResult.json";
 
 jest.mock("axios", () => ({
     __esModule: true,
@@ -229,4 +230,58 @@ test("the 'download failed' alert does not come back after switching scraper and
     axios.get.mockResolvedValue(okSearch);
     await search("com.x");
     expect(screen.queryByRole("alert")).toBeNull();
+});
+
+test("App Store: the table shows App Store columns and the download uses the /ios URLs of the displayed search", async () => {
+    localStorage.setItem("selectedScraper", JSON.stringify("App Store"));
+    axios.get.mockResolvedValue({ data: { results: [appStoreSearchResult], totalCount: 1 } });
+    renderBar();
+    await screen.findByLabelText(/Scrape by keyword/);
+    await search("instagram");
+
+    expect(screen.getByText("App Size (in Bytes)")).toBeInTheDocument();
+    expect(screen.getByText(appStoreSearchResult.size)).toBeInTheDocument();
+
+    const combo = screen.getByRole("combobox", { name: "Country" });
+    fireEvent.focus(combo);
+    fireEvent.change(combo, { target: { value: "United Kingdom" } });
+    fireEvent.keyDown(combo, { key: "ArrowDown" });
+    fireEvent.keyDown(combo, { key: "Enter" });
+    fireEvent.blur(combo);
+    expect(combo.value).toBe("United Kingdom");
+
+    axios.get.mockResolvedValue(blobResp);
+    clickDownload();
+    await waitFor(() => expect(downloadCalls()).toHaveLength(2));
+    expect(downloadCalls()[0]).toBe("/ios/download-csv?query=instagram&countryCode=US");
+    expect(downloadCalls()[1]).toBe(
+        "/ios/download-relog?query=instagram&totalCount=1&countryCode=US&store=iOS App Store",
+    );
+});
+
+test("a cancelled search does not change what the download button fetches", async () => {
+    axios.isCancel.mockImplementation((e) => Boolean(e && e.__CANCEL__));
+    axios.get.mockResolvedValue(okSearch);
+    renderBar();
+    await screen.findByLabelText(/Scrape by keyword/);
+    await search("com.x");
+
+    axios.get.mockImplementation((_url, config) =>
+        new Promise((_resolve, reject) => {
+            config.signal.addEventListener("abort", () => reject({ __CANCEL__: true, message: "canceled" }));
+        }),
+    );
+    fireEvent.change(input(), { target: { value: "zzz" } });
+    fireEvent.keyDown(input(), { key: "Enter" });
+    await screen.findByRole("dialog");
+    fireEvent.click(screen.getByRole("button", { name: /Cancel/i }));
+    await waitFor(() => expect(document.querySelector(".MuiDialog-root")).toBeNull(), { timeout: 4000 });
+
+    axios.get.mockResolvedValue(blobResp);
+    clickDownload();
+    await waitFor(() => expect(downloadCalls()).toHaveLength(2));
+    expect(downloadCalls()[0]).toBe("/api/download-csv?query=com.x&includePermissions=false&countryCode=US");
+    expect(downloadCalls()[1]).toBe(
+        "/api/download-relog?query=com.x&includePermissions=false&totalCount=1&countryCode=US&store=Google Play Store",
+    );
 });
