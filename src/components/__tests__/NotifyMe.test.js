@@ -62,3 +62,25 @@ test("special characters in the email and search term reach the backend unchange
         queryId: "c:US_t:health & fitness #1_p:false",
     });
 });
+
+test("a retry that succeeds after a failed attempt shows only the confirmation", async () => {
+    let attempts = 0;
+    axios.defaults.adapter = (config) => {
+        requests.push(config);
+        attempts += 1;
+        if (attempts === 1) {
+            return Promise.reject({ response: { status: 429 } });
+        }
+        return Promise.resolve({ data: { status: "success" }, status: 200, statusText: "OK", headers: {}, config });
+    };
+
+    render(<NotifyMe country="US" query="fitness" permissions={false} />);
+    fireEvent.change(screen.getByPlaceholderText("Email Address"), { target: { value: EMAIL } });
+    fireEvent.click(screen.getByText("NOTIFY ME"));
+    await screen.findByText(/Error setting up email notifications/);
+    expect(screen.queryByText(/Got it!/)).not.toBeInTheDocument();
+
+    fireEvent.click(screen.getByText("NOTIFY ME"));
+    await screen.findByText(/Got it!/);
+    expect(screen.queryByText(/Error setting up email notifications/)).toBeNull();
+});

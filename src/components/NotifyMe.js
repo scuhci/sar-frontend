@@ -36,6 +36,7 @@ const NotifyMe = ({ country, query, permissions, queryTime }) => {
         return;
       } else {
         setInvalidEmail(false);
+        setNetworkError(false);
 
         // Keep the address out of the URL so it doesn't end up in access logs or history
         const response = await axios.post("/api/email", {
