@@ -476,3 +476,36 @@ describe("Failed lookups are not reported as missing apps", () => {
         expect(error).toHaveTextContent("Could not look up: com.down.app.");
     });
 });
+
+describe("IDs that differ only in letter case", () => {
+    test("two spellings of one bundle ID select the app once", async () => {
+        mockBackend({ search: () => [app("com.facebook.Messenger")] });
+        renderFor("App Store");
+        await searchFor("com.facebook.Messenger, com.facebook.messenger");
+
+        expect(screen.getByText("1 apps selected")).toBeInTheDocument();
+        expect(screen.getByTestId("grid").querySelectorAll("li")).toHaveLength(1);
+        expect(screen.queryByRole("alert")).toBeNull();
+
+        clickDownload();
+        await waitFor(() => expect(window.URL.createObjectURL).toHaveBeenCalled());
+        expect(requested("/reviews")).toEqual(["/ios/reviews?appId=com.facebook.Messenger&countryCode=US"]);
+        const lines = await csvLines();
+        expect(lines).toHaveLength(3);
+        expect(lines[1]).not.toBe(lines[2]);
+    });
+
+    test("a differently-cased ID keeps the store's spelling", async () => {
+        mockBackend({ search: () => [app("com.facebook.Messenger")] });
+        renderFor("App Store");
+        await searchFor("com.facebook.messenger");
+
+        expect(screen.getByTestId("grid")).toHaveTextContent("com.facebook.Messenger");
+
+        clickDownload();
+        await waitFor(() => expect(window.URL.createObjectURL).toHaveBeenCalled());
+        expect(requested("/reviews")).toEqual(["/ios/reviews?appId=com.facebook.Messenger&countryCode=US"]);
+        const lines = await csvLines();
+        expect(lines.slice(1).every((line) => line.startsWith(`"com.facebook.Messenger",`))).toBe(true);
+    });
+});

@@ -173,7 +173,8 @@ const BulkReviewSearchBar = ({ flipState, activeStep, setActiveStep }) => {
                     (result) => result.appId?.toLowerCase() === appId.toLowerCase()
                 );
                 if (app) {
-                    foundApps.push(app);
+                    // Two spellings of one ID resolve to the same app; list it once
+                    if (!foundApps.some((found) => found.appId === app.appId)) foundApps.push(app);
                 } else {
                     notFound.push(appId);
                 }
