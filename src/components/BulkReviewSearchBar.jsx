@@ -17,6 +17,7 @@ import {
     Typography,
 } from "@mui/material";
 import Dropdown from "./Dropdown";
+import { iosReviewCountries } from "../constants/countryCodes";
 import { useScraper } from "./SelectedScraperProvider";
 import axios from "axios";
 import { DataGrid } from "@mui/x-data-grid";
@@ -315,7 +316,7 @@ const BulkReviewSearchBar = ({ flipState, activeStep, setActiveStep }) => {
                             gap: 10,
                         }}
                     >
-                        <Dropdown handler={handleCountryChange} />
+                        <Dropdown handler={handleCountryChange} appStoreCountries={iosReviewCountries} />
                         <TextField
                             label="Enter app IDs, separated by commas (e.g., com.example.app1, com.example.app2)"
                             variant="outlined"

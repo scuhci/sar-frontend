@@ -890,8 +890,9 @@ export const gplayCountries = [
 ]
 
 
-// App Store storefronts: the countries app-store-scraper's markets table maps to an Apple store.
-// The library sends any other country code to the US store, so only these are offered for the App Store.
+// These are the countries app-store-scraper's markets table maps to an Apple store id; its list (Top Charts) and
+// search calls send any other country code to the US store, so only these are offered for App Store Top Charts and keyword search;
+// reviews and app-id lookups use the country code directly (see iosReviewCountries).
 export const iosCountries = [
     { name: "Algeria", code: "DZ" },
     { name: "Angola", code: "AO" },
@@ -1009,3 +1010,14 @@ export const iosCountries = [
     { name: "Virgin Islands, British", code: "VG" },
     { name: "Yemen", code: "YE" },
 ];
+
+// Apple storefronts usable for App Store reviews. The extra 58 are real storefronts missing from the library's markets table,
+// each checked against Apple's lookup API; reviews put the country code straight into the request.
+const additionalIosReviewCountryCodes = [
+    "AF", "AL", "AG", "BS", "BJ", "BT", "BA", "BF", "KH", "CM", "CV", "TD", "CG", "CD", "CI", "DO", "FJ", "GA", "GM", "GE", "GW", "IQ", "KZ", "KG", "LA", "LR", "LY", "MW", "MV", "FM", "MD", "MN", "ME", "MA", "MZ", "MM", "NA", "NR", "PW", "PG", "RW", "KN", "LC", "VC", "ST", "RS", "SC", "SL", "SB", "SZ", "TJ", "TO", "TT", "TM", "TC", "VU", "ZM", "ZW"
+];
+
+export const iosReviewCountries = [
+    ...iosCountries,
+    ...gplayCountries.filter(country => additionalIosReviewCountryCodes.includes(country.code)),
+].sort((a, b) => a.name.localeCompare(b.name));

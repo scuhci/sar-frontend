@@ -7,9 +7,10 @@ import { useScraper } from "./SelectedScraperProvider";
 
 const defaultOption = { name: 'United States', code: "US" };
 
-export default function Dropdown({ handler }) {
+export default function Dropdown({ handler, appStoreCountries = iosCountries }) {
   const { selectedScraper } = useScraper();
-  const options = selectedScraper === "App Store" ? iosOptions : gplayOptions;
+  const appStoreOptions = React.useMemo(() => toOptions(appStoreCountries), [appStoreCountries]);
+  const options = selectedScraper === "App Store" ? appStoreOptions : gplayOptions;
   const [value, setValue] = React.useState(defaultOption);
   const [isEditing, setIsEditing] = React.useState(false);
 
@@ -68,7 +69,6 @@ const toOptions = (countries) => countries.map((country) => {
   return { name: country.name, code: country.code };
 });
 const gplayOptions = toOptions(gplayCountries);
-const iosOptions = toOptions(iosCountries);
 
 const Autocomplete = React.forwardRef(function CustomAutocomplete(props, ref) {
   return <BaseAutocomplete {...props} ref={ref} />;
