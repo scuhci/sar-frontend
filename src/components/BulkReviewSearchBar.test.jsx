@@ -16,7 +16,7 @@ jest.mock("@mui/x-data-grid", () => ({
     DataGrid: ({ rows }) => (
         <ul data-testid="grid">
             {rows.map((row) => (
-                <li key={row.appId}>{`${row.appId} | ${row.title}`}</li>
+                <li key={row.appId}>{`${row.appId} | ${row.title} | ${row.category ?? "-"}`}</li>
             ))}
         </ul>
     ),
@@ -507,5 +507,26 @@ describe("IDs that differ only in letter case", () => {
         expect(requested("/reviews")).toEqual(["/ios/reviews?appId=com.facebook.Messenger&countryCode=US"]);
         const lines = await csvLines();
         expect(lines.slice(1).every((line) => line.startsWith(`"com.facebook.Messenger",`))).toBe(true);
+    });
+});
+
+describe("Category column", () => {
+    test("an App Store app shows its primaryGenre", async () => {
+        // Shape of a real /ios/search result: genreIds and primaryGenre, no genreId
+        const { genreId, ...iosApp } = app("com.burbn.instagram", {
+            genreIds: ["6008", "6005"],
+            primaryGenre: "Photo & Video",
+        });
+        mockBackend({ search: () => [iosApp] });
+        renderFor("App Store");
+        await searchFor("com.burbn.instagram");
+        expect(screen.getByTestId("grid")).toHaveTextContent("com.burbn.instagram | Title com.burbn.instagram | Photo & Video");
+    });
+
+    test("a Play Store app still shows its genreId", async () => {
+        mockBackend({ search: (appId) => [app(appId, { genre: "Social", genreId: "SOCIAL" })] });
+        renderFor();
+        await searchFor("com.instagram.android");
+        expect(screen.getByTestId("grid")).toHaveTextContent("| SOCIAL");
     });
 });

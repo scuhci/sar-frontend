@@ -221,7 +221,8 @@ const BulkReviewSearchBar = ({ flipState, activeStep, setActiveStep }) => {
                 developer: app.developer,
                 score: app.score,
                 url: app.url,
-                category: app.genreId,
+                // Play returns genreId; the App Store returns the category name as primaryGenre
+                category: app.genreId ?? app.primaryGenre,
             })),
         [apps]
     );
