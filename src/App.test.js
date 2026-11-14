@@ -35,3 +35,35 @@ test('renders the about page on /about', () => {
     screen.getByRole('heading', { level: 3, name: 'About the SMAR project' })
   ).toBeInTheDocument();
 });
+
+test.each([
+  '/toplist',
+  '/topcharts',
+  '/user-guide',
+  '/agent-skills/smar-appstore-agent.skill',
+])('renders the not found page on %s', (route) => {
+  const warn = jest.spyOn(console, 'warn').mockImplementation(() => {});
+
+  try {
+    renderApp(route);
+
+    expect(
+      screen.getByRole('heading', { level: 3, name: 'Page not found' })
+    ).toBeInTheDocument();
+    expect(screen.getByRole('link', { name: 'search page' })).toHaveAttribute('href', '/');
+    expect(
+      screen.getByRole('link', { name: 'Systematic Mobile Application Reviews' })
+    ).toBeInTheDocument();
+    expect(
+      warn.mock.calls.some(([message]) => String(message).includes('No routes matched'))
+    ).toBe(false);
+  } finally {
+    warn.mockRestore();
+  }
+});
+
+test('does not render the not found page on /about', () => {
+  renderApp('/about');
+
+  expect(screen.queryByRole('heading', { level: 3, name: 'Page not found' })).not.toBeInTheDocument();
+});
