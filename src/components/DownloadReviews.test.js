@@ -79,3 +79,30 @@ test("cancelling a review scrape shows no error", async () => {
     await new Promise((resolve) => setTimeout(resolve, 50));
     expect(screen.queryByRole("alert")).toBeNull();
 });
+
+test("a click outside the review-scrape dialog does not abort the scrape", async () => {
+    let signal;
+    axios.get.mockImplementation(
+        (_url, config) => {
+            signal = config.signal;
+            return new Promise((_resolve, reject) => {
+                signal.addEventListener("abort", () => reject({ __CANCEL__: true, message: "canceled" }));
+            });
+        },
+    );
+    renderCell();
+
+    fireEvent.click(await scrapeButton());
+    const dialog = await screen.findByRole("dialog");
+    const backdrop = document.querySelector(".MuiDialog-container");
+    fireEvent.mouseDown(backdrop);
+    fireEvent.mouseUp(backdrop);
+    fireEvent.click(backdrop);
+
+    expect(signal.aborted).toBe(false);
+    expect(dialog).toBeInTheDocument();
+
+    fireEvent.click(screen.getByRole("button", { name: /Cancel/ }));
+    await dialogGone();
+    expect(signal.aborted).toBe(true);
+});

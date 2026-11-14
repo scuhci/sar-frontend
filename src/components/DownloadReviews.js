@@ -13,7 +13,8 @@ const DownloadReviews = ({ appId, countryCode }) => {
   const [abortController, setAbortController] = useState(null);
   const [scrapeFailed, setScrapeFailed] = useState(false);
 
-  const handleCancel = () => {
+  const handleCancel = (_event, reason) => {
+    if (reason === "backdropClick") return;
     abortController.abort();
     setIsLoading(false);
   };
