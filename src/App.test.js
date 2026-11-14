@@ -17,9 +17,11 @@ test('renders the home page with the navigation bar', () => {
   const title = screen.getByRole('link', { name: 'Systematic Mobile Application Reviews' });
   expect(title).toHaveAttribute('href', '/');
 
-  expect(
-    screen.getByRole('heading', { level: 3, name: /Systematic Mobile Application Reviews/ })
-  ).toBeInTheDocument();
+  // The page title sits next to the same text in the navigation bar (an h6).
+  const pageTitles = screen
+    .getAllByRole('heading', { name: /Systematic Mobile Application Reviews/ })
+    .filter((heading) => heading.tagName !== 'H6');
+  expect(pageTitles).toHaveLength(1);
 
   expect(screen.getByRole('link', { name: 'Top Charts' })).toHaveAttribute('href', '/toplists');
   expect(screen.getByRole('link', { name: 'Bulk Reviews' })).toHaveAttribute('href', '/bulkreviews');
@@ -32,7 +34,7 @@ test('renders the about page on /about', () => {
   renderApp('/about');
 
   expect(
-    screen.getByRole('heading', { level: 3, name: 'About the SMAR project' })
+    screen.getByRole('heading', { name: 'About the SMAR project' })
   ).toBeInTheDocument();
 });
 
