@@ -97,7 +97,7 @@ const UserGuide = () => {
         createData('appIpadScreenshots', 'Screenshot previews of the iPad app (if officially supported)'),
         createData('appletvScreenshots', 'Screenshot previews of the Apple TV app (if officially supported)'),
         createData('supportedDeviceList', 'A list of various devices that are supported by the app'),
-        createData('country', "App Store country code"),
+        createData('country', "App Store country code. Keyword and app ID search files only; Top Charts files do not have this column."),
         createData('collection', 'Top Charts files only: the chart the app was scraped from'),
         createData('scrapedFrom', 'Keyword and app ID search files only; Top Charts files do not have this column. Two possible values: (1) keyword search - the results of searching for the keyword in the Apple App Store. SMAR requests up to 50 results per keyword search. An app ID lookup returns one app, which is also labelled keyword search. (2) similar app links - the apps the App Store lists as similar to each of the keyword search results. This allows researchers to gather a larger number of apps that are related to a specific keyword. Regardless of how many times an app is found it is only shown once in the CSV (duplicates are removed).'),
         createData('dateScraped', 'Timestamp, date from when this app data was scraped'),

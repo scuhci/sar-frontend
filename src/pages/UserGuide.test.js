@@ -88,6 +88,7 @@ describe("User Guide describes the data as the backends produce it", () => {
         expect(apps.scrapedFrom).not.toMatch(/Google Play|30 results|September 2024/);
         expect(apps.totalReviews).toMatch(/ratings/);
         expect(apps.currentVersionReviews).toMatch(/ratings/);
+        expect(apps.country).toMatch(/search files only; Top Charts files do not have this column/);
         // The reviewer profile link is no longer written to the reviews file
         expect(reviews.userUrl).toBeUndefined();
     });
