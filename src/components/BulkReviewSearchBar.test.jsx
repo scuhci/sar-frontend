@@ -410,6 +410,17 @@ describe("FTB-07: Cancel and store switching", () => {
         expect(screen.getByTestId("step")).toHaveTextContent("0");
     });
 
+    test("Cancel aborts the search request that is in flight", async () => {
+        mockBackend({ search: (_appId, config) => pendingUntilAborted(config) });
+        renderFor();
+        submit("com.example.one, com.example.two");
+        fireEvent.click(await screen.findByRole("button", { name: "Cancel" }));
+        await waitFor(() => expect(screen.queryByRole("dialog")).toBeNull());
+        const searchCall = axios.get.mock.calls.find((call) => call[0].startsWith("/api/search"));
+        expect(searchCall[1]?.signal?.aborted).toBe(true);
+        expect(requested("/search")).toHaveLength(1);
+    });
+
     test("Cancel during the review fetch does not download a partial file", async () => {
         mockBackend({
             reviews: (appId, config) => (appId === "com.example.two" ? pendingUntilAborted(config) : reviewsCsv(appId)),
