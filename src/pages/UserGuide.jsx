@@ -198,7 +198,10 @@ const UserGuide = () => {
                                             <Link href="#Keyword_Search" sx={tocLinkSx} variant="body2">Conducting a Keyword Search</Link>
                                         </li>
                                         <li>
-                                            <Link href="#TopLists_Search" sx={tocLinkSx} variant="body2">Conducting a Top Lists Search</Link>
+                                            <Link href="#TopLists_Search" sx={tocLinkSx} variant="body2">Conducting a Top Charts Search</Link>
+                                        </li>
+                                        <li>
+                                            <Link href="#Bulk_Reviews" sx={tocLinkSx} variant="body2">Scraping Reviews in Bulk</Link>
                                         </li>
                                     </ul>
                                 </li>
@@ -284,16 +287,20 @@ const UserGuide = () => {
 
                     <Typography variant="h4" className="section-header" id="SMAR_Tool_Usage">SMAR Tool Usage</Typography>
 
-                    <Typography variant="body1" className="main-text" id="Keyword_Search">
+                    <Typography variant="h5" className="section-sub-header" id="Keyword_Search">I. Conducting a Keyword Search</Typography>
+                    <br />
+                    <Typography variant="body1" className="main-text">
                         The SMAR Tool is designed around the central search bar that allows
-                        users to quickly retrieve a filtered list of applications from the Google Play Store in a certain country.
+                        users to quickly retrieve a filtered list of applications from the Google Play Store or the Apple App Store
+                        in a certain country.
                     </Typography>
                     <br />
                     <Typography variant="body1" className="main-text">
-                        <b>1.</b> To get started, type in a search keyword (1). The Google Play Store country can be changed using the dropdown menu
-                        (a), which also supports type to search. Optionally, check the 'Include permissions in scrape' button b) to also
-                        retrieve individual app permissions (such as microphone or camera access). Click on the 'Scrape Data'  button (2) to
-                        begin the search process.
+                        <b>1.</b> To get started, select which app store you would like to search and type in a search keyword (1). The store
+                        country can be changed using the dropdown menu (a), which also supports type to search. Optionally, when scraping
+                        the Google Play Store, check the 'Include permissions in scrape' button (b) to also retrieve individual app
+                        permissions (such as microphone or camera access). Click on the 'Scrape Play Store' button (2), which reads
+                        'Scrape App Store' when the App Store is selected, to begin the search process.
                     </Typography>
                     <Box display="flex" justifyContent="center" alignItems="center">
                         <img src={require('../res/SMAR_Home_Screen.png')} className="inline-image" alt="SMAR steps" />
@@ -327,10 +334,10 @@ const UserGuide = () => {
                     </Typography>
                     <br /><br />
 
-                    <Typography variant="h5" className="section-sub-header" id="TopLists_Search">II. Conducting a Top Lists Search</Typography>
+                    <Typography variant="h5" className="section-sub-header" id="TopLists_Search">II. Conducting a Top Charts Search</Typography>
                     <br />
                     <Typography variant="body1" className="main-text">
-                        <b>1.</b> To get started, navigate to the Top Lists page by either clicking on the example collections (1) or
+                        <b>1.</b> To get started, navigate to the Top Charts page by either clicking on the example collections (1) or
                         the header navigation buttons (2).
                     </Typography>
                     <Box display="flex" justifyContent="center" alignItems="center">
@@ -342,7 +349,7 @@ const UserGuide = () => {
                         <b>2.</b> Now, select which app store you would like to search (3). The dropdown menus will adjust depending on the
                         selected app store -- now select the desired filters (4). <i>If scraping the Google Play Store, the 'Include permissions
                             in scrape' button (a) will be visible, and can be checked to retrieve individual app permissions (such as microphone or
-                            camera access) in addition to other app metadata.</i> Click on the 'Scrape Data' button (5) to begin the search process.
+                            camera access) in addition to other app metadata.</i> Click on the 'Search' button (5) to begin the search process.
                     </Typography>
                     <Box display="flex" justifyContent="center" alignItems="center">
                         <img src={require('../res/SMAR_TL.png')} className="inline-image" alt="SMAR top lists" />
@@ -359,7 +366,7 @@ const UserGuide = () => {
                     <br /><br />
 
                     <Typography variant="body1" className="main-text">
-                        <b>3.</b> Once the search has completed, a portion of the page will update with search results - this is the same as
+                        <b>4.</b> Once the search has completed, a portion of the page will update with search results - this is the same as
                         the interface for displaying keyword search results.
                         <br /><br />
                         A preview of the first few results will be visible (6) and are horizontally scrollable, while additional results can be
@@ -373,6 +380,24 @@ const UserGuide = () => {
                     <Box display="flex" justifyContent="center" alignItems="center">
                         <img src={require('../res/SMAR_Results_Screen_TL.png')} className="inline-image" alt="SMAR steps" />
                     </Box>
+                    <br /><br />
+
+                    <Typography variant="h5" className="section-sub-header" id="Bulk_Reviews">III. Scraping Reviews in Bulk</Typography>
+                    <br />
+                    <Typography variant="body1" className="main-text">
+                        <b>1.</b> To scrape the reviews of several apps at once, navigate to the Bulk Reviews page using the header
+                        navigation buttons and select which app store you would like to search.
+                    </Typography>
+                    <br />
+                    <Typography variant="body1" className="main-text">
+                        <b>2.</b> Enter the app IDs, separated by commas (for example com.example.app1, com.example.app2), and click on the
+                        'Scrape Play Store' button, which reads 'Scrape App Store' when the App Store is selected.
+                    </Typography>
+                    <br />
+                    <Typography variant="body1" className="main-text">
+                        <b>3.</b> Check the list of apps that were found, then click on the 'Scrape and Download Reviews' button to
+                        download the reviews for all of the listed apps, along with a reproducibility log.
+                    </Typography>
                     <br /><br />
 
                     <br /><br />
@@ -437,39 +462,39 @@ const UserGuide = () => {
                     <Typography variant="h4" className="section-header" id="References">References</Typography>
                     <br />
                     <Typography variant="body1" className="refs">
-                        [1] Turki Alelyani, Arup Kumar Ghosh, Larry Moralez, Shion Guha, and Pamela Wisniewski. 2019. Examining Parent Versus Child Reviews of Parental Control Apps on Google Play. In Social Computing and Social Media. Communication and Social Communities, 3–21. hps://doi.org/10.1007/978-3-030-21905-5_1
+                        [1] Turki Alelyani, Arup Kumar Ghosh, Larry Moralez, Shion Guha, and Pamela Wisniewski. 2019. Examining Parent Versus Child Reviews of Parental Control Apps on Google Play. In Social Computing and Social Media. Communication and Social Communities, 3–21. <Link href="https://doi.org/10.1007/978-3-030-21905-5_1" target="_blank" rel="noopener noreferrer">https://doi.org/10.1007/978-3-030-21905-5_1</Link>
                     </Typography>
                     <br />
                     <Typography variant="body1" className="refs">
-                        [2] Hemakumar Devan, Devin Farmery, Lucy Peebles, and Rebecca Grainger. 2019. Evaluation of Self-Management Support Functions in Apps for People With Persistent Pain: Systematic Review. JMIR mHealth and uHealth 7, 2: e13080. hps://doi.org/10.2196/13080
+                        [2] Hemakumar Devan, Devin Farmery, Lucy Peebles, and Rebecca Grainger. 2019. Evaluation of Self-Management Support Functions in Apps for People With Persistent Pain: Systematic Review. JMIR mHealth and uHealth 7, 2: e13080. <Link href="https://doi.org/10.2196/13080" target="_blank" rel="noopener noreferrer">https://doi.org/10.2196/13080</Link>
                     </Typography>
                     <br />
                     <Typography variant="body1" className="refs">
-                        [3] Akeiylah DeWi, Julie Kien, and Kendra Liljenquist. 2022. Quality of Mobile Apps for Child Development Support: Search in App Stores and Content Analysis. JMIR pediatrics and parenting 5, 4: e38793. hps://doi.org/10.2196/38793
+                        [3] Akeiylah DeWitt, Julie Kientz, and Kendra Liljenquist. 2022. Quality of Mobile Apps for Child Development Support: Search in App Stores and Content Analysis. JMIR pediatrics and parenting 5, 4: e38793. <Link href="https://doi.org/10.2196/38793" target="_blank" rel="noopener noreferrer">https://doi.org/10.2196/38793</Link>
                     </Typography>
                     <br />
                     <Typography variant="body1" className="refs">
-                        [4] Raymond Fok, Mingyuan Zhong, Anne Spencer Ross, James Fogarty, and Jacob O. Wobbrock. 2022. A Large-Scale Longitudinal Analysis of Missing Label Accessibility Failures in Android Apps. In Proceedings of the 2022 CHI Conference on Human Factors in Computing Systems (CHI ’22), 1–16. hps://doi.org/10.1145/3491102.3502143
+                        [4] Raymond Fok, Mingyuan Zhong, Anne Spencer Ross, James Fogarty, and Jacob O. Wobbrock. 2022. A Large-Scale Longitudinal Analysis of Missing Label Accessibility Failures in Android Apps. In Proceedings of the 2022 CHI Conference on Human Factors in Computing Systems (CHI ’22), 1–16. <Link href="https://doi.org/10.1145/3491102.3502143" target="_blank" rel="noopener noreferrer">https://doi.org/10.1145/3491102.3502143</Link>
                     </Typography>
                     <br />
                     <Typography variant="body1" className="refs">
-                        [5] Arup Kumar Ghosh, Karla Badillo-Urquiola, Shion Guha, Joseph J. LaViola Jr, and Pamela J. Wisniewski. 2018. Safety vs. Surveillance: What Children Have to Say about Mobile Apps for Parental Control. In Proceedings of the 2018 CHI Conference on Human Factors in Computing Systems (CHI ’18), 1–14. hps://doi.org/10.1145/3173574.3173698
+                        [5] Arup Kumar Ghosh, Karla Badillo-Urquiola, Shion Guha, Joseph J. LaViola Jr, and Pamela J. Wisniewski. 2018. Safety vs. Surveillance: What Children Have to Say about Mobile Apps for Parental Control. In Proceedings of the 2018 CHI Conference on Human Factors in Computing Systems (CHI ’18), 1–14. <Link href="https://doi.org/10.1145/3173574.3173698" target="_blank" rel="noopener noreferrer">https://doi.org/10.1145/3173574.3173698</Link>
                     </Typography>
                     <br />
                     <Typography variant="body1" className="refs">
-                        [6] M. R. Haque and S. Rubya. 2022. “ For an app supposed to make its users feel beer, it sure is a joke”-an analysis of user reviews of mobile mental health applications. Proceedings of the ACM on Human-Computer. Retrieved from hps://dl.acm.org/doi/abs/10.1145/3555146
+                        [6] M. R. Haque and S. Rubya. 2022. “For an app supposed to make its users feel better, it sure is a joke”-an analysis of user reviews of mobile mental health applications. Proceedings of the ACM on Human-Computer Interaction 6, CSCW2. <Link href="https://doi.org/10.1145/3555146" target="_blank" rel="noopener noreferrer">https://doi.org/10.1145/3555146</Link>
                     </Typography>
                     <br />
                     <Typography variant="body1" className="refs">
-                        [7] Shun Hidaka, Sota Kobuki, Mizuki Watanabe, and Katie Seaborn. 2023. Linguistic Dead-Ends and Alphabet Soup: Finding Dark Patterns in Japanese Apps. In Proceedings of the 2023 CHI Conference on Human Factors in Computing Systems (CHI ’23), 1–13. hps://doi.org/10.1145/3544548.3580942
+                        [7] Shun Hidaka, Sota Kobuki, Mizuki Watanabe, and Katie Seaborn. 2023. Linguistic Dead-Ends and Alphabet Soup: Finding Dark Patterns in Japanese Apps. In Proceedings of the 2023 CHI Conference on Human Factors in Computing Systems (CHI ’23), 1–13. <Link href="https://doi.org/10.1145/3544548.3580942" target="_blank" rel="noopener noreferrer">https://doi.org/10.1145/3544548.3580942</Link>
                     </Typography>
                     <br />
                     <Typography variant="body1" className="refs">
-                        [8] P. Wisniewski, A. K. Ghosh, H. Xu, and M. B. Rosson. 2017. Parental Control vs. Teen Self-Regulation: Is there a middle ground for mobile online safety? Proceedings of the. Retrieved from hps://dl.acm.org/citation.cfm?id=2998352
+                        [8] P. Wisniewski, A. K. Ghosh, H. Xu, and M. B. Rosson. 2017. Parental Control vs. Teen Self-Regulation: Is there a middle ground for mobile online safety? In Proceedings of the 2017 ACM Conference on Computer Supported Cooperative Work and Social Computing (CSCW ’17). <Link href="https://doi.org/10.1145/2998181.2998352" target="_blank" rel="noopener noreferrer">https://doi.org/10.1145/2998181.2998352</Link>
                     </Typography>
                     <br />
                     <Typography variant="body1" className="refs">
-                        [9] Rhonda Zwingerman, Michael Chaikof, and Claire Jones. 2020. A Critical Appraisal of Fertility and Menstrual Tracking Apps for the iPhone. Journal of obstetrics and gynaecology Canada: JOGC = Journal d’obstetrique et gynecologie du Canada: JOGC 42, 5: 583–590. hps://doi.org/10.1016/j.jogc.2019.09.023
+                        [9] Rhonda Zwingerman, Michael Chaikof, and Claire Jones. 2020. A Critical Appraisal of Fertility and Menstrual Tracking Apps for the iPhone. Journal of obstetrics and gynaecology Canada: JOGC = Journal d’obstetrique et gynecologie du Canada: JOGC 42, 5: 583–590. <Link href="https://doi.org/10.1016/j.jogc.2019.09.023" target="_blank" rel="noopener noreferrer">https://doi.org/10.1016/j.jogc.2019.09.023</Link>
                     </Typography>
                         </div>
                     </div>

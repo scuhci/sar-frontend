@@ -91,3 +91,60 @@ describe("User Guide describes the data as the backends produce it", () => {
         expect(reviews.userUrl).toMatch(/reviewer's App Store profile/);
     });
 });
+
+describe("User Guide walkthrough and references", () => {
+    test("every reference has a working https link and the full author, title and venue text", () => {
+        const { container } = render(<UserGuide />);
+        const refs = [...container.querySelectorAll("p.refs")];
+        expect(refs).toHaveLength(9);
+        refs.forEach((ref) => {
+            expect(ref.textContent).not.toMatch(/hps:\/\//);
+            const link = ref.querySelector("a");
+            expect(link).not.toBeNull();
+            expect(link.getAttribute("href")).toMatch(/^https:\/\/doi\.org\/10\./);
+            expect(link.textContent).toBe(link.getAttribute("href"));
+        });
+        const text = refs.map((ref) => ref.textContent).join("\n");
+        expect(text).toMatch(/Akeiylah DeWitt, Julie Kientz, and Kendra Liljenquist/);
+        expect(text).toMatch(/make its users feel better, it sure is a joke/);
+        expect(text).toMatch(/Proceedings of the ACM on Human-Computer Interaction 6, CSCW2/);
+        expect(text).toMatch(/Proceedings of the 2017 ACM Conference on Computer Supported Cooperative Work/);
+    });
+
+    test("the walkthrough names the buttons and pages as the site labels them", () => {
+        const { container } = render(<UserGuide />);
+        const text = container.textContent;
+        expect(text).not.toMatch(/Scrape Data/);
+        expect(text).not.toMatch(/Top Lists/);
+        expect(text).toMatch(/'Scrape Play Store' button/);
+        expect(text).toMatch(/'Scrape App Store'/);
+        expect(text).toMatch(/'Search' button/);
+        expect(text).toMatch(/navigate to the Top Charts page/);
+        expect(text).toMatch(/navigate to the Bulk Reviews page/);
+    });
+
+    test("the three usage sections are numbered, linked from the contents and their steps count up", () => {
+        const { container } = render(<UserGuide />);
+        const headings = [...container.querySelectorAll("h5")].map((heading) => heading.textContent);
+        expect(headings).toEqual(
+            expect.arrayContaining([
+                "I. Conducting a Keyword Search",
+                "II. Conducting a Top Charts Search",
+                "III. Scraping Reviews in Bulk",
+            ]),
+        );
+        ["Keyword_Search", "TopLists_Search", "Bulk_Reviews"].forEach((id) => {
+            expect(container.querySelector(`h5#${id}`)).not.toBeNull();
+            expect(container.querySelector(`a[href="#${id}"]`)).not.toBeNull();
+        });
+        // Step numbers between the "II." heading and the "III." heading
+        const steps = [];
+        let node = container.querySelector("#TopLists_Search").nextElementSibling;
+        while (node && node.id !== "Bulk_Reviews") {
+            const number = node.querySelector(":scope > b");
+            if (number && /^\d\.$/.test(number.textContent)) steps.push(number.textContent);
+            node = node.nextElementSibling;
+        }
+        expect(steps).toEqual(["1.", "2.", "3.", "4."]);
+    });
+});
