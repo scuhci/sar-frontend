@@ -6,7 +6,8 @@
 
 ## Two versions
 
-There are two versions of the SMAR agent skills. Both write CSVs in SMAR's format.
+There are two versions of the SMAR agent skills. Both write CSVs in SMAR's format as of the last benchmark (see
+[CSV format and the SMAR site](#csv-format-and-the-smar-site)).
 
 - **Full skills** (`smar-playstore-agent` 3.1.0, `smar-appstore-agent` 2.1.0): Google Play and the App Store.
   Scripts run on your computer, every value is cross-checked against a second source, and long runs can resume.
@@ -35,11 +36,11 @@ US runs. For important results, check with the full skills.
 
 | Version | Skill | Download | Repo copy |
 |---|---|---|---|
-| Full | `smar-playstore-agent` 3.1.0 | [smar-tool.org/agent-skills/smar-playstore-agent.skill](https://smar-tool.org/agent-skills/smar-playstore-agent.skill) | [`public/agent-skills/smar-playstore-agent.skill`](../public/agent-skills/smar-playstore-agent.skill) |
-| Full | `smar-appstore-agent` 2.1.0 | [smar-tool.org/agent-skills/smar-appstore-agent.skill](https://smar-tool.org/agent-skills/smar-appstore-agent.skill) | [`public/agent-skills/smar-appstore-agent.skill`](../public/agent-skills/smar-appstore-agent.skill) |
-| Chrome-only | `smar-playstore-keyword-search` | [smar-tool.org/agent-skills/chrome-only/smar-playstore-keyword-search.skill](https://smar-tool.org/agent-skills/chrome-only/smar-playstore-keyword-search.skill) | [`public/agent-skills/chrome-only/smar-playstore-keyword-search.skill`](../public/agent-skills/chrome-only/smar-playstore-keyword-search.skill) |
-| Chrome-only | `smar-playstore-top-charts` | [smar-tool.org/agent-skills/chrome-only/smar-playstore-top-charts.skill](https://smar-tool.org/agent-skills/chrome-only/smar-playstore-top-charts.skill) | [`public/agent-skills/chrome-only/smar-playstore-top-charts.skill`](../public/agent-skills/chrome-only/smar-playstore-top-charts.skill) |
-| Chrome-only | `smar-playstore-bulk-reviews` | [smar-tool.org/agent-skills/chrome-only/smar-playstore-bulk-reviews.skill](https://smar-tool.org/agent-skills/chrome-only/smar-playstore-bulk-reviews.skill) | [`public/agent-skills/chrome-only/smar-playstore-bulk-reviews.skill`](../public/agent-skills/chrome-only/smar-playstore-bulk-reviews.skill) |
+| Full | `smar-playstore-agent` 3.1.0 | [smar-tool.org/downloads/agent-skills/smar-playstore-agent.skill](https://smar-tool.org/downloads/agent-skills/smar-playstore-agent.skill) | [`public/downloads/agent-skills/smar-playstore-agent.skill`](../public/downloads/agent-skills/smar-playstore-agent.skill) |
+| Full | `smar-appstore-agent` 2.1.0 | [smar-tool.org/downloads/agent-skills/smar-appstore-agent.skill](https://smar-tool.org/downloads/agent-skills/smar-appstore-agent.skill) | [`public/downloads/agent-skills/smar-appstore-agent.skill`](../public/downloads/agent-skills/smar-appstore-agent.skill) |
+| Chrome-only | `smar-playstore-keyword-search` | [smar-tool.org/downloads/agent-skills/chrome-only/smar-playstore-keyword-search.skill](https://smar-tool.org/downloads/agent-skills/chrome-only/smar-playstore-keyword-search.skill) | [`public/downloads/agent-skills/chrome-only/smar-playstore-keyword-search.skill`](../public/downloads/agent-skills/chrome-only/smar-playstore-keyword-search.skill) |
+| Chrome-only | `smar-playstore-top-charts` | [smar-tool.org/downloads/agent-skills/chrome-only/smar-playstore-top-charts.skill](https://smar-tool.org/downloads/agent-skills/chrome-only/smar-playstore-top-charts.skill) | [`public/downloads/agent-skills/chrome-only/smar-playstore-top-charts.skill`](../public/downloads/agent-skills/chrome-only/smar-playstore-top-charts.skill) |
+| Chrome-only | `smar-playstore-bulk-reviews` | [smar-tool.org/downloads/agent-skills/chrome-only/smar-playstore-bulk-reviews.skill](https://smar-tool.org/downloads/agent-skills/chrome-only/smar-playstore-bulk-reviews.skill) | [`public/downloads/agent-skills/chrome-only/smar-playstore-bulk-reviews.skill`](../public/downloads/agent-skills/chrome-only/smar-playstore-bulk-reviews.skill) |
 
 The rest of this page describes the **full skills**.
 
@@ -50,15 +51,27 @@ SMAR-format CSVs:
 
 | Skill | Store | Version | Download |
 |---|---|---|---|
-| `smar-playstore-agent` | Google Play | 3.1.0 | [smar-tool.org/agent-skills/smar-playstore-agent.skill](https://smar-tool.org/agent-skills/smar-playstore-agent.skill) ([repo copy](../public/agent-skills/smar-playstore-agent.skill)) |
-| `smar-appstore-agent` | Apple App Store | 2.1.0 | [smar-tool.org/agent-skills/smar-appstore-agent.skill](https://smar-tool.org/agent-skills/smar-appstore-agent.skill) ([repo copy](../public/agent-skills/smar-appstore-agent.skill)) |
+| `smar-playstore-agent` | Google Play | 3.1.0 | [smar-tool.org/downloads/agent-skills/smar-playstore-agent.skill](https://smar-tool.org/downloads/agent-skills/smar-playstore-agent.skill) ([repo copy](../public/downloads/agent-skills/smar-playstore-agent.skill)) |
+| `smar-appstore-agent` | Apple App Store | 2.1.0 | [smar-tool.org/downloads/agent-skills/smar-appstore-agent.skill](https://smar-tool.org/downloads/agent-skills/smar-appstore-agent.skill) ([repo copy](../public/downloads/agent-skills/smar-appstore-agent.skill)) |
 
 They were built and tested with Claude (Claude Code, Claude.ai and Claude in Chrome).
 
 - **Values come from scripts, not from the model.** The agent only runs the skill's scripts. The scripts copy every
   value from Google's or Apple's own data and check it against a second source on the page.
 - **Cells that can't be verified are left blank and flagged** in the run's report, never guessed.
-- The columns are the same as SMAR's, so files work with anything you already built around SMAR's output.
+- The columns are the same as SMAR's as of the last benchmark, so files work with anything you already built around
+  that output.
+
+### CSV format and the SMAR site
+
+The skills were last benchmarked against SAR-backend `32d0fecb` (Google Play) and `95783af` (App Store,
+branch `ios-production`), the commits the [verify kit](verify/README.md) pins. "SMAR's format" on this page means the
+format those revisions write. When the site's CSV writer changes (columns, column order, how empty cells are written,
+line endings, the `dateScraped` format), files from the skills and files from smar-tool.org differ until the skills
+are updated and re-verified, so compare the header rows before combining them.
+
+App Store review files written by the skill include a `userUrl` column (a link to each reviewer's App Store
+profile), as the benchmarked site revision does. Remove that column if you do not need it.
 
 A `.skill` file is a zip. Its contents are also in this folder, unzipped, so you can read them before installing:
 [`smar-playstore-agent/`](smar-playstore-agent/) and [`smar-appstore-agent/`](smar-appstore-agent/) (start with
@@ -91,8 +104,8 @@ apps), top charts and bulk reviews, with CSV download in SMAR's columns.
 | Reviews for one app (up to 500, Apple's feed limit) | Supported |
 | Bulk reviews (several apps) | Supported |
 | **Both stores** | |
-| CSV download (optional exact-SMAR file with `--smar-compat`) | Supported |
-| Column definitions same as SMAR | Supported |
+| CSV download (optional file matching the benchmarked SMAR revision exactly, with `--smar-compat`) | Supported |
+| Column definitions same as SMAR (as of the last benchmark) | Supported |
 | Bulk reviews always newest first | Supported |
 | Reproducibility log | Partial: written as a separate file; its field names differ from SMAR's log |
 | Results preview | Partial: a short written report instead of a table |

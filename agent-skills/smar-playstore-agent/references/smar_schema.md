@@ -8,9 +8,12 @@ build or edit rows by hand.
 ## The one policy
 - **Default = page truth.** Every cell is the Google Play page's own value, cross-checked on the same page.
   A value that is missing, or fails its cross-check, is written `undefined`. Every row Google lists is kept.
-- **`--smar-compat` (browser `compat:true`) = SMAR's bytes**, for metadata and reviews: SMAR's row set,
-  SMAR's derived values and bugs, SMAR's header order and the BOM. It is pinned to gps 9.2.0; if SAR-backend
-  upgrades the library, SMAR's output changes and compat must be re-verified.
+- **`--smar-compat` (browser `compat:true`) = SMAR's bytes as of SAR-backend `32d0fecb`**, for metadata and
+  reviews: SMAR's row set, SMAR's derived values and bugs, SMAR's header order and the BOM. It is pinned to that
+  commit and to gps 9.2.0; if SAR-backend upgrades the library or changes `utilities/jsonToCsv.js` (column order,
+  how empty or null cells are written, line endings, the `dateScraped` format), SMAR's output changes, a compat
+  file no longer matches what smar-tool.org writes, and compat must be updated and re-verified. Everything on this
+  page that says "SMAR writes" describes that commit, not necessarily the live site.
 - Every summary has `compatFileReproducible` = `{ok, reasons, means}` (named `compatExact` in earlier versions): whether
   a `--smar-compat` file is built with SMAR's exact rows, formatting and known bugs from the pages fetched, and if
   not, why (codes at the end). It is not a byte comparison with a live SMAR run: Google's data (and reviews) change
