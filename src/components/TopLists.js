@@ -2,14 +2,11 @@ import React, { useState, useEffect } from "react";
 import { useLocation } from "react-router-dom";
 import "../css/TopList.css";
 import "../css/SearchBar.css";
-import { Select, FormControl, MenuItem, InputLabel, Typography, Button } from "@mui/material";
+import { Select, FormControl, MenuItem, InputLabel, Typography, Button, Alert } from "@mui/material";
 import { DataGrid } from "@mui/x-data-grid";
 import {
     gplayCategories,
     gplayCollections,
-    gplayCategories_topfree,
-    gplayCategories_toppaid,
-    gplayCategories_topgrossing,
     iosCategories,
     iosCollections,
     iosDevices,
@@ -62,17 +59,43 @@ const iosCategoriesByCollection = {
     topgrossingipadapplications: iosCategories_topgrossingipadapplications,
 };
 
-const gplayCategoriesByCollection = {
-    TOP_FREE: gplayCategories_topfree,
-    TOP_PAID: gplayCategories_toppaid,
-    GROSSING: gplayCategories_topgrossing,
-}
+// Device ("MAC" | "IOS" | "IPAD") an App Store collection belongs to, or undefined for Play collections.
+const getIosDeviceForCollection = (collectionCode) =>
+    iosCollections.find((item) => item.collections.some(({ code }) => code === collectionCode))?.device;
+
+// "Top Free Social Apps" on the Play Store. App Store collection names already end in "Apps"
+// ("Top Free iOS Apps"), so fold the category in ("Top Free iOS Games Apps") instead of repeating it.
+const describeApps = (collectionName, categoryName) =>
+    [(collectionName ?? "").trim().replace(/ Apps$/, ""), categoryName, "Apps"].filter(Boolean).join(" ");
+
+// Top Mac Apps, Top Paid Mac Apps and Top Grossing Mac Apps have no "No Category" chart, so those
+// collections start on their first category instead of an empty one the store cannot serve.
+const defaultCategoryFor = (collectionCode) => {
+    const categories = iosCategoriesByCollection[collectionCode] ?? iosCategories;
+    return categories.some(({ code }) => code === "") ? "" : categories[0].code;
+};
+
+const defaultIosCollectionByDevice = {
+    MAC: "topmacapps",
+    IOS: "topfreeapplications",
+    IPAD: "topfreeipadapplications",
+};
+
+// A short reason for a failed request: the backend's own message when it sent one.
+const requestErrorReason = (status, message) => {
+    if (!status) return "Could not reach the server.";
+    if (status === 504) return "The request took too long.";
+    if (typeof message === "string" && message.trim()) return message.trim();
+    return `The server returned status ${status}.`;
+};
 
 // zip
 let JSZip = require("jszip");
 
 const TopLists = ({ flipState }) => {
     const { selectedScraper } = useScraper();
+    // Apple has a storefront in only some of the countries Google Play serves
+    const countries = selectedScraper === "Play Store" ? gplayCountries : iosCountries;
     const [collection, setCollection] = useState("TOP_FREE");
     const [device, setDevice] = useState("IOS");
     const [category, setCategory] = useState("");
@@ -81,11 +104,18 @@ const TopLists = ({ flipState }) => {
     const [isLoading, setIsLoading] = useState(false);
     const [totalCount, setTotalCount] = useState(0);
     const [abortController, setAbortController] = useState(null);
-    const [displayPermissions, setDisplayPermissions] = useState(false);
     const [showTable, setShowTable] = useState(false);
+    const [chartError, setChartError] = useState("");
+    const [downloadError, setDownloadError] = useState("");
     const [includePermissions, setIncludePermissions] = useState(false);
-    const [downloadQuery, setDownloadQuery] = useState("TOP_FREEUS");
-    const [fullQuery, setFullQuery] = useState(["Top Free"]);
+    // The search the chart on screen came from; the heading, download, relog and row actions read this, not the live form.
+    const [shownQuery, setShownQuery] = useState({
+        labels: ["Top Free"],
+        downloadQuery: "TOP_FREEUS",
+        country: "US",
+        deviceName: "",
+        includePermissions: false,
+    });
 
     const location = useLocation();
     //const navigate = useNavigate();
@@ -102,33 +132,37 @@ const TopLists = ({ flipState }) => {
             setCountry("US");
             setDevice("IOS");
         }
+        setIncludePermissions(false);
         setShowTable(false);
+        setChartError("");
+        setDownloadError("");
     }, [selectedScraper]);
 
     useEffect(() => {
-        if (selectedScraper === "App Store") {
-            if (device === "MAC") {
-                setCollection("topmacapps");
-            } else if (device === "IOS") {
-                setCollection("topfreeapplications");
-            } else if (device === "IPAD") {
-                setCollection("topfreeipadapplications");
+        const handedIn = location.state && location.state.collectionState;
+        if (!handedIn) return;
+        // Router state outlives a store switch (Back/Forward), so only take a collection the selected store has
+        if (selectedScraper === "Play Store") {
+            if (gplayCollections.some(({ code }) => code === handedIn)) {
+                setCollection(handedIn);
+            }
+        } else if (selectedScraper === "App Store") {
+            // Keep the device in step with an App Store collection handed in from Home
+            const collectionDevice = getIosDeviceForCollection(handedIn);
+            if (collectionDevice) {
+                setCollection(handedIn);
+                setDevice(collectionDevice);
+                setCategory(defaultCategoryFor(handedIn));
             }
         }
-    }, [device, selectedScraper]);
-
-    useEffect(() => {
-        if (location.state && location.state.collectionState) {
-            setCollection(location.state.collectionState);
-        }
-    }, [location.state]);
+    }, [location.state, selectedScraper]);
 
     const rows =
-        displayPermissions && selectedScraper === "Play Store"
+        shownQuery.includePermissions && selectedScraper === "Play Store"
             ? searchResults.map((application) => ({
                   ...application,
                   reviewsCount: application.reviews,
-                  reviews: [application.reviews, application.appId, country],
+                  reviews: [application.reviews, application.appId, shownQuery.country],
 
                   // PERMISSIONS
                   // All truncated to two(ish) most relevant words.'
@@ -174,7 +208,7 @@ const TopLists = ({ flipState }) => {
             : searchResults.map((application) => ({
                   ...application,
                   reviewsCount: application.reviews,
-                  reviews: [application.reviews, application.appId, country],
+                  reviews: [application.reviews, application.appId, shownQuery.country],
               }));
 
     const handleCategoryChange = (event) => {
@@ -186,7 +220,7 @@ const TopLists = ({ flipState }) => {
     const handleCollectionChange = (event) => {
         if (event.target) {
             setCollection(event.target.value);
-            setCategory("");
+            setCategory(defaultCategoryFor(event.target.value));
         }
     };
 
@@ -199,24 +233,20 @@ const TopLists = ({ flipState }) => {
     const handleDeviceChange = (event) => {
         if (event.target) {
             setDevice(event.target.value);
+            setCollection(defaultIosCollectionByDevice[event.target.value]);
+            setCategory(defaultCategoryFor(defaultIosCollectionByDevice[event.target.value]));
         }
     };
 
     const handleCancel = (_event, reason) => {
         if (reason && reason === "backdropClick") return;
+        // Only the pending request is dropped; a chart already on screen stays
         abortController.abort();
-        setShowTable(false);
         setIsLoading(false);
     };
 
     const handlePermissionChange = () => {
         setIncludePermissions(!includePermissions);
-    };
-
-    const handleKeyDown = (event) => {
-        if (event.key === "Enter") {
-            handleTopListQuery();
-        }
     };
 
     const getNameByCode = (list, code) => {
@@ -229,7 +259,41 @@ const TopLists = ({ flipState }) => {
         return entry ? (entry.code === "" ? "" : entry.csvName) : null;
     };
 
+    const currentQuery = () => {
+        if (selectedScraper === "Play Store") {
+            return {
+                labels: [
+                    getNameByCode(gplayCollections, collection),
+                    getNameByCode(gplayCategories, category),
+                    getNameByCode(countries, country),
+                ],
+                downloadQuery: collection.concat(category, country),
+                country,
+                deviceName: getNameByCode(iosDevices, device),
+                includePermissions,
+            };
+        }
+        return {
+            labels: [
+                getNameByCode(
+                    iosCollections.filter((item) => item.device === device).flatMap((item) => item.collections),
+                    collection,
+                ),
+                getNameByCode(iosCategoriesByCollection[collection] ?? iosCategories, category),
+                getNameByCode(countries, country),
+            ],
+            downloadQuery: collection.concat(
+                getIosCategoryByCode(iosCategoriesByCollection[collection] ?? iosCategories, category),
+                country,
+            ),
+            country,
+            deviceName: getNameByCode(iosDevices, device),
+            includePermissions,
+        };
+    };
+
     const handleTopListQuery = () => {
+        const sent = currentQuery();
         if (abortController) {
             abortController.abort();
         }
@@ -237,6 +301,7 @@ const TopLists = ({ flipState }) => {
         setAbortController(newAbortController);
 
         setIsLoading(true);
+        setChartError("");
 
         axios
             .get(
@@ -252,7 +317,8 @@ const TopLists = ({ flipState }) => {
             )
             .then((response) => {
                 flipState();
-                setDisplayPermissions(includePermissions);
+                setDownloadError("");
+                setShownQuery(sent);
                 setShowTable(true);
                 setSearchResults(response.data.results);
                 setTotalCount(response.data.totalCount);
@@ -260,49 +326,31 @@ const TopLists = ({ flipState }) => {
             })
             .catch((error) => {
                 if (axios.isCancel(error)) {
-                    setShowTable(false);
                     console.log("Request canceled:", error.message);
                 } else {
                     flipState();
-                    setShowTable(true);
+                    setShowTable(false);
+                    setSearchResults([]);
+                    setTotalCount(0);
+                    setChartError(
+                        `Top Charts request failed: ${requestErrorReason(
+                            error.response?.status,
+                            error.response?.data?.error,
+                        )} No chart was returned, so this is not an empty chart. Please try again.`,
+                    );
                     console.error("Error fetching top lists:", error);
                 }
-                setSearchResults([]);
-                setTotalCount(0);
                 setIsLoading(false);
-                console.log(downloadQuery);
             });
-        if (selectedScraper === "Play Store") {
-                setFullQuery([
-                    getNameByCode(gplayCollections, collection),
-                    getNameByCode(gplayCategoriesByCollection[collection] ?? gplayCategories, category),  // ✅ Use filtered
-                    getNameByCode(gplayCountries, country),
-                ]);
-            setDownloadQuery(collection.concat(category, country));
-        } else {
-            setFullQuery([
-                getNameByCode(
-                    iosCollections.filter((item) => item.device === device).flatMap((item) => item.collections),
-                    collection,
-                ),
-                getNameByCode(iosCategoriesByCollection[collection] ?? iosCategories, category),
-                getNameByCode(gplayCountries, country),
-            ]);
-            setDownloadQuery(
-                collection.concat(
-                    getIosCategoryByCode(iosCategoriesByCollection[collection] ?? iosCategories, category),
-                    country,
-                ),
-            );
-        }
     };
 
     const handleDownloadAllResults = async () => {
+        setDownloadError("");
         try {
             const response = await axios.get(
                 selectedScraper === "Play Store"
-                    ? `/api/download-top-csv?query=${downloadQuery}&includePermissions=${includePermissions}`
-                    : `/ios/download-top-csv?query=${downloadQuery}&includePermissions=${includePermissions}`,
+                    ? `/api/download-top-csv?query=${shownQuery.downloadQuery}&includePermissions=${shownQuery.includePermissions}`
+                    : `/ios/download-top-csv?query=${shownQuery.downloadQuery}&includePermissions=${shownQuery.includePermissions}`,
                 {
                     responseType: "blob", //handling the binary data
                     headers: {
@@ -313,13 +361,10 @@ const TopLists = ({ flipState }) => {
 
             const relog_response = await axios.get(
                 selectedScraper === "Play Store"
-                    ? `/api/download-top-relog?collection=${fullQuery[0]}&category=${fullQuery[1]}&country=${fullQuery[2]}&includePermissions=${includePermissions}&totalCount=${totalCount}`
-                    : `/ios/download-top-relog?collection=${fullQuery[0]}&category=${fullQuery[1]}&country=${
-                          fullQuery[2]
-                      }&device=${getNameByCode(
-                          iosDevices,
-                          device,
-                      )}&includePermissions=${includePermissions}&totalCount=${totalCount}`,
+                    ? `/api/download-top-relog?collection=${shownQuery.labels[0]}&category=${shownQuery.labels[1]}&country=${shownQuery.labels[2]}&includePermissions=${shownQuery.includePermissions}&totalCount=${totalCount}`
+                    : `/ios/download-top-relog?collection=${shownQuery.labels[0]}&category=${shownQuery.labels[1]}&country=${
+                          shownQuery.labels[2]
+                      }&device=${shownQuery.deviceName}&includePermissions=${shownQuery.includePermissions}&totalCount=${totalCount}`,
                 {
                     responseType: "blob", //handling the binary data
                     headers: {
@@ -361,9 +406,25 @@ const TopLists = ({ flipState }) => {
                 window.URL.revokeObjectURL(url);
             });
         } catch (error) {
+            let message = "";
+            try {
+                const data = error.response?.data;
+                const text = data && typeof data.text === "function" ? await data.text() : null;
+                message = (text ? JSON.parse(text) : data)?.error ?? "";
+            } catch {
+                message = "";
+            }
+            setDownloadError(
+                `Download failed: ${requestErrorReason(
+                    error.response?.status,
+                    message,
+                )} Search this chart again, then download.`,
+            );
             console.error("Error fetching or downloading the file:", error);
         }
     };
+
+    const pending = currentQuery();
 
     return (
         <div className="toplist-container">
@@ -377,7 +438,7 @@ const TopLists = ({ flipState }) => {
                         label="country"
                         onChange={handleCountryChange}
                     >
-                        {(selectedScraper === "Play Store" ? gplayCountries : gplayCountries).map(
+                        {countries.map(
                             ({ code, name }, index) => (
                                 <MenuItem key={index} value={code}>
                                     {name}
@@ -442,7 +503,7 @@ const TopLists = ({ flipState }) => {
                         onChange={handleCategoryChange}
                     >
                         {(selectedScraper === "Play Store"
-                            ? (gplayCategoriesByCollection[collection] ?? gplayCategories)
+                            ? gplayCategories
                             : (iosCategoriesByCollection[collection] ?? iosCategories)
                         ).map(({ code, name }, index) => (
                             <MenuItem key={index} value={code}>
@@ -456,7 +517,6 @@ const TopLists = ({ flipState }) => {
                     variant="contained"
                     color="primary"
                     onClick={handleTopListQuery}
-                    onKeyDown={handleKeyDown}
                 >
                     Search
                 </Button>
@@ -491,21 +551,25 @@ const TopLists = ({ flipState }) => {
             <LoadingTopLists
                 open={isLoading}
                 onCancel={handleCancel}
-                country={getNameByCode(gplayCountries, country)}
-                collection={getNameByCode(gplayCollections, collection)}
-                category={getNameByCode(gplayCategoriesByCollection[collection] ?? gplayCategories, category)}
+                country={pending.labels[2]}
+                apps={describeApps(pending.labels[0], pending.labels[1])}
             />
+            {chartError && (
+                <Alert severity="error" onClose={() => setChartError("")}>
+                    {chartError}
+                </Alert>
+            )}
             {showTable &&
                 (totalCount > 0 ? (
                     <>
                         <div className="search-result-text">
                             {totalCount === 1 ? (
                                 <Typography variant="h5">
-                                    {totalCount} Result for {fullQuery[0]} {fullQuery[1]} Apps in {fullQuery[2]}
+                                    {totalCount} Result for {describeApps(shownQuery.labels[0], shownQuery.labels[1])} in {shownQuery.labels[2]}
                                 </Typography>
                             ) : (
                                 <Typography variant="h5">
-                                    {totalCount} Results for {fullQuery[0]} {fullQuery[1]} Apps in {fullQuery[2]}
+                                    {totalCount} Results for {describeApps(shownQuery.labels[0], shownQuery.labels[1])} in {shownQuery.labels[2]}
                                 </Typography>
                             )}
                         </div>
@@ -515,7 +579,7 @@ const TopLists = ({ flipState }) => {
                                 rows={rows}
                                 columns={
                                     selectedScraper === "Play Store"
-                                        ? displayPermissions
+                                        ? shownQuery.includePermissions
                                             ? Array.prototype.concat(columns, permissionColumns)
                                             : playStoreColumns
                                         : appStoreColumns
@@ -543,6 +607,11 @@ const TopLists = ({ flipState }) => {
                                     Download ({totalCount} Results + Reproducibility Log as ZIP)
                                 </Button>
                             </div>
+                            {downloadError && (
+                                <Alert severity="error" onClose={() => setDownloadError("")}>
+                                    {downloadError}
+                                </Alert>
+                            )}
                         </div>
                     </>
                 ) : (

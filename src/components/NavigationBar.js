@@ -5,36 +5,36 @@ import { Typography, Button, Chip } from "@mui/material";
 import { Link , NavLink} from "react-router-dom";
 
 const NavButton = ({ to, label, onClick }) => (
-  <NavLink
+  <Button
+    component={NavLink}
     to={to}
-    style={{ textDecoration: "none" }}
+    onClick={onClick}
+    color="inherit"
+    sx={{
+      color: "white",
+      position: "relative",
+      textDecoration: "none",
+      "&::after": {
+        content: '""',
+        display: "block",
+        width: "80%",
+        height: "2px",
+        background: "transparent",
+        position: "absolute",
+        bottom: "-6px",
+        left: "10%",
+        borderRadius: "5px",
+        transition: "all 0.3s ease-in-out",
+        boxShadow: "none",
+      },
+      "&.active::after": {
+        background: "#FFFFFF",
+        boxShadow: "0px 0px 10px rgba(255, 255, 255, 0.8)",
+      },
+    }}
   >
-    {({ isActive }) => (
-      <Button
-        onClick={onClick}
-        color="inherit"
-        sx={{
-          color: "white",
-          position: "relative",
-          "&::after": {
-            content: '""',
-            display: "block",
-            width: "80%",
-            height: "2px",
-            background: isActive ? "#FFFFFF" : "transparent", 
-            position: "absolute",
-            bottom: "-6px",
-            left: "10%",
-            borderRadius: "5px",
-            transition: "all 0.3s ease-in-out",
-            boxShadow: isActive ? "0px 0px 10px rgba(255, 255, 255, 0.8)" : "none",
-          },
-        }}
-      >
-        {label}
-      </Button>
-    )}
-  </NavLink>
+    {label}
+  </Button>
 );
 
 const NavigationBar = ({ refresh, refreshTopLists }) => {

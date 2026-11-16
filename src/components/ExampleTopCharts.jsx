@@ -11,9 +11,9 @@ const ExampleTopCharts = ({ selectedScraper }) => {
         {code: "GROSSING", name: "Top Grossing"},
     ];
     const iosTopCharts = [
-        {code: "topfreemacapps", name: "Top Free"},
-        {code: "toppaidmacapps", name: "Top Paid"},
-        {code: "topgrossingmacapps", name: "Top Grossing"},
+        {code: "topfreeapplications", name: "Top Free"},
+        {code: "toppaidapplications", name: "Top Paid"},
+        {code: "topgrossingapplications", name: "Top Grossing"},
     ];
 
     const navigate = useNavigate();
