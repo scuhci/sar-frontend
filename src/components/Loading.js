@@ -48,12 +48,13 @@ function Loading({
           {"\t"}1. <strong>Keyword search results</strong> - Results from
           searching for this keyword in{" "}
           {selectedScraper === "Play Store"
-            ? "Google Play (Google Play returns a max of 30 results)"
-            : "the Apple App Store (App Store returns a max of 30 results?)"}
+            ? "Google Play (SMAR requests up to 20 results)"
+            : "the Apple App Store (SMAR requests up to 50 results)"}
           <br></br>
-          {"\t"}2. <strong>Similar app links</strong> - Links (if any) to
-          “Similar Apps/Games” shown on the app profile page for each of the
-          keyword search results
+          {"\t"}2. <strong>Similar app links</strong> -{" "}
+          {selectedScraper === "Play Store"
+            ? <>Results of a second Google Play search for {"“related to <app title>”"} for each of the keyword search results</>
+            : "Apps that the App Store lists as similar to each of the keyword search results"}
           <br></br>
           <br></br>
           For more info, see the{" "}
@@ -64,13 +65,18 @@ function Loading({
           </a>
           .<br></br>
           <br></br>
-          <u>Busy? Drop an email and we'll ping you when it's done.</u>
-          <NotifyMe
-            country={country}
-            query={searchQuery}
-            permissions={permissions}
-            queryTime={time}
-          />
+          {/* Only the Play backend can send the notification email. */}
+          {selectedScraper === "Play Store" && (
+            <>
+              <u>Busy? Drop an email and we'll ping you when it's done.</u>
+              <NotifyMe
+                country={country}
+                query={searchQuery}
+                permissions={permissions}
+                queryTime={time}
+              />
+            </>
+          )}
         </DialogContentText>
         <LinearProgress className="loading-progress-bar" />
       </DialogContent>
