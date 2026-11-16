@@ -3,8 +3,14 @@ import { Typography, Box } from '@mui/material';
 import hciLabLogo from "../res/HCI_Logo.png";
 import "../css/Footer.css";
 import Link from '@mui/material/Link';
+import { Link as RouterLink, useInRouterContext } from 'react-router-dom';
 
 const Footer = () => {
+  // Pages are sometimes rendered without a router (for example in tests);
+  // fall back to a plain link there instead of throwing.
+  const privacyLinkProps = useInRouterContext()
+    ? { component: RouterLink, to: "/privacy" }
+    : { href: "/privacy" };
   return (
     <Box className="footer-container" component="footer">
       <Typography variant="body2" className="made-with-love">
@@ -16,6 +22,9 @@ const Footer = () => {
           rel="noopener noreferrer"
           >Human Computer Interaction Lab
         </Link> @Santa Clara University
+      </Typography>
+      <Typography variant="body2" className="footer-privacy">
+        <Link {...privacyLinkProps} className="hci-lab-text">Privacy notice</Link>
       </Typography>
     </Box>
   );

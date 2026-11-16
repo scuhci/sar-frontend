@@ -4,6 +4,10 @@ import './css/index.css';
 import App from './App';
 import reportWebVitals from './reportWebVitals';
 import { BrowserRouter } from 'react-router-dom';
+import { initAnalytics } from './analytics';
+
+// Google Analytics only loads once the visitor has accepted it (see ConsentBanner).
+initAnalytics();
 
 const root = ReactDOM.createRoot(document.getElementById('root'));
 root.render(

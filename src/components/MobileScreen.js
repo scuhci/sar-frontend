@@ -135,6 +135,9 @@ const MobileScreen = () => {
         For more information about the SMAR Web Application, check out our{" "}
         <a href={SMAR_USER_GUIDE_URL}>user guide</a>!
       </div>
+      <div className="mobile-info">
+        <a href="/privacy">Privacy notice</a>
+      </div>
     </div>
   );
 };

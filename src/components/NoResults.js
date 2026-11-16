@@ -10,7 +10,7 @@ const NoResults = ({fixedSearchQuery}) => {
             Looks like we could not find any apps matching your search. Try adjusting your keywords or filters, and let's give it another go!
         </Typography>
         <Box display="flex" justifyContent="center" alignItems="center">
-            <img src={'/noresultsfound.png'} className="inline-image-nb" alt="image"/>
+            <img src={'/noresultsfound.png'} className="inline-image-nb" alt="No results found"/>
         </Box>
     </div>
   )

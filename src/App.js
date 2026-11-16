@@ -10,6 +10,9 @@ import TopCharts from "./pages/TopCharts";
 import { ScraperProvider } from "./components/SelectedScraperProvider";
 import BulkReviews from "./pages/BulkReviews";
 import AgentSkills from "./pages/AgentSkills";
+import Privacy from "./pages/Privacy";
+import ConsentBanner from "./components/ConsentBanner";
+import NotFound from "./pages/NotFound";
 // testing commit
 
 function App() {
@@ -45,7 +48,10 @@ function App() {
                     <Route path="/bulkreviews" element={<BulkReviews flipState={flipState} />} />
                     <Route path="/agent-skills" element={<AgentSkills />} />
                     <Route path="/about" element={<About />} />
+                    <Route path="/privacy" element={<Privacy />} />
+                    <Route path="*" element={<NotFound />} />
                 </Routes>
+                <ConsentBanner />
             </div>
         </ScraperProvider>
     );
